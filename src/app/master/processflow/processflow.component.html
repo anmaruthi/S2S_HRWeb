@@ -1,0 +1,421 @@
+
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+
+    <div fxLayout="column" [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth)" *ngIf="Mode=='EDIT' || Mode=='ADD'" class="formColumn">
+    
+        <form novalidate #dialogForm="ngForm">
+            <div fxLayout="row" class="actionBarRow">
+
+                    <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                        <label class="menuBarHeading">PRODUCTION ENTRY</label>
+                    </div>
+    
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                        <div fxLayout="row" fxLayoutGap="20px">
+                            <div class="tooltip" matTooltip="Save" *ngIf="(this.sessionService.actionAllowed('EDIT_PROCESS_FLOW'))" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button type="submit" class="app-icon-button" (click)="SubmitClick(dialogForm.valid)">
+                                    <i class="material-icons logout">save</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="cancelClick()">
+                                    <i class="material-icons logout">cancel</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+            <div fxLayout="row" class="FirstColumnData" [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+              <div fxLayout="column"  fxFlex=100%>
+                <div fxLayout="row">
+
+                    <div fxFlex=18%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="text" readonly #ProjectName="ngModel" name="ProjectName" [(ngModel)]="selectedDataGridItem.ProjectName"
+                                        placeholder="Project Name" />                                                
+                        </mat-form-field> 
+                    </div>
+                    <div fxFlex=2%></div>
+                    <div fxFlex=18%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="tex" readonly #BuyerName="ngModel" name="BuyerName" [(ngModel)]="selectedDataGridItem.BuyerName"
+                                placeholder="Buyer Name" />                                                    
+                        </mat-form-field> 
+                    </div>
+                    <div fxFlex=2%></div>
+                    <div fxFlex=18%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="tex" readonly #StyleName="ngModel" name="StyleName" [(ngModel)]="selectedDataGridItem.StyleName"
+                                placeholder="Style Name" />                                                    
+                        </mat-form-field> 
+                    </div>    
+                    <div fxFlex=2%></div>
+                    <div fxFlex=18%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="text" readonly #StyleDescription="ngModel" name="StyleDescription" [(ngModel)]="selectedDataGridItem.StyleDescription"
+                                placeholder="Style Description" />                                                    
+                        </mat-form-field> 
+                    </div>               
+                    <div fxFlex=2%></div>    
+                    <div fxFlex=18%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="text" readonly #TotalOrderQuantity="ngModel" name="TotalOrderQuantity" [(ngModel)]="selectedDataGridItem.FinalOrderQuantity"
+                                placeholder="Quantity" />                                                    
+                        </mat-form-field> 
+                    </div>                                            
+                </div>        
+                <div fxLayout="row">
+                    <div fxFlex=18%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="tex" readonly #ProjectStartDate1="ngModel" name="ProjectStartDate1" [(ngModel)]="selectedDataGridItem.TentativeProcessStartDate1"
+                                    placeholder="Start Date" />                                                    
+                        </mat-form-field> 
+                    </div>
+                    <div fxFlex=2%></div>                      
+                    <div fxFlex=18%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="tex" readonly #ProjectCompletionDate1="ngModel" name="ProjectCompletionDate1" [(ngModel)]="selectedDataGridItem.ProcessCompletionDate1"
+                                        placeholder="Completion Date" />                                                    
+                        </mat-form-field> 
+                    </div>  
+                    <div fxFlex=2%></div>                      
+                    <div fxFlex=18%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="tex" readonly #ProcessName="ngModel" name="ProcessName" [(ngModel)]="selectedDataGridItem.ProcessName"
+                                placeholder="Process Name" />                                                    
+                        </mat-form-field> 
+                    </div> 
+                    <div fxFlex=2%></div>                      
+                    <div fxFlex=18%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="tex" readonly #DepartmentName="ngModel" name="DepartmentName" [(ngModel)]="selectedDataGridItem.DepartmentName"
+                                placeholder="Department Name" />                                                    
+                        </mat-form-field> 
+                    </div>             
+                    <div fxFlex=2%></div>   
+                    <div fxFlex=18%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <mat-select #statusCode1="ngModel" name="statusCode1"  [(ngModel)]="selectedDataGridItem.StatusCode" required
+                                    placeholder="Status">
+                                <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                                    {{ itm.StatusMessage }}
+                                </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="this.processFlowSubmitAttempt && statusCode1.hasError('required')">
+                                    Status is required
+                                </mat-error>
+                        </mat-form-field>
+                    </div>                                                    
+                </div>
+                <div fxLayout="row" >
+
+                    <p-table #processFlowDT [value]="this.ProcessFlowTransaction.FlowDetails" [scrollable]="true"
+                            scrollHeight="500px" [reorderableColumns]="true">
+
+                        <ng-template pTemplate="header" let-columns>
+                            <tr> 
+                                <th style="width: 2%">
+                                          
+                                </th>
+                                <th pSortableColumn="ExecutionModeName" style="width: 25%">
+                                    Execution Mode
+                                    <p-sortIcon field="ExecutionModeName"></p-sortIcon>
+                                </th>    
+                                <th pSortableColumn="ProcessingDate" style="width: 20%">
+                                    Processing Date
+                                    <p-sortIcon field="ProcessingDate"></p-sortIcon>
+                                </th>                             
+                                <th pSortableColumn="HourID" style="width: 18%">
+                                    Hour No
+                                    <p-sortIcon field="HourID"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="TotalQuantity" style="width: 20%">
+                                    Total Quantity
+                                    <p-sortIcon field="TotalQuantity"></p-sortIcon>
+                                </th>
+                                <th  style="width: 15%">
+                                    Action
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-index="rowIndex">
+                            <tr [pSelectableRow]="rowData" [pReorderableRow]="index">
+                                <td style="text-align: left;width: 2%; word-wrap:break-word">
+                                    <i class="fa fa-bars" pReorderableRowHandle></i>
+                                </td>
+                                <td style="width: 25%; word-wrap:break-word">
+                                    {{rowData.ExecutionModeName}}
+                                </td>
+                                <td style="width: 20%; word-wrap:break-word">
+                                    {{rowData.ProcessingDate1}}
+                                </td>                                
+                                <td style="width: 18%; word-wrap:break-word">
+                                    {{rowData.HourID}}
+                                </td>
+                                <td style="width: 20%; word-wrap:break-word">
+                                    {{rowData.TotalQuantity}}
+                                </td>                                
+                                <td style="text-align: right;width: 15%; word-wrap:break-word">
+                                    <div fxLayout="column" fxLayoutAlign="center end">
+                                        <div fxLayout="row" fxLayoutGap="10px">
+                                            <div class="tooltip" matTooltip="Edit" *ngIf="this.sessionService.actionAllowed('EDIT_PROCESS_FLOW')"
+                                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                <button class="app-icon-button" (click)="processFlowEditClick(rowData)">
+                                                    <i class="material-icons">edit</i>
+                                                </button>
+                                            </div>
+                                            <div class="tooltip" matTooltip="Delete" *ngIf="this.sessionService.actionAllowed('EDIT_PROCESS_FLOW')"
+                                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                <button class="app-icon-button" (click)="processFlowDeleteClick(rowData)">
+                                                    <i class="material-icons">delete</i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="summary">
+
+                                <form novalidate #ProcessQuantityForm="ngForm">
+
+                                        <div fxLayout="row">
+                                
+                                                <div fxLayout="column" fxFlex=100%>
+                        
+                                                        <div fxLayout="row" fxLayoutAlign="center center">
+                                                            <div fxFlex=2%> </div>   
+                                                            <div fxFlex=24%>
+                                                                <mat-form-field class="fld-mt0-w100">
+                                                                    <mat-select #executionMode="ngModel" name="ExecutionMode"  [(ngModel)]="newProcessFlowTransaction.ExecutionMode" required
+                                                                        placeholder="Execution Mode">
+                                                                    <mat-option *ngFor="let itm of ExecutionModeList" [value]="itm.ExecutionModeID">
+                                                                        {{ itm.ExecutionModeName }}
+                                                                    </mat-option>
+                                                                    </mat-select>
+                                                                    <mat-error *ngIf="this.processFlowSubmitAttempt && executionMode.hasError('required')">
+                                                                        Execution Mode is required
+                                                                    </mat-error>
+                                                                </mat-form-field>
+                                                            </div>
+                                                            <div fxFlex=2> </div>
+                                                            <div fxFlex=18%> 
+                                                                <customdate class="fld-mt0-w100" placeholder="Processing Date" required="true"  [submitAttempt]="this.processFlowSubmitAttempt"
+                                                                    #ProcessingDate="ngModel" name="ProcessingDate" [(ngModel)]="this.newProcessFlowTransaction.ProcessingDate" 
+                                                                    [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true" > </customdate>
+                                                            </div>     
+                                                            <div fxFlex=2%> </div>                                                       
+                                                            <div fxFlex=17%>
+                                                                <mat-form-field class="fld-mt0-w100">
+                                                                    <input matInput type="number" #HourID="ngModel" name="HourID" [(ngModel)]="newProcessFlowTransaction.HourID"
+                                                                            placeholder="Hour No" required minValue=1 maxValue=24 />
+                                                                                        
+                                                                        <mat-error *ngIf="this.processFlowSubmitAttempt && HourID.hasError('required')">
+                                                                            Hour No is required
+                                                                        </mat-error>
+                                                                        <mat-error *ngIf="this.processFlowSubmitAttempt && HourID.hasError('pattern')">
+                                                                            Hour No Quantity
+                                                                        </mat-error> 
+                                                                        <mat-error *ngIf="this.processFlowSubmitAttempt && HourID.hasError('minValue')
+                                                                            && !HourID.hasError('required') && !HourID.hasError('pattern')">
+                                                                                Minimum 1 is required
+                                                                        </mat-error> 
+                                                                        <mat-error *ngIf="this.processFlowSubmitAttempt && HourID.hasError('maxValue') && !HourID.hasError('pattern')">
+                                                                            Maximum allowed is 24
+                                                                        </mat-error> 
+                                                                </mat-form-field>                                                                 
+                                                            </div>
+                                                    
+                                                            <div fxFlex=2%> </div>
+                                                            
+                                                            <div fxFlex=18%> 
+                                                                <mat-form-field class="fld-mt0-w100">
+                                                                    <input matInput type="number" #TotalQuantity="ngModel" name="TotalQuantity" [(ngModel)]="newProcessFlowTransaction.TotalQuantity"
+                                                                            placeholder="Total Quantity" readonly required />
+                                                                                        
+                                                                        <mat-error *ngIf="this.processFlowSubmitAttempt && TotalQuantity.hasError('required')">
+                                                                            Total Quantity is required
+                                                                        </mat-error>
+                                                                        <mat-error *ngIf="this.processFlowSubmitAttempt && TotalQuantity.hasError('pattern')">
+                                                                            Invalid Total Quantity
+                                                                        </mat-error> 
+                                                                        <mat-error *ngIf="this.processFlowSubmitAttempt && TotalQuantity.hasError('minValue')
+                                                                            && !TotalQuantity.hasError('required') && !TotalQuantity.hasError('pattern')">
+                                                                                Minimum {{this.commonService.MIN_QUANTITY1}} is required
+                                                                        </mat-error> 
+                                                                        <mat-error *ngIf="this.processFlowSubmitAttempt && TotalQuantity.hasError('maxValue') && !TotalQuantity.hasError('pattern')">
+                                                                            Maximum allowed is {{this.commonService.MAX_QUANTITY}}
+                                                                        </mat-error> 
+                                                                </mat-form-field>                                                               
+                                                            </div>
+    
+                                                            <div fxFlex=2%> </div>
+
+                                                            <div fxFlex=13%> 
+                                                                    <div fxLayout="column" fxLayoutAlign="center center">
+                                                                        <div fxLayout="row" fxLayoutGap="20px">
+                                                                            <div class="tooltip" [matTooltip]="this.newProcessFlowTransaction.ProcessFlowTransactionID?'Save':'Add'" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                                                <button type="submit" class="app-icon-button" (click)="processFlowAddEdit(ProcessQuantityForm, ProcessQuantityForm.valid)">
+                                                                                <i class="material-icons"> {{this.newProcessFlowTransaction.ProcessFlowTransactionID?'save':'add'}}</i>
+                                                                                </button>
+                                                                            </div>
+        
+                                                                            <div class="tooltip" [matTooltip]="this.newProcessFlowTransaction.ProcessFlowTransactionID?'Cancel':'Clear'" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                                                <button type="button" class="app-icon-button" (click)="processFlowEditCancelClick()">
+                                                                                <i class="material-icons">{{this.newProcessFlowTransaction.ProcessFlowTransactionID?'cancel':'clear'}}</i>
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                        </div>
+
+                                                        <div fxLayout="row" fxLayoutAlign="center center">
+
+                                                            <p-table [value]="this.newProcessFlowTransaction.ProductionDetails">
+                                                                <ng-template pTemplate="header">
+                                                                    <tr>
+                                                                        <th style="width: 10%">Color Name</th>
+                                                                        <th style="width: 10%" *ngFor="let sz of this.SizeList">
+                                                                            {{sz.SizeName}}
+                                                                        </th>
+                                                                        <th style="width: 10%">Total</th>
+                                                                    </tr>
+                                                                </ng-template>
+                                                                <ng-template pTemplate="body" let-rowData let-sizeDet>
+                                                                    <tr>
+                                                                        <td style="text-align: left;width: 10%; word-wrap:break-word">{{rowData.ColorName}}</td>  
+                                                                        <td pEditableColumn style="text-align: right;width: 10%; word-wrap:break-word" *ngFor="let sz of sizeDet.SizeDetails">
+                                                                            <p-cellEditor>
+                                                                                <ng-template pTemplate="input">
+                                                                                    <mat-form-field class="fld-mt-10-w90">
+                                                                                        <input matInput type="number" #szQty1{{sz.SizeID}}="ngModel" 
+                                                                                            name="szQty1{{sz.SizeID}}" [(ngModel)]="sz.Quantity" (change)="onValueChange()"
+                                                                                            placeholder="" />        
+                                                                                    </mat-form-field>  
+                                                                                </ng-template>
+                                                                                <ng-template pTemplate="output">
+                                                                                    {{sz.Quantity}}
+                                                                                </ng-template>
+                                                                            </p-cellEditor>
+                                                                        </td>
+                                                                        <td style="text-align: right;width: 10%; word-wrap:break-word">{{rowData.ColorQuantity}}</td>  
+                                                                    </tr>
+                                                                </ng-template>
+
+
+                                                            </p-table>
+
+                                                        </div>
+                                                       
+                                                </div>
+                                    
+                                            </div>
+    
+                                </form>
+                                
+                        </ng-template>
+                    </p-table>
+                </div>
+              </div>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="ColumnDivider" *ngIf="Mode=='EDIT' || Mode=='ADD'"></div>
+        
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()" >
+
+        <div fxLayout="row">
+
+            <div fxLayout="column">
+                
+                <div fxLayout="row" class="actionBarRow" >
+
+                    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                            <label class="menuBarHeading">PRODUCTION STATUS</label>
+                    </div>
+                    <div fxLayout="column" class="actionBarDataColumn">
+                        </div>
+                    <div fxLayout="column" class="actionBarSearchColumn">
+                            <mat-form-field>
+                                <input inputmode="search" (keyup)="onKeyUp()" (input)="dt.filterGlobal($event.target.value, 'contains')" matInput placeholder="Text Filter" class="searchBox">
+                            </mat-form-field>
+                    </div>
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                            <div fxLayout="row" fxLayoutGap="20px">       
+                                <div class="tooltip" matTooltip="Approve" *ngIf="this.sessionService.actionAllowed('EDIT_PROCESS_FLOW')"
+                                    [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                    <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="editClick()">
+                                        <i class="material-icons">edit</i>
+                                    </button>
+                                </div>
+                                <div class="tooltip" matTooltip="Refresh" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                    <button class="app-icon-button" (click)="refreshClick()">
+                                      <i class="material-icons">refresh</i>
+                                    </button>
+                                </div>    
+                            </div>
+                    </div>
+                </div>
+                        
+                <div fxLayout="row" class="SecondColumnData">
+                    <p-table #dt [columns]="cols" [value]="dataGridList" sortField="ProjectID" selectionMode="single" [scrollable]="true" [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()" 
+                    [style.width]="this.sessionService.getScreenWidthInPx()"
+                    [(selection)]="selectedData" [paginator]="true" [rows]="sessionService.NoOfRowsPerPage" 
+                    [rowsPerPageOptions]="sessionService.RowsPerPageOptions" datakey="ProjectID">    
+                        <ng-template pTemplate="header" let-columns>
+                            <tr> 
+                                <th [pSortableColumn]="'ProjectName'" [style.width]="'12%'">
+                                    Project Name
+                                    <p-sortIcon [field]="'ProjectName'"></p-sortIcon>
+                                </th>
+                                <th [pSortableColumn]="'BuyerName'" [style.width]="'10%'">
+                                    Buyer Name
+                                    <p-sortIcon [field]="'BuyerName'"></p-sortIcon>
+                                </th>
+                                <th [pSortableColumn]="'StyleName'" [style.width]="'10%'">
+                                    Style Name
+                                    <p-sortIcon [field]="'StyleName'"></p-sortIcon>
+                                </th>
+                                <th *ngFor="let col of columns"  [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+                                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                                </th>
+                            </tr>                            
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                            <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                <td pEditableColumn [style.width]="'12%'" [style.text-align]="'left'" [style.word-wrap]="'break-word'" 
+                                    *ngIf="rowData.sizeCount != null" [attr.rowspan]="rowData.sizeCount">
+                                    {{rowData.ProjectName}}
+                                </td>
+                                <td pEditableColumn [style.width]="'10%'" [style.text-align]="'left'" [style.word-wrap]="'break-word'" 
+                                    *ngIf="rowData.sizeCount != null" [attr.rowspan]="rowData.sizeCount">
+                                    {{rowData.BuyerName}}
+                                </td>
+                                <td pEditableColumn [style.width]="'10%'" [style.text-align]="'left'" [style.word-wrap]="'break-word'" 
+                                    *ngIf="rowData.sizeCount != null" [attr.rowspan]="rowData.sizeCount">
+                                    {{rowData.StyleName}}
+                                </td>
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                                    [style.word-wrap]="col.wrap">
+                                    {{rowData[col.field]}}
+                                </td>
+                            </tr>                            
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>  
+        </div>
+
+    </div>
+
+</div>
+

@@ -1,0 +1,300 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()">
+        <div fxLayout="row">
+            <div fxLayout="row" class="actionBarRow  actionBarRowCustom">
+                <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                    <label class="menuBarHeading">Monthly Attendance</label>
+                </div>
+                <div fxLayout="column" class="actionBarRowDataColumn">
+                    <form novalidate #searchForm="ngForm" fxFlex=100%>
+                        <div fxLayout="row" fxFlex=100% fxLayoutAlign="center center" fxLayoutGap="10px">
+                            <div fxFlex=15%>
+                                <autocomplete class="fld-mt0-w100" placeholder="Group" required="true"
+                                    [submitAttempt]="this.submitAttempt" [InputDataList]="this.EmployeeGroupList"
+                                    KeyID="GroupID" KeyDescription="GroupName" #EmpGroup="ngModel" name="EmpGroup"
+                                    [(ngModel)]="SelectedGroup.GroupID" (SelectionDone)="SelectEmpGroup($event)">
+                                </autocomplete>
+                            </div>
+                            <div fxFlex=15%>
+                                <autocomplete class="fld-mt0-w100" placeholder="Category" required="true"
+                                    [submitAttempt]="this.submitAttempt" [InputDataList]="this.EmployeeCategoryList"
+                                    KeyID="CategoryID" KeyDescription="CategoryName" #Category="ngModel" name="Category"
+                                    [(ngModel)]="SelectedCategory.CategoryID"
+                                    (SelectionDone)="SelectEmpCategory($event)">
+                                </autocomplete>
+                            </div>
+                            <div fxFlex=15%>
+                                <autocomplete class="fld-mt0-w100" placeholder="Type" required="true"
+                                    [submitAttempt]="this.submitAttempt" [InputDataList]="this.EmployeeTypeList"
+                                    KeyID="TypeID" KeyDescription="TypeName" #Type="ngModel" name="Type"
+                                    [(ngModel)]="SelectedType.TypeID" (SelectionDone)="SelectEmpType($event)">
+                                </autocomplete>
+                            </div>
+                            <div fxFlex=20%>
+                                <autocomplete class="fld-mt0-w100" placeholder="Department" required="true"
+                                    [submitAttempt]="this.submitAttempt" [InputDataList]="this.EmployeeDepartmentList"
+                                    KeyID="DepartmentID" KeyDescription="DepartmentName" #Department="ngModel"
+                                    name="Department" [(ngModel)]="SelectedDepartment.DepartmentID"
+                                    (SelectionDone)="SelectEmpDepartment($event)">
+                                </autocomplete>
+                            </div>
+                            <div fxFlex=20%>
+                                <autocomplete class="fld-mt0-w100" placeholder="Designation" required="true"
+                                    [submitAttempt]="this.submitAttempt" [InputDataList]="this.EmployeeDesignationList"
+                                    KeyID="DesignationID" KeyDescription="DesignationName" #Designation="ngModel"
+                                    name="Designation" [(ngModel)]="SelectedDesignation.DesignationID"
+                                    (SelectionDone)="SelectEmpDesignation($event)">
+                                </autocomplete>
+                            </div>
+                            <!-- <div fxFlex=10%>
+                                <autocomplete class="fld-mt0-w100" placeholder="Month" required="true"
+                                    [submitAttempt]="this.submitAttempt" [InputDataList]="this.month_list" KeyID="id"
+                                    KeyDescription="month" #Month="ngModel" name="month" [(ngModel)]="SelectedMonth"
+                                    (SelectionDone)="SelectedMonthFun($event)">
+                                </autocomplete>
+                            </div>
+                            <div fxFlex=10%>
+                                <autocomplete class="fld-mt0-w100" placeholder="year" required="true"
+                                    [submitAttempt]="this.submitAttempt" [InputDataList]="this.year_list" KeyID="id"
+                                    KeyDescription="year" #year="ngModel" name="year" [(ngModel)]="SelectedYear"
+                                    (SelectionDone)="SelectedYearFun($event)">
+                                </autocomplete>
+                            </div> -->
+                            <div fxFlex=2%>
+                                <button type="button" pButton pRipple icon="pi pi-filter" (click)="filter()"
+                                    class="p-button-info ml-auto" pTooltip="Filter" tooltipPosition="bottom"></button>
+                            </div>
+                            <div fxFlex=1%> </div>
+                            <div fxFlex=2%>
+                                <button type="button" pButton pRipple icon="pi pi-times" (click)="clear()"
+                                    class="p-button-info ml-auto" pTooltip="clear" tooltipPosition="bottom"></button>
+                            </div>
+                            <div fxFlex=1%>
+
+                            </div>
+
+                            <div fxFlex=1%>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <p-table #dt [value]="dataGridList" selectionMode="single" dataKey="MonthlyAttID"
+            [globalFilterFields]="['name','unique_id_no',]" [style.width]="
+        this.sessionService.getScreenWidthInPx()" [(selection)]="selectedData" [paginator]="true" [rows]="15"
+            [rowsPerPageOptions]="sessionService.RowsPerPageOptions" [scrollable]="true" scrollHeight="470px"
+            styleClass="mt-3">
+            <ng-template pTemplate="caption">
+                <div fxLayout="row" fxFlex=100% fxLayoutAlign="center center" fxLayoutGap="10px">
+                    <div fxFlex=15%>
+                        <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="center start">
+                            <div class="tooltip">
+                                <i class="pi pi-search"></i>
+                            </div>
+                            <div class="flex">
+                                <input pInputText type="text" (input)="dt.filterGlobal($event.target.value,'contains')"
+                                    placeholder="Search here" />
+                            </div>
+                        </div>
+                    </div>
+                    <div fxFlex=48%></div>
+                    <div fxFlex=10%>
+                        <autocomplete class="fld-mt0-w80" placeholder="Month" required="true"
+                            [submitAttempt]="this.submitAttempt" [InputDataList]="this.month_list" KeyID="id"
+                            KeyDescription="month" #Month="ngModel" name="month" [(ngModel)]="SelectedMonth"
+                            (SelectionDone)="SelectedMonthFun($event)">
+                        </autocomplete>
+                    </div>
+                    <div fxFlex=10%>
+                        <autocomplete class="fld-mt0-w80" placeholder="year" required="true"
+                            [submitAttempt]="this.submitAttempt" [InputDataList]="this.year_list" KeyID="id"
+                            KeyDescription="year" #year="ngModel" name="year" [(ngModel)]="SelectedYear"
+                            (SelectionDone)="SelectedYearFun($event)">
+                        </autocomplete>
+                    </div>
+                    <div fxFlex=2%></div>
+                    <div fxFlex=5% fxLayoutAlign="center start">
+                        <button type="button"
+                            style="background-color: rgb(17, 224, 17); text:white;border-radius: 10px;" pButton pRipple
+                            (click)="exportExcel()" class="p-button-success " pTooltip="XLS" tooltipPosition="top"><i
+                                class="pi pi-file-excel"></i>Excel</button>
+                    </div>
+                    <div fxFlex=5% fxLayoutAlign="center start">
+                        <button type="button"
+                            style="background-color: rgb(255, 54, 54); text:white;border-radius: 10px;" pButton pRipple
+                            (click)="exportPdf()" class="p-button-warning " pTooltip="PDF" tooltipPosition="top"><i
+                                class="pi pi-file-pdf"></i>PDF</button>
+                    </div>
+
+                </div>
+                <!-- <div fxLayout="column" fxFlex=30% fxLayoutAlign="center start">
+                    <div fxLayout="row">
+                        <button type="button"
+                            style="background-color: rgb(17, 224, 17); text:white;border-radius: 10px;" pButton pRipple
+                            (click)="exportExcel()" class="p-button-success " pTooltip="XLS" tooltipPosition="top"><i
+                                class="pi pi-file-excel"></i>Excel</button>
+                        <div fxFlex=5%></div>
+                        <button type="button"
+                            style="background-color: rgb(255, 54, 54); text:white;border-radius: 10px;" pButton pRipple
+                            (click)="exportPdf()" class="p-button-warning " pTooltip="PDF" tooltipPosition="top"><i
+                                class="pi pi-file-pdf"></i>PDF</button>
+                    </div>
+                </div>
+                <div fxLayout="column" fxFlex=40% fxLayoutAlign="center start">
+                    <div fxLayout="row">
+
+                        <autocomplete class="fld-mt0-w80" placeholder="Month" required="true"
+                            [submitAttempt]="this.submitAttempt" [InputDataList]="this.month_list" KeyID="id"
+                            KeyDescription="month" #Month="ngModel" name="month" [(ngModel)]="SelectedMonth"
+                            (SelectionDone)="SelectedMonthFun($event)">
+                        </autocomplete>
+
+                        <div fxFlex=5%></div>
+                        <autocomplete class="fld-mt0-w80" placeholder="year" required="true"
+                            [submitAttempt]="this.submitAttempt" [InputDataList]="this.year_list" KeyID="id"
+                            KeyDescription="year" #year="ngModel" name="year" [(ngModel)]="SelectedYear"
+                            (SelectionDone)="SelectedYearFun($event)">
+                        </autocomplete>
+
+                    </div>
+                </div>
+
+                <div fxLayout="column" fxFlex=30% fxLayoutAlign="start end">
+                    <div fxLayout="row" fxLayoutGap="10px">
+                        <div class="tooltip">
+                            <i class="pi pi-search"></i>
+                        </div>
+                        <div class="flex">
+                            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value,'contains')"
+                                placeholder="Search here" />
+                        </div>
+                    </div>
+                </div> -->
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+
+                    <th style="min-width:100px" pFrozenColumn>Emp Code</th>
+                    <th style="min-width:200px" pFrozenColumn>Emp Name</th>
+                    <th style="min-width:5px">01</th>
+                    <th style="min-width:5px">02</th>
+                    <th style="min-width:5px">03</th>
+                    <th style="min-width:5px">04</th>
+                    <th style="min-width:5px">05</th>
+                    <th style="min-width:5px">06</th>
+                    <th style="min-width:5px">07</th>
+                    <th style="min-width:5px">08</th>
+                    <th style="min-width:5px">09</th>
+                    <th style="min-width:5px">10</th>
+                    <th style="min-width:5px">11</th>
+                    <th style="min-width:5px">12</th>
+                    <th style="min-width:5px">13</th>
+                    <th style="min-width:5px">14</th>
+                    <th style="min-width:5px">15</th>
+                    <th style="min-width:5px">16</th>
+                    <th style="min-width:5px">17</th>
+                    <th style="min-width:5px">18</th>
+                    <th style="min-width:5px">19</th>
+                    <th style="min-width:5px">20</th>
+                    <th style="min-width:5px">21</th>
+                    <th style="min-width:5px">22</th>
+                    <th style="min-width:5px">23</th>
+                    <th style="min-width:5px">24</th>
+                    <th style="min-width:5px">25</th>
+                    <th style="min-width:5px">26</th>
+                    <th style="min-width:5px">27</th>
+                    <th style="min-width:5px">28</th>
+                    <th style="min-width:5px">29</th>
+                    <th style="min-width:5px">30</th>
+                    <th style="min-width:5px">31</th>
+
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-customer>
+                <tr style="align-items: center;">
+                    <td (dblclick)="onDoubleClick(customer.unique_id_no,'1')" style="min-width:100px" pFrozenColumn>
+                        {{customer.unique_id_no}}</td>
+                    <td (dblclick)="onDoubleClick(customer.unique_id_no,'1')" style="min-width:200px" pFrozenColumn>
+                        {{customer.name}}
+                    </td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+                    <td style="min-width:5px">{{customer['1']}}</td>
+
+                </tr>
+            </ng-template>
+            <ng-template colspan="10" pTemplate="emptymessage">
+                No records found
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+<div id="htmlData" style="display:none;">
+    <div style="margin-left:100px;margin-top:85px;width:1000px;border-top: 1px solid rgb(52, 103, 235);">
+        <div class="row mt-1">
+            <div class="col-md-4 text-start">Module Name : </div>
+            <div class="col-md-8 text-start"><b> <b style="font-size:small;letter-spacing:0.5px"></b></b></div>
+        </div>
+    </div>
+</div>
+<p-dialog header="Individual Attendance" appendTo="body" [(visible)]="visible" [styleClass]="'default-dialog'"
+    [style]="{width: '98%',height:'90%' }">
+    <div fxLayout="row">
+        
+    </div>
+    <div class="card">
+
+        <p-table [value]="daysInMonth">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>In</th>
+                    <th>Out</th>
+                    <th>Date</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowIndex="rowIndex" let-product *ngFor="let emp of individual">
+                <tr [pSelectableRow]="product" [pSelectableRowIndex]="rowIndex">
+                    <td>{{product | date: 'dd/MM/yyyy'}}</td>
+                    <!-- <td> {{ daysInMonth[rowIndex] | date: 'dd/MM/yyyy' }}</td>-->
+                    <td>{{ individual[rowIndex]?.EmpName}}</td>
+                    <td>{{ individual[rowIndex]?.In}}</td>
+                    <td>{{ individual[rowIndex]?.Out}}</td>
+                    <td>{{ individual[rowIndex]?.date}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</p-dialog>

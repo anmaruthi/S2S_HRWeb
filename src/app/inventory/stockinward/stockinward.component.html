@@ -1,0 +1,768 @@
+<style>
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+    }
+</style>
+
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()"
+        *ngIf="(Mode=='EDIT' || Mode=='ADD') && this.replacementMode != true" class="formColumn">
+
+        <form novalidate #dialogForm="ngForm">
+            <div fxLayout="row" class="actionBarRow  actionBarRowCustom">
+
+                <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                    <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Inward Transaction</label>
+                    <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Inward Transaction</label>
+                </div>
+
+                <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                    <div fxLayout="row" fxLayoutGap="20px">
+                        <div class="tooltip" matTooltip="Save"
+                            *ngIf="((this.sessionService.actionAllowed('ADD_STOCKINWARD') && this.Mode == 'ADD')  || 
+                                (this.sessionService.actionAllowed('EDIT_STOCKINWARD') && this.Mode == 'EDIT' && this.CanEdit)) && this.showApprove != true"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button"
+                                (click)="SubmitClick(dialogForm.valid,'save')">
+                                <i class="material-icons logout">save</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Submit"
+                            *ngIf="((this.sessionService.actionAllowed('ADD_STOCKINWARD') && this.Mode == 'ADD')  || 
+                                (this.sessionService.actionAllowed('EDIT_STOCKINWARD') && this.Mode == 'EDIT' && this.CanEdit)) && this.showApprove != true"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button iconImage"
+                                (click)="SubmitClick(dialogForm.valid,'submit')">
+                                <i class="material-icons">check_circle</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Approve" *ngIf="this.sessionService.actionAllowed('APPROVE_STOCKINWARD')  &&  
+                                this.Mode == 'EDIT' && this.CanEdit && this.showApprove == true"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button"
+                                (click)="SubmitClick(dialogForm.valid,'approve')">
+                                <i class="material-icons">thumb_up</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Reject" *ngIf="this.sessionService.actionAllowed('APPROVE_STOCKINWARD')  &&  
+                                this.Mode == 'EDIT' && this.CanEdit && this.showApprove == true"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button"
+                                (click)="SubmitClick(dialogForm.valid,'reject')">
+                                <i class="material-icons">thumb_down</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Cancel"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button class="app-icon-button" (click)="cancelClick()">
+                                <i class="material-icons logout">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="start start" style="padding-top: 10px;" class="dataSetRow">
+                <div fxLayout="column" fxFlex=2%></div>
+                <div fxLayout="column" fxFlex=15%>
+                    <mat-form-field class="fld-mt0-w100">
+                        <input matInput type="text" #GRNIDText="ngModel" name="GRNIDText"
+                            [(ngModel)]="selectedDataGridItem.GRNIDText" placeholder="Inward No." readonly />
+                    </mat-form-field>
+                </div>
+                <div fxLayout="column" fxFlex=2%></div>
+                <div fxLayout="column" fxFlex=15%>
+                    <customdate class="fld-mt0-w100" placeholder="Inward Date" #GRNDate="ngModel"
+                        name="GRNDate" [(ngModel)]="selectedDataGridItem.GRNDate" [allowFutureDate]="true"
+                        [allowCurrentDate]="true" [allowPastDate]="true" [submitAttempt]="this.submitAttempt"
+                        [ReadOnlyControl]="true"> </customdate>
+                </div>
+                <div fxLayout="column" fxFlex=2%></div>
+                <!-- <div fxLayout="column" fxFlex=10%>
+                    <mat-form-field class="fld-mt0-w100">
+                        <input matInput type="text" #InwardIDText="ngModel" name="InwardIDText"
+                            [(ngModel)]="selectedDataGridItem.InwardIDText" placeholder="Inward No." required
+                            [readonly]="this.submitApproved==true ? true : false" />
+
+                        <mat-error *ngIf="this.submitAttempt && InwardIDText.hasError('required')">
+                            Inward Number is required
+                        </mat-error>
+
+                    </mat-form-field>
+                </div>
+                <div fxLayout="column" fxFlex=2%></div> -->
+                <div fxLayout="column" fxFlex=30%>
+                    <autocomplete class="fld-mt0-w100" placeholder="Supplier" required="true"
+                        [submitAttempt]="this.submitAttempt" [InputDataList]="this.SupplierList" required="true"
+                        KeyID="SupplierID" KeyDescription="SupplierName" #Supplier="ngModel" name="Supplier"
+                        [(ngModel)]="selectedDataGridItem.SupplierID" (SelectionDone)="SelectSupplier($event)">
+                    </autocomplete>
+                </div>
+                <div fxLayout="column" fxFlex=2%></div>
+                <div fxLayout="column" fxFlex=30%>
+                    <mat-form-field class="fld-mt0-w100">
+                        <mat-select #PurchaseOrderID="ngModel" name="PurchaseOrderID" [(ngModel)]="selectedPOs" multiple
+                            placeholder="PO Numbers" (selectionChange)="onSelectionPurchaseOrders()">
+                            <mat-option *ngFor="let itm of this.PurchaseOrderListFiltered" [value]="itm">
+                                {{ itm.PurchaseOrderNumberString }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <!-- <customdropdown class="fld-mt0-w100" placeholder="PO Numbers" required="true" [submitAttempt]="this.submitAttempt"
+                        (SelectionDone)="selectedDataGridItem.PurchaseOrderNumbers=$event;onSelectionPurchaseOrders();" 
+                        [InputDataList]="this.PurchaseOrderListFiltered"  [multiSelect]="true"
+                        KeyID="PurchaseOrderID" KeyDescription="PurchaseOrderNumberString" #PurchaseOrderID="ngModel" name="PurchaseOrderID" 
+                        [(ngModel)]="selectedDataGridItem.PurchaseOrderNumbers" [ReadOnlyControl]="this.submitApproved==true ? true : false" > 
+                    </customdropdown> -->
+                </div>
+                <div fxLayout="column" fxFlex=2%></div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start start" style="padding-top: 10px;" class="dataSetRow">
+                <div fxLayout="column" fxFlex=2%></div>
+                <div fxLayout="column" fxFlex=15%>
+                    <mat-form-field class="fld-mt0-w100">
+                        <input matInput type="text" #DCNumber="ngModel" name="DCNumber"
+                            [(ngModel)]="selectedDataGridItem.DCNumber" placeholder="DC/Invoice No." required
+                            [readonly]="this.submitApproved==true ? true : false" />
+
+                        <mat-error *ngIf="this.submitAttempt && DCNumber.hasError('required')">
+                            DC Number is required
+                        </mat-error>
+                    </mat-form-field>                    
+                </div>
+                <div fxLayout="column" fxFlex=2%></div>
+                <div fxLayout="column" fxFlex=15%>
+                    <customdate class="fld-mt0-w100" placeholder="DC Date" required="true" #DCDate="ngModel"
+                        name="DCDate" [(ngModel)]="selectedDataGridItem.DCDate" [allowFutureDate]="true"
+                        [allowCurrentDate]="true" [allowPastDate]="true" [submitAttempt]="this.submitAttempt"
+                        [ReadOnlyControl]="this.submitApproved==true ? true : false"> </customdate>
+                </div>
+                <div fxLayout="column" fxFlex=2%></div>
+                <div fxLayout="column" fxFlex=13%>
+                    <!-- <mat-form-field class="fld-mt0-w100">
+                        <input matInput type="text" #InvoiceNumber="ngModel" name="InvoiceNumber"
+                            [(ngModel)]="selectedDataGridItem.InvoiceNumber" placeholder="Invoice No."
+                            [readonly]="this.submitApproved==true ? true : false" />
+                    </mat-form-field> -->
+                </div>
+                <div fxLayout="column" fxFlex=2%></div>
+                <div fxLayout="column" fxFlex=15%>
+                    <!-- <customdate class="fld-mt0-w100" placeholder="Invoice Date" #InvDate="ngModel"
+                        name="InvDate" [(ngModel)]="selectedDataGridItem.InvoiceDate" [allowFutureDate]="true"
+                        [allowCurrentDate]="true" [allowPastDate]="true" [submitAttempt]="this.submitAttempt"
+                        [ReadOnlyControl]="this.submitApproved==true ? true : false"> </customdate> -->
+                </div>                
+                <div fxLayout="column" fxFlex=32%></div>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="start start" style="padding-top: 10px;"
+                *ngIf="this.sessionService.actionAllowed('ADD_STOCKINWARD')  && (this.Mode == 'ADD' ||  this.Mode == 'EDIT') && this.CanEdit && this.submitApproved != true">
+                <div fxLayout="column" fxFlex=2%></div>
+                <div fxLayout="column" fxFlex=96%>
+                    <p-table #newStockDT [columns]="newStockCols" [value]="selectedDataGridItemDetail"
+                        selectionMode="single" [(selection)]="selectedPOItem" 
+                        [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth - 20)">
+
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                                    [style.word-wrap]="col.wrap">
+                                    {{col.header}}
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData">
+                                <!-- <td style="width: 3%">
+                                    <a [pRowToggler]="rowData" *ngIf="expanded">
+                                        <i class="material-icons">keyboard_arrow_down</i>
+                                    </a>
+                                    <a [pRowToggler]="rowData" *ngIf="!expanded">
+                                        <i class="material-icons">keyboard_arrow_right</i>
+                                    </a>
+                                </td> -->
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                    <span *ngIf="col.field != 'QuantityReceived'">{{rowData[col.field]}}</span>
+                                    <span *ngIf="col.field == 'QuantityReceived' && this.submitApproved==true">
+                                        {{rowData[col.field]}}
+                                    </span>
+                                    <span *ngIf="col.field == 'QuantityReceived' && this.submitApproved!=true">
+                                        <mat-form-field  style="height: 22px;text-align:right;">
+                                            <input matInput type="number"
+                                                #QuantityReceived{{rowData.StockInwardTransactionDetailID}}="ngModel"
+                                                name="QuantityReceived{{rowData.StockInwardTransactionDetailID}}"
+                                                [(ngModel)]="rowData.QuantityReceived" placeholder=""
+                                                [minValue]="this.commonService.MIN_QUANTITY0" 
+                                                (change)="onQtyChange(rowData)"
+                                                [maxValue]="this.commonService.MAX_QUANTITY"
+                                                [pattern]="this.commonService.PATTERN_PERCENTAGE" />
+
+                                            <!-- <mat-error *ngIf="this.submitAttempt && this.sessionService.hasError(dialogForm, QuantityReceived + rowData.StockInwardTransactionDetailID, 'required')">
+                                                    Qty. recd. is required
+                                                  </mat-error> -->
+                                            <mat-error
+                                                *ngIf="this.submitAttempt && this.sessionService.hasError(dialogForm, QuantityReceived + rowData.StockInwardTransactionDetailID, 'pattern')">
+                                                Invalid Qty. recd.
+                                            </mat-error>
+                                            <mat-error
+                                                *ngIf="this.submitAttempt && this.sessionService.hasError(dialogForm, QuantityReceived + rowData.StockInwardTransactionDetailID, 'minValue')
+                                                      && !this.sessionService.hasError(dialogForm, QuantityReceived + rowData.StockInwardTransactionDetailID, 'required') 
+                                                      && !this.sessionService.hasError(dialogForm, QuantityReceived + rowData.StockInwardTransactionDetailID, 'pattern')">
+                                                Minimum {{this.commonService.MIN_QUANTITY0}} is required
+                                            </mat-error>
+                                            <mat-error
+                                                *ngIf="this.submitAttempt && this.sessionService.hasError(dialogForm, QuantityReceived + rowData.StockInwardTransactionDetailID, 'maxValue') 
+                                                      && !this.sessionService.hasError(dialogForm,  QuantityReceived + rowData.StockInwardTransactionDetailID, 'pattern')">
+                                                Maximum allowed is {{this.commonService.MAX_QUANTITY}}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </span>
+                                    <!-- <div *ngIf="col.secfield != '' && rowData.UOMID != rowData.PUOMID"
+                                        style="color:brown;font-size: smaller;padding-top: 5px;">
+                                        ( {{rowData[col.secfield]}} {{rowData.UOM}} )
+                                    </div> -->
+                                    <!-- <div *ngIf="this.submitAttempt && col.field == 'QuantityPUOMReceived' && !rowData.QuantityPUOMReceived"  class="classMatError" style="padding-top: 5px;">
+                                            Qty. recd. is required
+                                        </div> -->
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <!-- <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                            <tr>
+                                <td style="width: 3%"></td>
+                                <td style="width: 40%" colspan="2">
+                                    <div fxLayout="row" *ngFor="let itm of rowData.ProjectItemDetail">
+                                        <div fxLayout="column" fxFlex=100%>
+                                            <div fxLayout="row" fxLayoutAlign="start center" style="height: 22px">
+                                                <div fxLayout="column" fxFlex=25%>
+                                                    <span style="text-align:left">{{itm.OrderIDText}}</span>
+                                                </div>
+                                                <div fxLayout="column" fxFlex=30%>
+                                                    <span style="text-align:left">{{itm.StyleName}}
+                                                        {{itm.StyleDescription}}</span>
+                                                </div>
+                                                <div fxLayout="column" fxFlex=15%>
+                                                </div>
+                                                <div fxLayout="column" fxFlex=15%>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 10%">
+                                    <div fxLayout="row" *ngFor="let itm of rowData.ProjectItemDetail">
+                                        <div fxLayout="column" fxFlex=100%>
+                                            <span style="text-align:right">{{itm.OrderQuantity}}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 10%">
+                                    <div fxLayout="row" *ngFor="let itm of rowData.ProjectItemDetail">
+                                        <div fxLayout="column" fxFlex=100%>
+                                            <span style="text-align:right">{{itm.AlreadyReceivedQuantity}}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 5%">
+
+                                </td>
+                                <td style="width: 10%">
+                                    <div fxLayout="row" *ngFor="let itm of rowData.ProjectItemDetail">
+                                        <div fxLayout="column" fxFlex=100%>
+                                            <span style="text-align:right">{{itm.QuantityReceived}}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 10%">
+                                    <div fxLayout="row" *ngFor="let itm of rowData.ProjectItemDetail">
+                                        <div fxLayout="column" fxFlex=100%>
+                                            <span style="text-align:right">{{itm.BalanceQuantity}}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 10%"></td>
+                            </tr>
+
+                        </ng-template> -->
+
+                    </p-table>
+
+                </div>
+                <div fxLayout="column" fxFlex=2%></div>
+            </div>
+
+
+            <div fxLayout="row" fxLayoutAlign="center center" 
+                *ngIf="this.sessionService.actionAllowed('APPROVE_STOCKINWARD')  && this.Mode == 'EDIT' && this.submitApproved == true">
+                <!-- approved grid -->
+                <div fxLayout="column" fxFlex=2%></div>
+                <div fxLayout="column" fxFlex=96%>
+                    <p-table #newStockDT [columns]="newStockCols2" [value]="selectedDataGridItemDetail"
+                        selectionMode="single" [(selection)]="selectedPOItem" 
+                        [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth - 20)" >
+
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <!-- <th style="width: 3%"></th> -->
+                                <th *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                                    [style.word-wrap]="col.wrap">
+                                    {{col.header}}
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData">
+                                <!-- <td style="width: 3%">
+                                    <a [pRowToggler]="rowData" *ngIf="expanded">
+                                        <i class="material-icons">keyboard_arrow_down</i>
+                                    </a>
+                                    <a [pRowToggler]="rowData" *ngIf="!expanded">
+                                        <i class="material-icons">keyboard_arrow_right</i>
+                                    </a>
+                                </td> -->
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap"
+                                    style.vertical-align="text-top">
+                                    <span>{{rowData[col.field]}}</span>
+                                    <!-- <div *ngIf="col.secfield != '' && rowData.UOMID != rowData.PUOMID"
+                                        style="color:brown;font-size: smaller;padding-top: 5px;">
+                                        ( {{rowData[col.secfield]}} {{rowData.UOM}} )
+                                    </div> -->
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <!-- <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                            <tr>
+                                <td style="width: 3%"></td>
+                                <td style="width: 45%" colspan="2">
+                                    <div fxLayout="row" *ngFor="let itm of rowData.ProjectItemDetail">
+                                        <div fxLayout="column" fxFlex=100%>
+                                            <div fxLayout="row" fxLayoutAlign="start center" style="height: 22px">
+                                                <div fxLayout="column" fxFlex=25%>
+                                                    <span style="text-align:left">{{itm.OrderIDText}}</span>
+                                                </div>
+                                                <div fxLayout="column" fxFlex=30%>
+                                                    <span style="text-align:left">{{itm.StyleName}}
+                                                        {{itm.StyleDescription}}</span>
+                                                </div>
+                                                <div fxLayout="column" fxFlex=15%>
+                                                </div>
+                                                <div fxLayout="column" fxFlex=15%>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 15%">
+                                    <div fxLayout="row" *ngFor="let itm of rowData.ProjectItemDetail">
+                                        <div fxLayout="column" fxFlex=100%>
+                                            <span style="text-align:right">{{itm.OrderQuantity}}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 7%">
+
+                                </td>
+                                <td style="width: 15%">
+                                    <div fxLayout="row" *ngFor="let itm of rowData.ProjectItemDetail">
+                                        <div fxLayout="column" fxFlex=100%>
+                                            <span style="text-align:right">{{itm.QuantityReceived}}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 15%"></td>
+                            </tr>
+
+                        </ng-template> -->
+
+                    </p-table>
+
+                </div>
+                <div fxLayout="column" fxFlex=2%></div>
+
+
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="start start" style="padding-top: 10px;" class="dataSetRow">
+                <div fxLayout="column" fxFlex=2%></div>
+                <div fxLayout="column" fxFlex=66%>
+                    <mat-form-field class="fld-mt0-w100">
+                        <textarea matInput type="text" #comments="ngModel" name="comments"
+                            [(ngModel)]="selectedDataGridItem.Comments" placeholder="Comments"
+                            maxlength="200"></textarea>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="column" fxFlex=4%></div>
+                <div fxLayout="column" fxFlex=16% fxLayoutAlign="start end">
+                    <div
+                        *ngIf="(this.sessionService.actionAllowed('APPROVE_STOCK_INWARD')  && this.Mode == 'EDIT' && this.CanEdit && this.showApprove == true) || 
+                                (this.sessionService.actionAllowed('APPROVE_STOCK_INWARD')  && this.Mode == 'EDIT' && this.submitApproved == true)">
+                        <h3 class="first">Quality Rating {{selectedDataGridItem.QualityRating}}</h3>
+                        <p-rating #QualityRating="ngModel" name="QualityRating"
+                            [(ngModel)]="selectedDataGridItem.QualityRating" stars="5" required [cancel]="false">
+                        </p-rating>
+                    </div>
+
+                </div>
+                <div fxLayout="column" fxFlex=10%></div>
+                <div fxLayout="column" fxFlex=2%></div>
+
+            </div>
+        </form>
+    </div>
+
+    <!-- <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()"  *ngIf="Mode=='EDIT' && this.replacementMode == true"  class="formColumn">
+
+        <form novalidate #replaceForm="ngForm">
+
+            <div fxLayout="row"  class="actionBarRow  actionBarRowCustom">
+
+                <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                    <label  class="menuBarHeading">MATERIAL REJECTION / REPLACEMENT REQUEST</label>
+                </div>
+
+                <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                    <div fxLayout="row" fxLayoutGap="20px">
+                        <div class="tooltip" matTooltip="Submit" 
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button iconImage"  (click)="SubmitClick(dialogForm.valid,'submit')">
+                                <i class="material-icons">check_circle</i>                                
+                            </button>
+                        </div>                            
+                        <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button class="app-icon-button" (click)="cancelClick()">
+                                <i class="material-icons logout">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="start start" style="padding-top: 10px;" class="dataSetRow">
+                <div fxLayout="column"  fxFlex=2%></div>
+                <div fxLayout="column"  fxFlex=16%>
+                    <mat-form-field class="fld-mt0-w100">
+                        <input matInput type="text" #GRNIDText="ngModel" name="GRNIDText" [(ngModel)]="selectedDataGridItem.GRNIDText"
+                                placeholder="GRN No."  required readonly />
+
+                        <mat-error *ngIf="this.submitAttempt && GRNIDText.hasError('required')">
+                            GRN Number is required
+                        </mat-error>
+
+                    </mat-form-field>
+                </div>
+                <div fxLayout="column"  fxFlex=2%></div>
+                <div fxLayout="column"  fxFlex=16%>
+                    <mat-form-field class="fld-mt0-w100">
+                        <input matInput type="text" #DCNumber="ngModel" name="DCNumber" [(ngModel)]="selectedDataGridItem.DCNumber"
+                                placeholder="DC No."  required [readonly]="this.submitApproved==true ? true : false" />
+
+                        <mat-error *ngIf="this.submitAttempt && DCNumber.hasError('required')">
+                            DC Number is required
+                        </mat-error>
+
+                    </mat-form-field>
+                </div>
+                <div fxLayout="column"  fxFlex=2%></div>
+                <div fxLayout="column"  fxFlex=16%>
+                    <mat-form-field class="fld-mt0-w100">
+                        <input matInput type="text" #InwardIDText="ngModel" name="InwardIDText" [(ngModel)]="selectedDataGridItem.InwardIDText"
+                                placeholder="Inward No."  required  [readonly]="this.submitApproved==true ? true : false" />
+
+                        <mat-error *ngIf="this.submitAttempt && InwardIDText.hasError('required')">
+                            Inward Number is required
+                        </mat-error>
+
+                    </mat-form-field>
+                </div>
+                <div fxLayout="column"  fxFlex=2%></div>
+                <div fxLayout="column"  fxFlex=25%>
+                    <customdropdown class="fld-mt0-w100" placeholder="Supplier" required="true" [submitAttempt]="this.submitAttempt"
+                        (SelectionDone)="selectedDataGridItem.SupplierID=$event;onSupplierSelection($event);" [InputDataList]="this.SupplierList"
+                        KeyID="SupplierID" KeyDescription="SupplierName" #SupplierID="ngModel" name="SupplierID" 
+                        [(ngModel)]="selectedDataGridItem.SupplierID" [ReadOnlyControl]="this.submitApproved==true ? true : false"> 
+                    </customdropdown>  
+                </div>
+                <div fxLayout="column"  fxFlex=2%></div>
+                <div fxLayout="column"  fxFlex=12%>
+                    <customdropdown class="fld-mt0-w100" placeholder="PO Numbers" required="true" [submitAttempt]="this.submitAttempt"
+                        (SelectionDone)="selectedDataGridItem.PurchaseOrderNumbers=$event;onSelectionPurchaseOrders();" 
+                        [InputDataList]="this.PurchaseOrderListFiltered"  [multiSelect]="true"
+                        KeyID="PurchaseOrderID" KeyDescription="PurchaseOrderNumberString" #PurchaseOrderID="ngModel" name="PurchaseOrderID" 
+                        [(ngModel)]="selectedDataGridItem.PurchaseOrderNumbers" [ReadOnlyControl]="this.submitApproved==true ? true : false" > 
+                    </customdropdown>
+                </div>
+                <div fxLayout="column"  fxFlex=2%></div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start start" style="padding-top: 10px;" class="dataSetRow">
+                <div fxLayout="column"  fxFlex=2%></div>
+                <div fxLayout="column"  fxFlex=16%>
+                    <customdate class="fld-mt0-w100" placeholder="GRN Date" required="true" 
+                        #GRNDate="ngModel" name="GRNDate" [(ngModel)]="selectedDataGridItem.GRNDate" 
+                        [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true" 
+                        [submitAttempt]="this.submitAttempt" [ReadOnlyControl]="true"  > </customdate>                     
+                </div>
+                <div fxLayout="column"  fxFlex=2%></div>
+                <div fxLayout="column"  fxFlex=16%>
+                    <customdate class="fld-mt0-w100" placeholder="DC Date" required="true" 
+                    #DCDate="ngModel" name="DCDate" [(ngModel)]="selectedDataGridItem.DCDate" 
+                    [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true" 
+                    [submitAttempt]="this.submitAttempt" [ReadOnlyControl]="this.submitApproved==true ? true : false" > </customdate> 
+                </div>
+                <div fxLayout="column"  fxFlex=2%></div>
+
+                <div fxLayout="column"  fxFlex=16%>
+                    <mat-form-field class="fld-mt0-w100">
+                        <input matInput type="text" #InvoiceNumber="ngModel" name="InvoiceNumber" [(ngModel)]="selectedDataGridItem.InvoiceNumber"
+                                placeholder="Invoice No."  [readonly]="this.submitApproved==true ? true : false" />
+
+                    </mat-form-field>
+                </div>
+                <div fxLayout="column"  fxFlex=42%></div>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="start start" style="padding-top: 10px;">
+                <div fxLayout="column"  fxFlex=2%></div>
+                <div fxLayout="column"  fxFlex=96%>
+                    <p-table #newStockDT [columns]="newStockCols1" [value]="selectedDataGridItemDetail" selectionMode="single"  
+                            [(selection)]="selectedPOItem" rowExpandMode="multiple" scrollHeight="300px"    [scrollable]="true"                         
+                            dataKey="StockInwardTransactionDetailID" [expandedRowKeys]="expandedRowsNewStock" >
+
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <th style="width: 3%"></th>
+                                    <th *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                        {{col.header}}
+                                    </th>                   
+                                </tr>                
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-expanded="expanded" let-columns="columns">
+                                <tr [pSelectableRow]="rowData">
+                                    <td style="width: 3%">
+                                        <a [pRowToggler]="rowData" *ngIf="expanded">
+                                          <i class="material-icons">keyboard_arrow_down</i>
+                                        </a>
+                                        <a [pRowToggler]="rowData"  *ngIf="!expanded">
+                                          <i class="material-icons">keyboard_arrow_right</i>
+                                        </a>                               
+                                    </td>                                    
+                                    <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                                        [style.word-wrap]="col.wrap" style.vertical-align="text-top">
+                                        <span *ngIf="col.field != 'QuantityPUOManCcelled' && col.field != 'RequestType'">{{rowData[col.field]}}</span>
+                                        <span *ngIf="col.field == 'QuantityPUOManCcelled'">
+                                            <mat-form-field class="fld-mt0-w100" style="height: 22px;text-align:right;">
+                                                <input matInput type="number" #QuantityPUOManCcelled{{rowData.StockInwardTransactionDetailID}}="ngModel" 
+                                                    name="QuantityPUOManCcelled{{rowData.StockInwardTransactionDetailID}}" [(ngModel)]="rowData.QuantityPUOManCcelled"
+                                                    placeholder="" required   [minValue]="this.commonService.MIN_QUANTITY0" (change)="onQtyChange(rowData)"
+                                                    [maxValue]="this.commonService.MAX_QUANTITY" [pattern]="this.commonService.PATTERN_QUANTITY" />
+                            
+                                              </mat-form-field>
+                                        </span>
+                                        <span *ngIf="col.field == 'RequestType'">
+                                            <mat-form-field  class="fld-mt0-w100">
+                                                <mat-select [(ngModel)]="StatusCode" placeholder="Status" #RequestType{{rowData.StockInwardTransactionDetailID}}="ngModel" required 
+                                                    name="RequestType{{rowData.StockInwardTransactionDetailID}}">
+                                                  <mat-option *ngFor="let itm of returnType" [value]="itm">
+                                                    {{ itm }}
+                                                  </mat-option>
+                                                </mat-select>                                              
+                                              </mat-form-field>                                        
+                                        </span>
+                                        <div *ngIf="col.secfield != '' && rowData.UOMID != rowData.PUOMID" style="color:brown;font-size: smaller;padding-top: 5px;">
+                                            ( {{rowData[col.secfield]}} {{rowData.UOM}} )
+                                        </div>
+                                        <div *ngIf="this.submitAttempt && col.field == 'QuantityPUOManCcelled' && !rowData.QuantityPUOManCcelled"  class="classMatError" style="padding-top: 5px;">
+                                            Qty. recd. is required
+                                        </div>
+                                    </td>                     
+                                </tr>
+                            </ng-template>
+
+                    </p-table>
+                </div>
+                <div fxLayout="column"  fxFlex=2%></div>
+            </div>
+
+
+        </form>
+
+
+
+
+    </div> -->
+
+    <div class="ColumnDivider" *ngIf="Mode=='EDIT' || Mode=='ADD'"></div>
+
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()" *ngIf="this.showReport != true">
+
+
+        <div fxLayout="row">
+
+            <div fxLayout="column">
+
+                <div fxLayout="row" class="actionBarRow  actionBarRowCustom">
+
+                    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                        <label class="menuBarHeading">Stock Inward Transaction</label>
+                    </div>
+                    <div fxLayout="column" class="actionBarDataColumn">
+
+                        <form novalidate #searchForm="ngForm" fxFlex=100%>
+
+                            <div fxLayout="row" fxFlex=100% fxLayoutAlign="center center">
+                                <div fxFlex=10%></div>
+
+                                <!-- <div fxFlex=5%></div>
+                                <div fxFlex=20%>
+                                    <div class="tooltip" matTooltip="Search"
+                                        [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                        <button type="submit" class="app-icon-button" (click)="loadDataGrid()">
+                                            <i class="material-icons">search</i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div fxFlex=10%></div> -->
+                            </div>
+
+                        </form>
+
+                    </div>
+                    <div fxLayout="column" class="actionBarSearchColumn">
+                        <!-- <mat-form-field>
+                            <input inputmode="search" (keyup)="onKeyUp()"
+                                (input)="dt.filterGlobal($event.target.value, 'contains')" matInput
+                                placeholder="Text Filter" class="searchBox">
+                        </mat-form-field> -->
+                    </div>
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                        <div fxLayout="row" fxLayoutGap="20px">
+                            <div class="tooltip" matTooltip="Add"
+                                *ngIf="this.sessionService.actionAllowed('ADD_STOCKINWARD')"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="addClick()">
+                                    <i class="material-icons">add_box</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Edit"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                                *ngIf="this.sessionService.actionAllowed('EDIT_STOCKINWARD')">
+                                <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="editClick()">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Delete"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                                *ngIf="this.sessionService.actionAllowed('DELETE_STOCKINWARD')">
+                                <button [disabled]="!isRowSelectedForDelete()" class="app-icon-button"
+                                    (click)="deleteClick()">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="GRN Report"
+                                *ngIf="(this.sessionService.reportAllowed('Goods Received Note'))"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button type="button" class="app-icon-button" [disabled]="!isPrintReady()" (click)="printGRNReport()">
+                                <i class="material-icons logout">assignment</i>
+                                </button>
+                            </div>                            
+                            <div class="tooltip" matTooltip="Refresh"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="refreshClick()">
+                                    <i class="material-icons">refresh</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div fxLayout="row" class="SecondColumnData">
+                    <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single" [scrollable]="true"
+                        [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+                        [style.width]="this.sessionService.getScreenWidthInPx()" [(selection)]="selectedData"
+                        [paginator]="true" [rows]="sessionService.NoOfRowsPerPage"
+                        [rowsPerPageOptions]="sessionService.RowsPerPageOptions">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+                                    <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
+                                </th>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="caption">
+                            <div fxLayout="row" fxFlex=50% fxLayoutAlign="center start">
+                                <customdate class="fld-mt0-w100" placeholder="From Date" required="false"
+                                    [submitAttempt]="this.submitAttempt" #fromDate1="ngModel" name="fromDate1"
+                                    [(ngModel)]="this.searchRequest.FromDate" [allowFutureDate]="true"
+                                    [allowCurrentDate]="true" [allowPastDate]="true">
+                                </customdate>
+                                <div fxFlex=5%></div>
+                                <customdate class="fld-mt0-w100" placeholder="To Date"
+                                    [submitAttempt]="this.submitAttempt" #toDate1="ngModel" name="toDate1"
+                                    [(ngModel)]="this.searchRequest.ToDate" [allowFutureDate]="true"
+                                    [allowCurrentDate]="true" [allowPastDate]="true">
+                                </customdate>
+                            </div>
+                            <div fxLayout="column" fxFlex=50% fxLayoutAlign="center end">
+                                <div fxLayout="row" fxLayoutGap="10px">
+                                    <div class="tooltip">
+                                        <i class="pi pi-search"></i>
+                                    </div>
+                                    <div class="flex">
+                                        <input pInputText type="text"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Search here" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                    {{rowData[col.field]}}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div fxLayout="column" fxFlex="100%" fxLayoutAlign="center" *ngIf="this.showReport == true" class="rpts">
+        <br>
+        <div fxLayout="row" class="actionBarRow">
+          <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+            <label class="menuBarHeading">Goods Received Note</label>
+          </div>
+          <div fxLayout="column" class="actionBarDataColumn"></div>
+          <div fxLayout="column" class="actionBarSearchColumn"></div>
+          <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end" fxLayoutGap="10px">
+            <div fxLayout="row" fxLayoutGap="20px">
+              <div class="tooltip" matTooltip="Back" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                <button class="app-icon-button" (click)="reportCloseClick()">
+                  <i class="material-icons">arrow_back</i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row">
+          <iframe [height]="this.sessionService.getIframHeight(20)" class="iframeClass" [src]="reportUrl"
+            [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)"></iframe>
+        </div>
+    </div>
+    
+
+</div>

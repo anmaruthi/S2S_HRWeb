@@ -1,0 +1,310 @@
+<style>
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+  }
+</style>
+
+
+<div fxLayout="column" *ngIf="Mode=='HOME' || Mode=='POREQ' || Mode=='EDIT'">
+  <div fxLayout="row" class="actionBarRow" *ngIf="this.showReport != true">
+    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+      <label class="menuBarHeading">Purchase Request</label>
+    </div>
+    <div fxLayout="column" class="actionBarRowDataColumn">
+      <form novalidate #searchForm="ngForm" fxFlex=100%>
+        <div fxLayout="row">
+          <div fxFlex="20%">
+            <customdate placeholder="From Date" [(ngModel)]="FromDate" [allowFutureDate]="false"
+              [allowCurrentDate]="true" [allowPastDate]="true" #StartDate="ngModel" name="StartDate"></customdate>
+          </div>
+          <div fxFlex="3%"></div>
+          <div fxFlex="20%">
+            <customdate placeholder="To Date" [(ngModel)]="ToDate" [allowFutureDate]="false" [allowCurrentDate]="true"
+              [allowPastDate]="true" #EndDate="ngModel" name="EndDate"></customdate>
+          </div>
+          <div fxFlex="3%"></div>
+          <div fxFlex="50%">
+            <div fxLayout="row" fxLayoutAlign="center end" class="tabClass">
+            
+              <!-- <div *ngIf="(this.commonService.getLength(this.TabViewList)>1)">
+                <mat-tab-group (selectedTabChange)="onTabChange($event)">
+                  <mat-tab *ngFor="let itm of TabViewList" [label]="itm.TabTitle">
+                  </mat-tab>
+                </mat-tab-group>
+              </div> -->
+            </div>
+          </div>
+          <div fxFlex="4%"></div>
+        </div>
+      </form>
+    </div>
+
+    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end" fxLayoutGap="10px">
+      <div fxLayout="row" fxLayoutGap="20px">
+        <div class="tooltip" matTooltip="Add" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.sessionService.actionAllowed('ADD_PURCHASEREQUEST') && Mode=='HOME' && this.selectedTab=='ENTRY'">
+          <button class="app-icon-button" (click)="addClick()">
+            <i class="material-icons">add_box</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Edit" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.sessionService.actionAllowed('EDIT_PURCHASEREQUEST') && Mode=='HOME' && this.selectedTab=='ENTRY'">
+          <button class="app-icon-button" [disabled]="!rowSelected()"
+            (click)="onDoubleClick(this.selectedData.PurchaseRequestID)">
+            <i class="material-icons">edit</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Cancel PO" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.sessionService.actionAllowed('EDIT_PURCHASEREQUEST') && Mode=='HOME'">
+          <button class="app-icon-button" [disabled]="!rowSelected()" (click)="cancelPOClick()">
+            <i class="material-icons">clear</i>
+          </button>
+        </div>
+
+        <div class="tooltip" matTooltip="Report"
+          *ngIf="(this.sessionService.reportAllowed('Purchase Request')) && this.Mode == 'HOME'"
+          [matTooltipPosition]="this.sessionService.ToolTipPosition">
+          <button type="button" class="app-icon-button" [disabled]="!rowSelected()" (click)="printPurchaseOrder()">
+            <i class="material-icons logout">assignment</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Refresh" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="Mode=='HOME'">
+          <button class="app-icon-button" (click)="refreshClick()">
+            <i class="material-icons">refresh</i>
+          </button>
+        </div>
+
+        <div class="tooltip" matTooltip="Approve"
+          *ngIf="(this.sessionService.actionAllowed('APPROVE_PURCHASEREQUEST')) && this.Mode == 'POREQ'"
+          [matTooltipPosition]="this.sessionService.ToolTipPosition">
+          <button type="button" class="app-icon-button" [disabled]="this.canGenPO != true" (click)="approvePORequest()">
+            <i class="material-icons logout">thumb_up</i>
+          </button>
+        </div>
+        <!-- <div class="tooltip" matTooltip="Back" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="(Mode == 'POREQ')">
+          <button class="app-icon-button" (click)="closeClick()">
+            <i class="material-icons">arrow_back</i>
+          </button>
+        </div> -->
+
+      </div>
+    </div>
+  </div>
+  <div fxLayout="row" class="dataGridContainerDiv">
+
+    <div fxLayout="column" fxFlex=100%>
+      <p-card class="TabView">
+        <div fxFlex="1%"></div>
+        <div fxLayout="row" fxLayoutAlign="center center">
+          <div *ngIf="(this.commonService.getLength(this.TabViewList)>1)">
+            <mat-tab-group (selectedTabChange)="onTabChange($event)">
+              <mat-tab *ngFor="let itm of TabViewList" [label]="itm.TabTitle">
+              </mat-tab>
+            </mat-tab-group>
+          </div>
+        </div>
+        <div fxFlex="45%"> </div>
+        <div fxFlex="15%"  *ngIf="this.selectedTab != 'ENTRY'"> </div>
+        <div fxFlex="1%" class="clrBox" *ngIf="this.selectedTab == 'ENTRY'"> </div>
+        <div fxFlex="14%" fxLayoutAlign="center center" *ngIf="this.selectedTab == 'ENTRY'">Purchase Order Raised</div>
+        <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="center center">
+          <div class="tooltip">
+            <i class="pi pi-search"></i>
+          </div>
+          <div class="flex">
+            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+              placeholder="Search here" />
+          </div>
+        </div>
+        <div fxFlex="1%"></div>
+      </p-card>
+
+      <p-table #dt [columns]="cols2" [value]="dataGridList" selectionMode="single" [scrollable]="true"
+        [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+        [style.width]="this.sessionService.getScreenWidthInPx()" [(selection)]="selectedData" [paginator]="true"
+        [rows]="sessionService.NoOfRowsPerPage" [rowsPerPageOptions]="sessionService.RowsPerPageOptions"
+        dataKey="PurchaseRequestID" *ngIf="this.Mode == 'HOME'">
+
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+              {{col.header}}
+
+            </th>
+          </tr>
+        </ng-template>
+        <!-- <ng-template pTemplate="caption">
+        <div fxLayout="column" fxFlex=50% fxLayoutAlign="center start">
+          <!-- <div *ngIf="(this.commonService.getLength(this.TabViewList)>1)">
+            <mat-tab-group (selectedTabChange)="onTabChange($event)">
+              <mat-tab *ngFor="let itm of TabViewList" [label]="itm.TabTitle">
+              </mat-tab>
+            </mat-tab-group>
+          </div> 
+        </div>-->
+        <!-- <div fxLayout="column" fxFlex=50% fxLayoutAlign="start end">
+          <div fxLayout="row" fxLayoutGap="10px">
+            <div class="tooltip">
+              <i class="pi pi-search"></i>
+            </div>
+            <div class="flex">
+              <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                placeholder="Search here" />
+            </div>
+          </div>
+         
+        </div> -->
+        <!-- </ng-template> --> -->
+        <ng-template pTemplate="body" let-rowData let-columns="columns">
+          <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData.PurchaseRequestID)">
+            <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+              [style.word-wrap]="col.wrap" [ngClass]="{'clrProfit': rowData['POStatusCode'] >= 70}" >
+              {{rowData[col.field]}}
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          No records found
+        </ng-template>
+      </p-table>
+      <form novalidate #reqForm="ngForm" name="reqForm" *ngIf="this.Mode == 'POREQ'">
+        <p-table #dtreq [columns]="cols" [value]="PendingItemsList" rowGroupMode="rowspan" groupRowsBy="RequestAddrID"
+          sortField="ReqRefCode" sortMode="single" responsiveLayout="scroll" scrollHeight="450px">
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <th style="width: 3%">
+                <mat-checkbox #aChk{{rowIndex}}="ngModel" name="aChk{{rowIndex}}" [(ngModel)]="IsSelectAll"
+                  (change)="onSelectAll()"></mat-checkbox>
+              </th>
+              <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                {{col.header}}
+              </th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-item let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan"
+            let-columns>
+            <tr>
+              <td style="width: 3%">
+                <mat-checkbox #aChk{{rowIndex}}="ngModel" name="aChk{{rowIndex}}" [(ngModel)]="item.IsSelected"
+                  (change)="onSelectItem()"></mat-checkbox>
+              </td>
+
+              <td style="width: 10%" style="text-align:left;" *ngIf="rowgroup" [attr.rowspan]="rowspan">
+                <span class="font-bold ml-2">{{item.ReqRefCode}}</span>
+              </td>
+              <td style="width: 12%" style="text-align:left;">
+                <span class="font-bold ml-2">{{item.PurchaseRequestDateStr}}</span>
+              </td>
+              <td style="width: 14%" style="text-align:left;">
+                <span class="font-bold ml-2">{{item.StatusMessage}}</span>
+              </td>
+              <td style="width: 25%" style="text-align:left;">
+                {{item.ItemName}}
+              </td>
+              <td style="width: 12%" style="text-align:right;">
+                {{item.RequestQuantity}}
+              </td>
+              <td style="width: 12%" style="text-align:right;">
+                <mat-form-field class="fld-mt0-w100">
+                  <input matInput type="number" #aQty{{rowIndex}}="ngModel" name="aQty{{rowIndex}}"
+                    [(ngModel)]="item.ApprovedQuantity" [required]="item.IsSelected" [maxValue]="item.RequestQuantity"
+                    minValue=1>
+                  <mat-error *ngIf="this.submitAttempt1 && this.hasError(reqForm,'aQty' + rowIndex,'required')">
+                    Quantity is required
+                  </mat-error>
+                  <mat-error *ngIf="this.submitAttempt1 && this.hasError(reqForm,'aQty' + rowIndex,'maxValue')">
+                    Approved quantity is greater than requested quantity
+                  </mat-error>
+                  <mat-error *ngIf="this.submitAttempt1 && this.hasError(reqForm,'aQty' + rowIndex,'minValue')">
+                    Approved quantity should not be 0
+                  </mat-error>
+                </mat-form-field>
+              </td>
+              <td style="width: 12%" style="text-align:right;">
+                <div fxLayout="row">
+                  <div fxLayout="column" fxFlex=70% fxLayoutAlign="center center">
+                    {{item.StockQuantity}}                    
+                  </div> 
+                  <div fxLayout="column" fxFlex=30% fxLayoutAlign="center end">
+                    <mat-icon matPrefix class="PrefixPadding" (click)="showBasicDialog(item.ItemID)">help_outline</mat-icon>
+                  </div> 
+                </div>
+
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </form>
+    </div>
+  </div>
+
+  <div fxLayout="column" fxFlex="100%" fxLayoutAlign="center" *ngIf="this.showReport == true" class="rpts">
+    <br>
+    <div fxLayout="row" class="actionBarRow">
+      <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+        <label class="menuBarHeading">Purchase Request Report</label>
+      </div>
+      <div fxLayout="column" class="actionBarDataColumn"></div>
+      <div fxLayout="column" class="actionBarSearchColumn"></div>
+      <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end" fxLayoutGap="10px">
+        <div fxLayout="row" fxLayoutGap="20px">
+          <div class="tooltip" matTooltip="Back" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+            <button class="app-icon-button" (click)="reportCloseClick()">
+              <i class="material-icons">arrow_back</i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div fxLayout="row">
+      <iframe [height]="this.getIframHeight()" class="iframeClass" [src]="reportUrl"
+        [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)"></iframe>
+    </div>
+  </div>
+
+</div>
+
+
+<p-dialog [(visible)]="displayResponsive" [closeIcon]="false" [style]="{width: '490px'}">
+  <div>
+    <p-table #dtStk [columns]="stkCols" [value]="filteredStockList" selectionMode="single">
+
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+            {{col.header}}
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowdata let-columns="columns">
+        <tr [pSelectableRow]="rowdata">
+          <td>
+            {{rowdata.SiteCode}}
+          </td>
+          <td>{{rowdata.QuantityOnHand}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <td colspan="2">
+          No records found
+        </td>
+      </ng-template>
+      <ng-template pTemplate="caption">
+        <div fxLayout="column" fxLayoutAlign="center end">
+          <div class="flex">
+            <span class="p-input-icon-left ml-auto">
+              <button class="app-icon-button" (click)="cancelDialogForm()">
+                <i class="material-icons logout">cancel</i>
+              </button>
+            </span>
+          </div>
+        </div>
+      </ng-template>
+
+    </p-table>
+  </div>
+</p-dialog>

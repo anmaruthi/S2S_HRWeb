@@ -1,0 +1,34 @@
+﻿<div style="width: 100%; margin-top: 5px;" *ngIf="this.multiSelect!=true">
+  <span class="ui-float-label">
+      <p-dropdown  #inputText="ngModel" [style]="{'width': '100%', 'topmargin': '5px','min-width':'100%'}" [options]="this.DataList" [showAddNew]="this.allowAdd" 
+        [(ngModel)]="this.SelectedItem" filter="true" [autoDisplayFirst]="false"  [readonly]="ReadOnlyControl" [required]="this.required"
+        optionLabel="Description" (ngModelChange)="onSelectionChange(inputText);this.changeEventEmit();"  (addNewClick)="clickEventChange()" >
+        <span><i class="fa fa-plus" aria-hidden="true"></i></span>    
+        <ng-template let-itm pTemplate="item">
+            <div class="ui-helper-clearfix" style="position: relative;height: 25px;" *ngIf="itm.label != 'Add New'">                                                                   
+                <div style="font-size:14px;float:left;margin-top:4px">{{itm.label}}</div>
+            </div>
+            <div class="ui-helper-clearfix" style="position: relative;height: 25px;" *ngIf="itm.label == 'Add New'">                                                                                                                                      
+                <div style="font-size:14px;float:left;margin-top:4px">
+                    <span><i class="fa fa-plus" aria-hidden="true"></i></span>    
+                    <span style="margin-left:10px;">{{itm.label}} </span>                                                                       
+                </div>
+            </div>
+        </ng-template>
+      </p-dropdown>  
+
+    <label for="inputText">{{placeholder}}</label>
+  </span>
+  <label style="color: red;font-size: 10px;font-weight: 400;" *ngIf="this.submitAttempt && inputText.hasError('required')">{{this.placeholder}} is required</label>  
+</div>
+
+<div style="width: 100%; margin-top: 5px;"  *ngIf="this.multiSelect==true">
+  <span class="ui-float-label">
+    <p-multiSelect  #inputText1="ngModel" [style]="{'width': '100%', 'topmargin': '5px','min-width':'100%'}"  [options]="this.DataList" 
+      [(ngModel)]="this.SelectedItems"  [readonly]="ReadOnlyControl" [required]="this.required" optionLabel="Description"  [showAddNew]="this.allowAdd" 
+      (ngModelChange)="onSelectionChange1(inputText1);this.changeEventEmit();" dataKey="ID" [defaultLabel]="this.placeholder"  (addNewClick)="clickEventChange()">
+    </p-multiSelect>
+    <label for="inputText1">{{placeholder}}</label>
+  </span>  
+  <label style="color: red;font-size: 10px;font-weight: 400;" *ngIf="this.submitAttempt && inputText1.hasError('required')">{{this.placeholder}} is required</label>
+</div>

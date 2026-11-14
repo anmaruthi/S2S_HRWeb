@@ -1,0 +1,363 @@
+﻿@import 'custom-theme.scss';
+@import 'fld-styles.scss';
+@import 'custom-theme-color.scss';
+@import 'primeng.scss';
+@import 'mat-styles.scss';
+@import 'ptable.scss';
+@import 'actionbar.scss';
+@import '~ngx-toastr/toastr';
+@import '../node_modules/material-design-icons/iconfont/material-icons.css';
+
+body, html {
+  height: 100%;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+}
+
+.menu-icon {
+  cursor: pointer;
+}
+
+.menuBarHeading {
+  font-size: medium;
+  color: $accent;
+  font-weight: 700;
+}
+
+.labelHeading {
+  font-size: small;
+  color: $primary;
+  font-weight: 500;
+}
+
+.dataGridContainerDiv {
+  margin: 10px;
+  height: calc(100% - 50px);
+}
+
+//******** Work around for primeng data table pagingation grid header alignment issue ends********** //
+.app-icon-button {
+  box-shadow: none;
+  user-select: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  filter: none;
+  font-weight: normal;
+  height: auto;
+  line-height: inherit;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+  text-decoration: none;
+}
+
+.app-icon-button {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background: 0 0;
+  border: none;
+  cursor: pointer;
+  -webkit-filter: none;
+  filter: none;
+  font-weight: 400;
+  height: auto;
+  line-height: inherit;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+  text-decoration: none;
+}
+
+md-dialog-container.mat-dialog-container {
+  background-color: white;
+}
+
+.mdDialogHeader {
+  color: $primary
+}
+
+.matDialogHeader {
+  color: $primary
+}
+
+.dateColumn {
+  width: 120px;
+  margin-left: 20px;
+}
+
+.tooltip {
+  display: inline-block;
+  align-items: center;
+  text-align: center;
+}
+
+
+.iconImage {
+  align-items: center;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.iconLabel {
+  vertical-align: bottom;
+  font-size: x-small;
+}
+
+.suffixButton {
+  display: inline-flex;
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
+  height: 15px;
+  width: 10px;
+}
+
+body .md2-datepicker-input {
+  min-width: 10px;
+}
+
+.secondLine {
+  color: blue;
+}
+
+.thridLine {
+  color: green;
+}
+
+.uncertainCheckBoxIcon {
+  background-color: $accent;
+}
+
+.box {
+  border: 1px solid gray;
+  padding: 10px;
+}
+
+.classUncertain {
+  font-style: italic;
+}
+
+.classCertain {
+  font-style: normal;
+}
+
+.classMatError {
+  color: red;
+  font-size: smaller;
+  font-weight: 200px;
+}
+
+.formError{
+  font-size: 10.5px;
+  font-weight: 400;
+  color: #f44336;
+}
+
+.closeIcon {
+  font-size: 20px;
+  color:$primary;
+  cursor: pointer;
+}
+
+.closeIcon:hover {
+  font-size: 20px;
+  color: #D20C0C;
+}
+
+.clearIcon {
+  font-size: 20px;
+  color:red;
+  cursor: pointer;
+}
+
+.clearIcon:hover {
+  font-size: 20px;
+  color: darkred;
+}
+
+.subheader
+{
+  font-weight:normal;
+}
+
+.fs_form {
+  width: 400px;
+}
+
+.mobile_form {
+  width: 300px;
+}
+
+
+.errorMsg{
+  font-size: 10.5px;
+  font-weight: 400px;
+  margin-top: -10px;
+  margin-left: 5px;
+}
+
+.errorMsgFF{
+  font-size: 10.5px;
+  font-weight: 400px;
+  margin-top: -10px;
+}
+
+select {
+  color:black;
+  background-color: white;
+  border-radius: 50px;
+  font-size: 13px;
+  width: 240px;
+  height: 25px;
+  cursor: pointer;
+  outline: none;
+  padding: 0px 10px;
+}
+
+.app-icon-button-home {
+  box-shadow: none;
+  user-select: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  filter: none;
+  font-weight: normal;
+  height: auto;
+  line-height: inherit;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+  color: white;
+  text-align: left;
+  text-decoration: none;
+}
+
+.material-icons.md-light {
+  color: #9a9a9a;
+  font-size: 20px;
+}
+
+.tooltip {
+  display: inline-flex;
+  align-items: center;
+}
+
+
+/* start - azure style pagelayout */
+.ColumnDivider
+{
+    border-left: 1px;
+    border-left-style: solid;
+    border-left-color: gainsboro;
+    height: 1200px;
+}
+
+.FirstColumnData
+{
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.FirstColumnData1
+{
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+
+.SecondColumnData
+{
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.formColumn{
+  background: white;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+/* end - azure style pagelayout */
+
+body .ui-widget-header {
+  background: #fff;
+  color: #2d353c;
+  border: 1px solid #cdcdcd;
+}
+
+.mat-form-field-appearance-legacy .mat-form-field-prefix .mat-icon {
+  width: 1.5em !important;
+}
+
+body .ui-dropdown {
+  border: 1px solid #d6d6d6 !important;
+}
+
+body .ui-widget-header {
+  background: #fff;
+  color: #2d353c;
+  border-bottom: 1px solid #cdcdcd !important;
+  border-left: 1px solid #cdcdcd !important;
+  border-right: 1px solid #cdcdcd !important;
+}
+
+
+.iframeClass
+{
+    position: relative;
+    overflow: hidden;
+    width: 95%;
+    background-color: white;
+}
+.input-icons i {
+  position: absolute;
+}
+
+.input-icons {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.icon {
+  padding: 10px;
+  min-width: 40px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+}
+
+
+.flex
+{
+  position:relative;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+.default-dialog {
+
+  background-color: white;
+  border-radius: 5px;
+
+}

@@ -1,0 +1,195 @@
+<div fxLayout="column">
+
+     <div fxLayout="row" class="actionBarRow">
+      <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+        <label class="menuBarHeading">Event Configuration</label>
+      </div>
+      <div fxLayout="column" class="actionBarDataColumn">
+      </div>
+      <div fxLayout="column" class="actionBarSearchColumn">
+        <mat-form-field>
+            <input  inputmode="search"  (keyup)="onKeyUp()" (input)="dt.filterGlobal($event.target.value, 'contains')" matInput placeholder="Text Filter" class="searchBox">
+        </mat-form-field>
+      </div>
+      <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end" fxLayoutGap="10px">
+        <div fxLayout="row" fxLayoutGap="20px">
+          <div class="tooltip" matTooltip="Save" [matTooltipPosition]="this.sessionService.ToolTipPosition" *ngIf="this.sessionService.actionAllowed('SAVE_EVENT')">
+              <button class="app-icon-button" (click)="saveClick()">
+                  <i class="material-icons">save</i>
+              </button>
+          </div>
+          <div class="tooltip" matTooltip="Refresh" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+            <button class="app-icon-button" (click)="refreshClick()">
+              <i class="material-icons">refresh</i>
+            </button>
+          </div>     
+        </div>
+      </div>
+    </div>
+  
+    <div fxLayout="row" class="dataGridContainerDiv"> 
+  
+       <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single" [scrollable]="true" [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()" 
+        [style.width]="getDataGridWidth()" [(selection)]="selectedDataGridItem" [paginator]="true" [rows]="sessionService.NoOfRowsPerPage" 
+        [rowsPerPageOptions]="sessionService.RowsPerPageOptions">
+  
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <th style="width: 250px;word-wrap: break-word" pSortableColumn="EventName">
+              Event Name
+              <p-sortIcon field="EventName"></p-sortIcon>
+            </th>
+
+            <th style="width: 120px" pSortableColumn="SendEmail">
+              Send Email
+              <p-sortIcon field="SendEmail"></p-sortIcon>
+            </th>        
+  
+            <th style="width: 250px;word-wrap: break-word" pSortableColumn="EmailTemplateName">
+              Email Template
+              <p-sortIcon field="EmailTemplateName"></p-sortIcon>
+             </th>
+  
+            <th style="width: 350px;word-wrap: break-word" pSortableColumn="DefaultToEmailID">
+              Default To Email
+              <p-sortIcon field="DefaultToEmailID"></p-sortIcon>
+            </th>
+  
+            <th style="width: 350px;word-wrap: break-word" pSortableColumn="DefaultCCEmailID">
+              Default CC Email
+              <p-sortIcon field="DefaultCCEmailID"></p-sortIcon>
+            </th>
+  
+            <th style="width: 350px;word-wrap: break-word" pSortableColumn="DefaultBCCEmailID">
+              Default BCC Email
+              <p-sortIcon field="DefaultBCCEmailID"></p-sortIcon>
+            </th>
+  
+            <th style="width: 110px; word-wrap: break-word" pSortableColumn="SendSMS">
+              Send SMS
+              <p-sortIcon field="SendSMS"></p-sortIcon>
+            </th>
+  
+            <th style="width: 250px;word-wrap: break-word" pSortableColumn="SMSTemplateName">
+              SMS Template
+              <p-sortIcon field="SMSTemplateName"></p-sortIcon>
+            </th>
+  
+            <th style="width: 300px;word-wrap: break-word" pSortableColumn="DefaultMobileNumber">                  
+              Default Mobile Number
+              <p-sortIcon field="DefaultMobileNumber"></p-sortIcon>
+            </th>
+  
+          </tr>
+        </ng-template>
+          
+        <ng-template pTemplate="body" let-rowData let-columns="columns">
+          <tr [pSelectableRow]="rowData">
+  
+            <td style="width: 250px;word-wrap: break-word">
+              {{rowData.EventName}}
+            </td>
+  
+            <td style="width: 120px; text-align: center">     
+              <mat-checkbox [(ngModel)]="rowData.SendEmail" #SendEmail="ngModel" name="SendEmail"></mat-checkbox>
+            </td>
+                   
+            <td style="width: 250px;word-wrap: break-word" pEditableColumn>
+              <p-cellEditor>
+                <ng-template pTemplate="input">              
+                  <mat-form-field>                        
+                    <mat-select [(ngModel)]="rowData.SelectedEmailTemplate" #SelectedEmailTemplate="ngModel" name="SelectedEmailTemplate" (selectionChange)="onEmailTemplateChange(rowData)" >
+                      <mat-option *ngFor="let itm of this.TemplateEmailList" [value]="itm">
+                        {{ itm.TemplateName }}
+                      </mat-option>                              
+                    </mat-select>                            
+                    <mat-icon *ngIf="rowData.SelectedEmailTemplate != null" matSuffix matTooltip="Close" class="closeIcon" (click)="this.emailClearClick(rowData)">close</mat-icon>  
+                  </mat-form-field>  
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{rowData.EmailTemplateName}}
+                </ng-template>
+              </p-cellEditor>               
+            </td>  
+                   
+            <td pEditableColumn style="width: 350px;word-wrap: break-word">
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <mat-form-field>
+                    <textarea matInput rows="3" #DefaultToEmailID="ngModel" name="DefaultToEmailID" [(ngModel)]="rowData.DefaultToEmailID"></textarea>
+                  </mat-form-field>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{rowData.DefaultToEmailID}}
+                </ng-template>    
+              </p-cellEditor>                     
+            </td>
+   
+            <td pEditableColumn style="width: 350px;word-wrap: break-word">
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <mat-form-field>
+                    <textarea matInput rows="3" #DefaultCCEmailID="ngModel" name="DefaultCCEmailID" [(ngModel)]="rowData.DefaultCCEmailID"></textarea>
+                  </mat-form-field>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{rowData.DefaultCCEmailID}}
+                </ng-template>
+              </p-cellEditor>                   
+            </td>
+   
+            <td pEditableColumn style="width: 350px;word-wrap: break-word">
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <mat-form-field>
+                    <textarea matInput rows="3" #DefaultBCCEmailID="ngModel" name="DefaultBCCEmailID" [(ngModel)]="rowData.DefaultBCCEmailID"></textarea>
+                  </mat-form-field>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{rowData.DefaultBCCEmailID}}
+                </ng-template>      
+              </p-cellEditor>                    
+            </td>
+   
+            <td style="width: 110px;word-wrap: break-word; text-align: center">
+              <mat-checkbox [(ngModel)]="rowData.SendSMS" #SendSMS="ngModel" name="SendSMS"></mat-checkbox>
+            </td> 
+  
+            <td style="width: 250px;word-wrap: break-word" pEditableColumn>
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <mat-form-field>                          
+                    <mat-select [(ngModel)]="rowData.SelectedSMSTemplate" #SelectedSMSTemplate="ngModel" name="SelectedSMSTemplate" (selectionChange)="onSMSTemplateChange(rowData)" >
+                      <mat-option *ngFor="let itm of this.TemplateSMSList" [value]="itm">
+                        {{ itm.TemplateName }}
+                      </mat-option>                            
+                    </mat-select>                            
+                    <mat-icon *ngIf="rowData.SelectedSMSTemplate != null" matSuffix matTooltip="Close" class="closeIcon" (click)="this.smsClearClick(rowData)">close</mat-icon>
+                  </mat-form-field>
+                </ng-template>
+                <ng-template pTemplate="output">
+                    {{rowData.SMSTemplateName}}
+                </ng-template>
+              </p-cellEditor>
+            </td>
+   
+            <td style="width: 300px;word-wrap: break-word" pEditableColumn >
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <mat-form-field>
+                    <textarea matInput rows="3" #DefaultMobileNumber="ngModel" name="DefaultMobileNumber" [(ngModel)]="rowData.DefaultMobileNumber"></textarea>
+                  </mat-form-field>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{rowData.DefaultMobileNumber}}
+                </ng-template>                  
+              </p-cellEditor>                                     
+            </td> 
+          </tr>
+        </ng-template>
+  
+      </p-table> 
+  
+    </div> 
+  
+</div>

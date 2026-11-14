@@ -1,0 +1,89 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+
+  <div fxLayout="column" [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth)" *ngIf="Mode=='EDIT' || Mode=='ADD'" class="formColumn">
+      <custom-buyer [selectedBuyerItem]="this.selectedDataGridItem" [Mode]="Mode" 
+      (cancelClicked)="cancelClick()" (saveCompleted)="finishAddEdit()"></custom-buyer>
+  </div>
+  
+  <div class="ColumnDivider" *ngIf="Mode=='EDIT' || Mode=='ADD'"></div>
+  
+  <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()" >
+
+  <div fxLayout="row">
+
+          <div fxLayout="column">
+          
+              <div fxLayout="row" class="actionBarRow" >
+
+                  <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                      <label class="menuBarHeading">Buyer</label>
+                  </div>
+                  <div fxLayout="column" class="actionBarDataColumn">
+                  </div>
+                  <div fxLayout="column" class="actionBarSearchColumn">
+                      <mat-form-field>
+                          <input inputmode="search" (keyup)="onKeyUp()" (input)="dt.filterGlobal($event.target.value, 'contains')" matInput placeholder="Text Filter" class="searchBox">
+                      </mat-form-field>
+                  </div>
+                  <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                      <div fxLayout="row" fxLayoutGap="20px">
+                          <div class="tooltip" matTooltip="Add" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                            *ngIf="this.sessionService.actionAllowed('ADD_BUYER')">
+                              <button class="app-icon-button" (click)="addClick()">
+                                  <i class="material-icons">add_box</i>
+                              </button>
+                          </div>
+                          <div class="tooltip" matTooltip="Edit" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                            *ngIf="this.sessionService.actionAllowed('EDIT_BUYER')">
+                              <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="editClick()">
+                                  <i class="material-icons">edit</i>
+                              </button>
+                          </div>
+                          <div class="tooltip" matTooltip="Delete" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                            *ngIf="this.sessionService.actionAllowed('DELETE_BUYER')">
+                              <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="deleteClick()">
+                                  <i class="material-icons">delete</i>
+                              </button>
+                          </div>
+                          <div class="tooltip" matTooltip="Refresh" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                              <button class="app-icon-button" (click)="RefreshClick()">
+                                <i class="material-icons">refresh</i>
+                              </button>
+                          </div>
+                          
+                      </div>
+                  </div>
+              </div>
+                  
+           <div fxLayout="row" class="SecondColumnData">
+              <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single" [scrollable]="true" [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()" 
+              [style.width]="this.sessionService.getScreenWidthInPx()"
+              [(selection)]="selectedData" [paginator]="true" [rows]="sessionService.NoOfRowsPerPage" 
+              [rowsPerPageOptions]="sessionService.RowsPerPageOptions">    
+                  <ng-template pTemplate="header" let-columns>
+                      <tr> 
+                          <th *ngFor="let col of columns"  [pSortableColumn]="col.field" [style.width]="col.width">
+                              {{col.header}}
+                              <p-sortIcon [field]="col.field"></p-sortIcon>
+                          </th>
+                      </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-rowData let-columns="columns">
+                      <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                          <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                              [style.word-wrap]="col.wrap">
+                              {{rowData[col.field]}}
+                          </td>
+                      </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                      No records found
+                  </ng-template>
+              </p-table>
+          </div>
+      </div>  
+  </div>
+
+  </div>
+
+</div>

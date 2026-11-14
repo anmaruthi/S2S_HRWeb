@@ -1,0 +1,60 @@
+<div class="homeContainer">
+
+  <div fxLayout="row" class="headerContainer">
+
+    <div fxLayout="column" fxFlex="20%" fxLayoutAlign="center start">
+      <span class="SubHeadingText">MMX ERP</span>
+    </div>
+
+    <div fxLayout="column" fxFlex="35%" fxLayoutAlign="center center">
+      <div fxLayout="row" fxLayoutGap="20px">
+        <div fxLayout="column" class="SubHeadingText">
+
+        </div>
+        <div fxLayout="column">
+
+        </div>
+      </div>
+    </div>
+    <div fxLayout="column" fxFlex="25%" class="welcome" fxLayoutAlign="center center">
+      Welcome, {{ this.sessionService.FullName}}
+    </div>
+    <div fxLayout="column" fxFlex="20%" fxLayoutAlign="center end">
+      <div fxLayout="row" fxLayoutGap="15px">
+        <div class="tooltip" matTooltip="Change Password" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+          <button class="app-icon-button-home" (click)="this.commonService.changePasswordClick()">
+            <i class="material-icons iconfocus">lock</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Logout" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          style="margin-right:15px">
+          <button class="app-icon-button-home" (click)="this.commonService.logout()">
+            <i class="material-icons iconfocus">power_settings_new</i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div fxLayout="row" class="rootContainer" fxLayoutAlign="center center">
+
+    <mat-grid-list cols="6" rowHeight="150px" class="custom-list" gutterSize="40px">
+
+      <mat-grid-tile *ngFor="let tile of this.sessionService.UserAppsInfo" colspan=1 rowspan=1 class="custom-tile"
+        [style.background]="tile.Color" (click)="AppsClick(tile.AppID)">
+
+        <div fxLayout="column" fxLayoutAlign="center center">
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <button class="app-icon-button-home">
+              <i class="material-icons  home-material-icons">{{tile.Icon}}</i>
+            </button>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="center center" style="margin-top:20px">
+            {{tile.AppName}}
+          </div>
+        </div>
+      </mat-grid-tile>
+    </mat-grid-list>
+
+  </div>
+</div>

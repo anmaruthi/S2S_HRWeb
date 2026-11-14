@@ -1,0 +1,21 @@
+﻿<div class="dialogContainer" fxLayout="column" fxFlex=100%>
+        <div fxLayout="row"  fxLayoutAlign="center center">              
+                <h3 mat-dialog-title class="mdDialogHeader" align="center">{{this.DialogHeader}}</h3>
+        </div>
+        <div fxLayout="row"  fxLayoutAlign="center center">
+                <div fxLayout="column" class="imagePreviwStyle" fxLayoutAlign="center center">
+                        <mat-dialog-content>
+                                <img src="{{SelectedItem.DocumentImage}}" class="images">
+                        </mat-dialog-content>
+                </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div fxLayout="row" fxLayoutAlign="center center">
+                <mat-dialog-actions>
+                        <button type="button" color="primary" mat-raised-button (click)="cancelClick()">Close</button>
+                </mat-dialog-actions>
+        </div>
+</div>

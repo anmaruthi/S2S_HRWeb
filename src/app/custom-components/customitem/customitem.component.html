@@ -1,0 +1,495 @@
+<style>
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+    }
+</style>
+
+<div fxLayout="row">
+    <div fxLayout="column" fxFlex=100%>
+        <div>
+            <form novalidate #dialogForm="ngForm">
+                <div fxLayout="row" class="actionBarRow">
+
+                    <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                        <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Material</label>
+                        <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Material</label>
+                    </div>
+
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                        <div fxLayout="row" fxLayoutGap="20px">
+                            <div class="tooltip" matTooltip="Save" *ngIf="(this.sessionService.actionAllowed('ADD_MATERIAL') && this.Mode == 'ADD')
+                                            || this.sessionService.actionAllowed('EDIT_MATERIAL')"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button type="submit" class="app-icon-button" (click)="SubmitClick(dialogForm.valid)">
+                                    <i class="material-icons logout">save</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Cancel"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="cancelClick()">
+                                    <i class="material-icons logout">cancel</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div fxLayout="row" class="FirstColumnData"
+                    [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+
+                    <div fxLayout="column" fxFlex=100%>
+                        <br>
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="text" #itemCode="ngModel" name="itemCode" maxlength="100"
+                                        [(ngModel)]="selectedDataGridItem.ItemCode" placeholder="Material Code"
+                                        required />
+                                    <mat-error *ngIf="this.submitAttempt && itemCode.hasError('required')">
+                                        Material Code is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div fxFlex=4%></div>
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="text" #itemBarCode="ngModel" name="itemBarCode"
+                                        maxlength="100" [(ngModel)]="selectedDataGridItem.ItemBarCode"
+                                        placeholder="Part Number" />
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <div fxFlex=100%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="text" #itemName="ngModel" name="itemName" maxlength="100"
+                                        [(ngModel)]="selectedDataGridItem.ItemName" placeholder="Material Name"
+                                        required />
+                                    <mat-error *ngIf="this.submitAttempt && itemName.hasError('required')">
+                                        Material name is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <div fxFlex=100%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="text" #itemDescription="ngModel" name="itemDescription"
+                                        maxlength="100" [(ngModel)]="selectedDataGridItem.ItemDescription"
+                                        placeholder="Material Description" />
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <mat-select #itemCategory="ngModel" name="itemCategory"
+                                        [(ngModel)]="selectedDataGridItem.ItemCategoryID" required
+                                        placeholder="Material Category" (selectionChange)="onSelectCategory()">
+                                        <mat-option *ngFor="let itm of ItemCategoryList" [value]="itm.ItemCategoryID">
+                                            {{ itm.ItemCategoryName }}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="this.submitAttempt && itemCategory.hasError('required')">
+                                        Material Category is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div fxFlex=4%></div>
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <mat-select #itemTypeName="ngModel" name="itemTypeName"
+                                        [(ngModel)]="selectedDataGridItem.ItemTypeID" required
+                                        placeholder="Material Type">
+                                        <mat-option *ngFor="let itm of ItemTypeListFiltered" [value]="itm.ItemTypeID">
+                                            {{ itm.ItemTypeName }}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="this.submitAttempt && itemTypeName.hasError('required')">
+                                        Material type is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="text" #itemSize="ngModel" name="itemSize" maxlength="100"
+                                        [(ngModel)]="selectedDataGridItem.ItemSize" placeholder="Material Size" />
+                                </mat-form-field>
+                            </div>
+                            <div fxFlex=4%></div>
+                            <div fxFlex=22%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <mat-select #ItemUOM="ngModel" name="ItemUOM"
+                                        [(ngModel)]="selectedDataGridItem.UOMID" required
+                                        placeholder="Unit Of Measurement">
+                                        <mat-option *ngFor="let itm of UOMList" [value]="itm.UOMID">
+                                            {{ itm.UOM }}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="this.submitAttempt && ItemUOM.hasError('required')">
+                                        Unit Of Measurement is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div fxFlex=4%></div>
+                            <div fxFlex=22%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="number" #ReservedQuantity="ngModel" name="ReservedQuantity"
+                                        [(ngModel)]="selectedDataGridItem.ReservedQuantity" placeholder="Reserved Qty" />
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="center center" *ngIf="this.fRows > 0">
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="text" #ItemField1="ngModel" name="ItemField1" maxlength="100"
+                                        [(ngModel)]="selectedDataGridItem.ItemField1"
+                                        placeholder="{{FieldList[0].FieldName}}"
+                                        [required]="FieldList[0].IsMandatory" />
+                                    <mat-error *ngIf="this.submitAttempt && ItemField1.hasError('required')">
+                                        {{FieldList[0].FieldName}} is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div fxFlex=4%></div>
+                            <div fxFlex=48%>
+                                <span *ngIf="this.fRows > 1">
+                                    <mat-form-field class="fld-mt0-w100">
+                                        <input matInput type="text" #ItemField2="ngModel" name="ItemField2"
+                                            maxlength="100" [(ngModel)]="selectedDataGridItem.ItemField2"
+                                            placeholder="{{FieldList[1].FieldName}}"
+                                            [required]="FieldList[1].IsMandatory" />
+                                        <mat-error *ngIf="this.submitAttempt && ItemField2.hasError('required')">
+                                            {{FieldList[1].FieldName}} is required
+                                        </mat-error>
+                                    </mat-form-field>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="center center" *ngIf="this.fRows > 2">
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="text" #ItemField3="ngModel" name="ItemField3" maxlength="100"
+                                        [(ngModel)]="selectedDataGridItem.ItemField3"
+                                        placeholder="{{FieldList[2].FieldName}}"
+                                        [required]="FieldList[2].IsMandatory" />
+                                    <mat-error *ngIf="this.submitAttempt && ItemField3.hasError('required')">
+                                        {{FieldList[2].FieldName}} is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div fxFlex=4%></div>
+                            <div fxFlex=48%>
+                                <span *ngIf="this.fRows > 3">
+                                    <mat-form-field class="fld-mt0-w100">
+                                        <input matInput type="text" #ItemField4="ngModel" name="ItemField4"
+                                            maxlength="100" [(ngModel)]="selectedDataGridItem.ItemField4"
+                                            placeholder="{{FieldList[3].FieldName}}"
+                                            [required]="FieldList[3].IsMandatory" />
+                                        <mat-error *ngIf="this.submitAttempt && ItemField4.hasError('required')">
+                                            {{FieldList[3].FieldName}} is required
+                                        </mat-error>
+                                    </mat-form-field>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="center center" *ngIf="this.fRows > 4">
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="text" #ItemField5="ngModel" name="ItemField5" maxlength="100"
+                                        [(ngModel)]="selectedDataGridItem.ItemField5"
+                                        placeholder="{{FieldList[4].FieldName}}"
+                                        [required]="FieldList[4].IsMandatory" />
+                                    <mat-error *ngIf="this.submitAttempt && ItemField5.hasError('required')">
+                                        {{FieldList[4].FieldName}} is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div fxFlex=4%></div>
+                            <div fxFlex=48%>
+                                <span *ngIf="this.fRows > 5">
+
+                                </span>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <div fxFlex=22%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="number" #ItemPrice="ngModel" name="ItemPrice"
+                                        [(ngModel)]="selectedDataGridItem.ItemPrice" placeholder="General Price"
+                                        required style="text-align:right">
+
+                                    <mat-error *ngIf="this.submitAttempt && ItemPrice.hasError('required')">
+                                        General Price % is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div fxFlex=4%></div>
+                            <div fxFlex=22%>
+                                <customdate class="fld-mt0-w100" placeholder="Effective Date" required="true"
+                                    #EffectiveDate="ngModel" name="EffectiveDate" [(ngModel)]="selectedDataGridItem.EffectiveDate"
+                                    [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true">
+                                </customdate>
+                            </div>
+                            <div fxFlex=4%></div>
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <mat-select #statusCode="ngModel" name="statusCode"
+                                        [(ngModel)]="selectedDataGridItem.StatusCode" required placeholder="Status">
+                                        <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                                            {{ itm.StatusMessage }}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="this.submitAttempt && statusCode.hasError('required')">
+                                        Status is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="center center"  *ngIf="this.sessionService.actionAllowed('UPDATE_STOCK')  && this.Mode != 'ADD' ">
+                            <div fxFlex=100%>
+                                <div fxLayout="row" fxLayoutAlign="center center">
+                                    <div fxFlex=100%>
+                                        <mat-checkbox  #canStkUp="ngModel" name="canStkUp" [(ngModel)]="canUpdateStock" (change)="onChangeCheckbox()">
+                                            Update Stock Quantity
+                                        </mat-checkbox>                              
+                                    </div>
+                                </div>
+                                <div fxLayout="row" fxLayoutAlign="center center" *ngIf="canUpdateStock == true">
+                                    <div fxFlex=48%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="number" #itemStock="ngModel" name="itemStock"
+                                                [(ngModel)]="selectedDataGridItem.StockQuantity" placeholder="Stock Quantity"
+                                                required style="text-align:right">
+        
+                                            <mat-error *ngIf="this.submitAttempt && itemStock.hasError('required')">
+                                                Stock Quantity % is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=4%></div>
+                                    <div fxFlex=48%>
+                                        <customdate class="fld-mt0-w100" placeholder="Stock Date" required="true"
+                                            #stockDate="ngModel" name="stockDate" [(ngModel)]="selectedDataGridItem.StockDate"
+                                            [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true">
+                                        </customdate>
+                                    </div>
+                                </div>        
+                            </div>
+                        </div>
+
+                        <br>
+                        <div>
+                            <div fxLayout="row" *ngIf="this.commonService.getLength(this.TaxDetailList)>0">
+                                <div fxFlex=100%>
+
+                                    <p-table #dt1 [columns]="cols" [value]="TaxDetailList" selectionMode="single">
+
+                                        <ng-template pTemplate="header" let-columns>
+                                            <tr>
+                                                <th *ngFor="let col of columns" [pSortableColumn]="col.field"
+                                                    [style.width]="col.width">
+                                                    {{col.header}}
+                                                </th>
+                                            </tr>
+                                        </ng-template>
+
+                                        <ng-template pTemplate="body" let-rowdata let-columns="columns">
+                                            <tr [pSelectableRow]="rowdata">
+                                                <td pEditableColumn *ngFor="let col of columns"
+                                                    [style.width]="col.width" [style.text-align]="col.align"
+                                                    [style.word-wrap]="col.wrap">
+                                                    <span *ngIf="col.field != 'TaxValue'">
+                                                        {{rowdata[col.field]}}
+                                                    </span>
+                                                    <span *ngIf="col.field == 'TaxValue'">
+                                                        <p-cellEditor>
+                                                            <ng-template pTemplate="input">
+                                                                <input pInputText type="number" #taxvalue="ngModel"
+                                                                    name="taxvalue" maxlength="10"
+                                                                    [(ngModel)]="rowdata.TaxValue" placeholder="%"
+                                                                    required />
+                                                            </ng-template>
+                                                            <ng-template pTemplate="output">
+                                                                {{rowdata.TaxValue}}
+                                                            </ng-template>
+                                                        </p-cellEditor>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+
+                                        <ng-template pTemplate="emptymessage">
+                                            No records found
+                                        </ng-template>
+
+                                    </p-table>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <br>
+                        <br>
+
+                        <div>
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex=100%>
+                                    <p-table #dt1 [columns]="cols1" [value]="ItemSupplierList" selectionMode="single"
+                                    [(selection)]="dialogPriceItem" >
+                            
+                                    <ng-template pTemplate="caption" class="capsegment">
+                                      <form novalidate #dialogForm1="ngForm" *ngIf="this.Mode1 == 'ADD' || this.Mode1 == 'EDIT'">
+                            
+                                        <div fxLayout="row" >
+                                          <div fxLayout="column" fxFlex=100%>
+                                            <div fxLayout="row" fxLayoutAlign="center center">
+                                              <div fxFlex=2%></div>
+                                              <div fxFlex=40%>
+                                                <mat-form-field class="fld-mt0-w100">
+                                                    <mat-select #SupplierItem="ngModel" name="SupplierItem"
+                                                        [(ngModel)]="selectedPriceItem.SupplierID" required placeholder="Supplier">
+                                                        <mat-option *ngFor="let itm of SupplierList" [value]="itm.SupplierID">
+                                                            {{ itm.SupplierName }}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                    <mat-error *ngIf="this.submitAttempt1 && SupplierItem.hasError('required')">
+                                                        Supplier is required
+                                                    </mat-error>
+                                                </mat-form-field>
+                                              </div>
+                                              <div fxFlex=4%></div>
+                                              <div fxFlex=30%>
+                                                <mat-form-field class="fld-mt0-w100">
+                                                  <input matInput type="number" maxlength="200" #ItemPrice="ngModel" name="ItemPrice"
+                                                    [(ngModel)]="selectedPriceItem.ItemPrice" placeholder="Rate" required>
+                                  
+                                                  <mat-error *ngIf="this.submitAttempt1 && ItemPrice.hasError('required')">
+                                                    Rate is required
+                                                  </mat-error>
+                                                </mat-form-field>
+                                              </div>
+                                              <div fxFlex=4%></div>
+                                              <div fxFlex=20%>
+                                                <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="center end">
+                                                  <div class="tooltip" matTooltip="Save" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                    <button type="submit" class="app-icon-button" (click)="updateSuppInfo(dialogForm1.valid)">
+                                                      <i class="material-icons logout">save</i>
+                                                    </button>
+                                                  </div>
+                                                  <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                    <button class="app-icon-button" (click)="calSuppItem()">
+                                                      <i class="material-icons logout">cancel</i>
+                                                    </button>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>     
+                                  
+                                      </form>
+                                        
+                                    </ng-template>
+                            
+                                    <ng-template pTemplate="header" let-columns>
+                                      <tr>
+                                        <th>
+                                          <button class="app-icon-button" (click)="addsuppclick()">
+                                            <i class="material-icons" color="accent">add_box</i>
+                                          </button>
+                                        </th>
+                                        <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                                          {{col.header}}
+                                        </th>
+                                        <th></th>
+                                      </tr>
+                                    </ng-template>
+                            
+                                    <ng-template pTemplate="body" let-rwitem let-columns="columns">
+                                      <tr [pSelectableRow]="rwitem">      
+                                        <td>
+                                          <button [disabled]="DisableEdit1()" class="app-icon-button" (click)="editsuppclick()">
+                                            <i class="material-icons">edit</i>
+                                          </button>
+                                        </td>    
+                                        <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                                          [style.word-wrap]="col.wrap">
+                                          {{rwitem[col.field]}}
+                                        </td>
+                                        <td>
+                                          <button [disabled]="DisableEdit1()" class="app-icon-button" (click)="deletesuppDetail()">
+                                            <i class="material-icons">delete</i>
+                                          </button>
+                                        </td>
+                                      </tr>
+                                    </ng-template>
+                            
+                                    <ng-template pTemplate="emptymessage">
+                                      No records found
+                                    </ng-template>
+                                  </p-table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br>
+                        <br>
+                        <div>
+                            <div fxLayout="row" *ngIf="this.commonService.getLength(this.MaterialPriceHistory)>0">
+                                <div fxFlex=100%>
+
+                                    <p-table #dt1 [columns]="cols2" [value]="MaterialPriceHistory" selectionMode="single">
+
+                                        <ng-template pTemplate="header" let-columns>
+                                            <tr>
+                                                <th *ngFor="let col of columns" [pSortableColumn]="col.field"
+                                                    [style.width]="col.width">
+                                                    {{col.header}}
+                                                </th>
+                                            </tr>
+                                        </ng-template>
+
+                                        <ng-template pTemplate="body" let-rowdata let-columns="columns">
+                                            <tr [pSelectableRow]="rowdata">
+                                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                                    {{rowdata[col.field]}}
+                                                </td>                                                
+                                            </tr>
+                                        </ng-template>
+
+                                        <ng-template pTemplate="emptymessage">
+                                            No records found
+                                        </ng-template>
+
+                                    </p-table>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <br>
+                        <br>
+                        <br>
+
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,128 @@
+﻿/* You can add global styles to this file, and also import other style files */
+
+@import '../node_modules/@angular/material/_theming';
+@import '../node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import 'custom-theme-color.scss';
+
+@include mat-core();
+
+.material-icons.md-light {
+  color: rgba(240, 240, 240, 1);
+}
+
+.material-icons.md-black {
+  color: black;
+}
+
+.material-icons.md-red {
+  color: red;
+}
+
+.material-icons.md-black1 {
+  color: black;
+  cursor:pointer;
+  font-size: 13px;
+}
+
+.material-icons.md-red1 {
+  color: red;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+$mat-deep-orange-custom: (
+  50: #fbe9e7,
+  100: #ffccbc,
+  200: #ffab91,
+  300: #ff8a65,
+  400: #ff7043,
+  500: #ff6b22,
+  600: #f4511e,
+  700: #e64a19,
+  800: #d84315,
+  900: #bf360c,
+  A100: #ff9e80,
+  A200: #ff6e40,
+  A400: #ff3d00,
+  A700: #dd2c00,
+  contrast: (
+    50: $dark-primary-text,
+    100: $dark-primary-text,
+    200: $dark-primary-text,
+    300: $dark-primary-text,
+    400: $dark-primary-text,
+    500: $light-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text,
+    900: $light-primary-text,
+    A100: $dark-primary-text,
+    A200: $dark-primary-text,
+    A400: $light-primary-text,
+    A700: $light-primary-text,
+  )
+);
+$mat-blue-custom: (
+  50: #e3f2fd,
+  100: #bbdefb,
+  200: #90caf9,
+  300: #64b5f6,
+  400: #42a5f5,
+  500: #1a83ca,
+  600: #1e88e5,
+  700: #1976d2,
+  800: #1565c0,
+  900: #22477e,
+  A100: #82b1ff,
+  A200: #448aff,
+  A400: #2979ff,
+  A700: #2962ff,
+  contrast: (
+    50: $dark-primary-text,
+    100: $dark-primary-text,
+    200: $dark-primary-text,
+    300: $dark-primary-text,
+    400: $dark-primary-text,
+    500: $light-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text,
+    900: $light-primary-text,
+    A100: $dark-primary-text,
+    A200: $light-primary-text,
+    A400: $light-primary-text,
+    A700: $light-primary-text,
+  )
+);
+
+$custom-theme-primary: mat-palette($mat-blue-custom);
+$custom-theme-accent: mat-palette($mat-deep-orange-custom);
+$custom-theme-warn: mat-palette($mat-red); 
+$custom-theme: mat-light-theme($custom-theme-primary, $custom-theme-accent, $custom-theme-warn); 
+@include angular-material-theme($custom-theme); 
+@mixin angular-material-theme($theme) {
+  @include mat-core-theme($theme);
+  @include mat-autocomplete-theme($theme);
+  @include mat-button-theme($theme);
+  @include mat-button-toggle-theme($theme);
+  @include mat-card-theme($theme);
+  @include mat-checkbox-theme($theme);
+  @include mat-chips-theme($theme);
+  @include mat-datepicker-theme($theme);
+  @include mat-dialog-theme($theme);
+  @include mat-grid-list-theme($theme);
+  @include mat-icon-theme($theme);
+  @include mat-input-theme($theme);
+  @include mat-list-theme($theme);
+  @include mat-menu-theme($theme);
+  @include mat-progress-bar-theme($theme);
+  @include mat-progress-spinner-theme($theme);
+  @include mat-radio-theme($theme);
+  @include mat-select-theme($theme);
+  @include mat-sidenav-theme($theme);
+  @include mat-slide-toggle-theme($theme);
+  @include mat-slider-theme($theme);
+  @include mat-tabs-theme($theme);
+  @include mat-toolbar-theme($theme);
+  @include mat-tooltip-theme($theme);
+}

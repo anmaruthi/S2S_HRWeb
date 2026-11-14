@@ -1,0 +1,363 @@
+
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+
+    <div fxLayout="column" [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth)"
+        *ngIf="this.showReport == true &&  this.Mode != 'HOME'" class="formColumn">
+        <div fxLayout="row">
+            <div fxLayout="column"  fxFlex=100%>
+                <div fxLayout="row" class="actionBarRow">
+
+                    <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                        <label class="menuBarHeading">WORK ORDER REPORT</label>
+                    </div>
+                    
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">                     
+                        <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button class="app-icon-button" (click)="cancelReportClick()">
+                                <i class="material-icons logout">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div fxLayout="row">
+                    <iframe  [height]="this.sessionService.getIframHeight(200)" class="iframeClass" [src]="reportUrl"
+                        [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)"></iframe>                
+                </div>
+            </div>
+        </div>        
+    </div>
+
+    <div fxLayout="column" [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth)"    
+                *ngIf="this.showReport == false &&   this.Mode != 'HOME'" class="formColumn">
+        <div fxLayout="row"  class="FirstColumnData" [style.height]="this.sessionService.getColumnScrollHeightInPX()">
+            <div fxLayout="column"  fxFlex=100% [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+                <form novalidate #dialogForm="ngForm">
+                    <div fxLayout="row" class="actionBarRow">
+
+                            <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                                <label class="menuBarHeading">EDIT WORK ORDER</label>
+                            </div>
+            
+                            <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                                <div fxLayout="row" fxLayoutGap="20px">
+                                    <div class="tooltip" matTooltip="Save" *ngIf="(this.sessionService.actionAllowed('EDIT_PROCESS_FLOW'))" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                        <button type="submit" class="app-icon-button" (click)="SubmitClick()">
+                                            <i class="material-icons logout">save</i>
+                                        </button>
+                                    </div>
+                                    <div class="tooltip" matTooltip="Preview Work-Order" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                                        *ngIf="this.sessionService.actionAllowed('EDIT_PROCESS_FLOW')">
+                                        <button type="button" [disabled]="!isWorkOrderReady()" class="app-icon-button" (click)="printWorkOrder()">
+                                            <i class="material-icons logout">assignment</i>
+                                        </button>
+                                    </div>                             
+                                    <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                        <button class="app-icon-button" (click)="cancelClick()">
+                                            <i class="material-icons logout">cancel</i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+
+                    <div fxLayout="row">
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                        <input matInput type="text" readonly #ProjectName="ngModel" name="ProjectName" [(ngModel)]="selectedDataGridItem.ProjectName"
+                                                    placeholder="Project Name" />                                                
+                                    </mat-form-field> 
+                            </div>
+                            <div fxFlex=4%></div>
+                            <div fxFlex=48%>
+                                    <mat-form-field class="fld-mt0-w100">
+                                        <input matInput type="tex" readonly #BuyerName="ngModel" name="BuyerName" [(ngModel)]="selectedDataGridItem.BuyerName"
+                                            placeholder="Buyer Name" />                                                    
+                                    </mat-form-field> 
+                            </div>
+                    </div>
+                    <div fxLayout="row">
+                            <div fxFlex=48%>
+                                    <mat-form-field class="fld-mt0-w100">
+                                        <input matInput type="tex" readonly #StyleName="ngModel" name="StyleName" [(ngModel)]="selectedDataGridItem.StyleName"
+                                            placeholder="Style Name" />                                                    
+                                    </mat-form-field> 
+                            </div>    
+                            <div fxFlex=4%></div>
+                            <div fxFlex=48%>
+                                    <mat-form-field class="fld-mt0-w100">
+                                        <input matInput type="text" readonly #StyleDescription="ngModel" name="StyleDescription" [(ngModel)]="selectedDataGridItem.StyleDescription"
+                                            placeholder="Style Description" />                                                    
+                                    </mat-form-field> 
+                            </div>  
+                    </div>
+                    <div fxLayout="row">
+                            <div fxFlex=48%>
+                                    <mat-form-field class="fld-mt0-w100">
+                                        <input matInput type="tex" readonly #ProcessName="ngModel" name="ProcessName" [(ngModel)]="selectedDataGridItem.ProcessName"
+                                            placeholder="Process Name" />                                                    
+                                    </mat-form-field> 
+                            </div> 
+                            <div fxFlex=4%></div>                      
+                            <div fxFlex=48%>
+                                    <mat-form-field class="fld-mt0-w100">
+                                        <input matInput type="tex" readonly #DepartmentName="ngModel" name="DepartmentName" [(ngModel)]="selectedDataGridItem.DepartmentName"
+                                            placeholder="Department Name" />                                                    
+                                    </mat-form-field> 
+                            </div>  
+                    </div>                    
+                    <div fxLayout="row">
+                            <div fxFlex=22%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="tex" readonly #ProjectStartDate1="ngModel" name="ProjectStartDate1" [(ngModel)]="selectedDataGridItem.TentativeProcessStartDate1"
+                                        placeholder="Start Date" />                                                    
+                                </mat-form-field> 
+                            </div>
+                            <div fxFlex=4%></div>      
+                            <div fxFlex=22%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="tex" readonly #ProjectCompletionDate1="ngModel" name="ProjectCompletionDate1" [(ngModel)]="selectedDataGridItem.ProcessCompletionDate1"
+                                        placeholder="Completion Date" />                                                    
+                                </mat-form-field> 
+                            </div>      
+                            <div fxFlex=4%></div>                      
+                            <div fxFlex=22%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="text" readonly #TotalOrderQuantity="ngModel" name="TotalOrderQuantity" [(ngModel)]="selectedDataGridItem.FinalOrderQuantity"
+                                        placeholder="Order Quantity" />                                                    
+                                </mat-form-field> 
+                            </div>  
+                            <div fxFlex=4%></div>                      
+                            <div fxFlex=22%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="text" readonly #statusCode1="ngModel" name="statusCode1" [(ngModel)]="selectedDataGridItem.StatusMessage"
+                                        placeholder="Process Status" />                                                    
+                                </mat-form-field>  
+                            </div>
+                    </div>
+
+
+                    <div fxLayout="row" class="lineClass"></div> 
+
+                    <div fxLayout="row">
+                            <p-table #dt [columns]="cols1" [value]="workOrderList" sortField="ProjectID" selectionMode="single" [scrollable]="true" [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()" 
+                                [style.width]="'100%'" [(selection)]="selectedData1" [paginator]="true" [rows]="sessionService.NoOfRowsPerPage" 
+                                [rowsPerPageOptions]="sessionService.RowsPerPageOptions" datakey="WorkOrderID">
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr> 
+                                        <th *ngFor="let col of columns"  [pSortableColumn]="col.field" [style.width]="col.width">
+                                            {{col.header}}
+                                            <p-sortIcon [field]="col.field"></p-sortIcon>
+                                        </th>
+                                        <th style="width: 10%">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                                    <tr [pSelectableRow]="rowData">
+                                        <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                                            [style.word-wrap]="col.wrap">
+                                            <span *ngIf="rowData[col.field] != null">{{rowData[col.field]}}</span>
+                                        </td>
+                                        <td style="text-align: right;width: 10%; word-wrap:break-word">
+                                            <div fxLayout="column" fxLayoutAlign="center end">
+                                                <div fxLayout="row" fxLayoutGap="20px">
+                                                    <div class="tooltip" matTooltip="Edit" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                        <button class="app-icon-button" (click)="workorderEditClick(rowData)">
+                                                            <i class="material-icons">edit</i>
+                                                        </button>
+                                                    </div>                                                    
+                                                    <div class="tooltip" matTooltip="Delete" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                        <button class="app-icon-button" (click)="workorderDeleteClick(rowData)">
+                                                            <i class="material-icons">delete</i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>                                
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="summary">
+                                    <div fxLayout="row">
+                                        <div fxFlex=17%>
+                                            <mat-form-field class="fld-mt0-w100">
+                                                <input matInput type="number" #WorkOrderNumber="ngModel" name="WorkOrderNumber" readonly
+                                                    [(ngModel)]="selectedDataItem.WorkOrderNumber" placeholder="WO Number" />     
+                                            </mat-form-field>                         
+                                        </div>                 
+                                        <div fxFlex=2%></div>   
+                                        <div fxFlex=29%>
+                                            <customdate  placeholder="WO Date" required="true" [submitAttempt]="this.processFlowSubmitAttempt"
+                                                    #WorkOrderDate="ngModel" name="WorkOrderDate" [(ngModel)]="selectedDataItem.WorkOrderDate" 
+                                                    [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true" > </customdate>
+                                        </div> 
+                                        <div fxFlex=4%></div>                                          
+                                        <div fxFlex=48%>
+                                            <mat-form-field class="fld-mt0-w100">
+                                                <mat-select #WorkOrderStatusCode="ngModel" name="WorkOrderStatusCode"  [(ngModel)]="selectedDataItem.WorkOrderStatusCode" required
+                                                        placeholder="WO Status">
+                                                    <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                                                        {{ itm.StatusMessage }}
+                                                    </mat-option>
+                                                    </mat-select>
+                                                    <mat-error *ngIf="this.processFlowSubmitAttempt && WorkOrderStatusCode.hasError('required')">
+                                                        WO StatusCode is required
+                                                    </mat-error>
+                                            </mat-form-field>
+                                        </div>                      
+                                    </div>
+                                    <div fxLayout="row">
+                                        <div fxFlex=48%>
+                                            <autocomplete class="fld-mt0-w100" placeholder="Vendor" required="true" [submitAttempt]="this.processFlowSubmitAttempt"
+                                                [InputDataList]="this.VendorList" KeyID="VendorID" KeyDescription="VendorName"
+                                                        #VendorID="ngModel" name="VendorID" [(ngModel)]="selectedDataItem.VendorID"> 
+                                            </autocomplete>
+                                        </div>
+                                        <div fxFlex=4%></div>     
+                                        <div fxFlex=30%>
+                                            <mat-form-field class="fld-mt0-w100">
+                                                <input matInput type="number" #Quantity="ngModel" name="Quantity" [(ngModel)]="selectedDataItem.Quantity"
+                                                    placeholder="WO Quantity" [minValue]="this.commonService.MIN_QUANTITY1" [maxValue]="this.commonService.MAX_QUANTITY"
+                                                    [pattern]="this.commonService.PATTERN_QUANTITY" required />
+                                                
+                                                    <mat-error *ngIf="this.processFlowSubmitAttempt && Quantity.hasError('required')">
+                                                        WO Quantity is required
+                                                    </mat-error>
+                    
+                                                    <mat-error *ngIf="this.processFlowSubmitAttempt && Quantity.hasError('pattern')">
+                                                        Invalid WO  Quantity
+                                                    </mat-error>
+                    
+                                                    <mat-error *ngIf="this.processFlowSubmitAttempt && Quantity.hasError('minValue')
+                                                        && !Quantity.hasError('required') && !Quantity.hasError('pattern')">
+                                                            Minimum {{this.commonService.MIN_QUANTITY1}} is required
+                                                    </mat-error> 
+                                                    <mat-error *ngIf="this.processFlowSubmitAttempt && Quantity.hasError('maxValue') && !Quantity.hasError('pattern')">
+                                                        Maximum allowed is {{this.commonService.MAX_QUANTITY}}
+                                                    </mat-error> 
+                                            </mat-form-field> 
+                                        </div>                 
+                                        <div fxFlex=18%>
+                                            <div fxLayout="column" fxLayoutAlign="center end">
+                                                <div fxLayout="row" fxLayoutGap="20px">
+                                                    <div class="tooltip" [matTooltip]="this.selectedDataItem.WorkOrderID?'Save':'Add'" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                        <button type="submit" class="app-icon-button" (click)="workorderAddEdit(dialogForm.valid)">
+                                                        <i class="material-icons"> {{this.selectedDataItem.WorkOrderID?'save':'add'}}</i>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="tooltip" [matTooltip]="this.selectedDataItem.WorkOrderID?'Cancel':'Clear'" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                        <button type="button" class="app-icon-button" (click)="workorderEditCancelClick()">
+                                                        <i class="material-icons">{{this.selectedDataItem.WorkOrderID?'cancel':'clear'}}</i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>                                            
+                                    </div>
+                    
+                                </ng-template>
+                            </p-table>  
+                        </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="ColumnDivider" *ngIf="Mode !='HOME'"></div>
+        
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()" >
+
+        <div fxLayout="row">
+
+            <div fxLayout="column">
+                
+                <div fxLayout="row" class="actionBarRow" >
+
+                    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                            <label class="menuBarHeading">WORK ORDER</label>
+                    </div>
+                    <div fxLayout="column" class="actionBarDataColumn">
+                        </div>
+                    <div fxLayout="column" class="actionBarSearchColumn">
+                            <mat-form-field>
+                                <input inputmode="search" (keyup)="onKeyUp()" (input)="dt.filterGlobal($event.target.value, 'contains')" matInput placeholder="Text Filter" class="searchBox">
+                            </mat-form-field>
+                    </div>
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                            <div fxLayout="row" fxLayoutGap="20px">    
+                                <div class="tooltip" matTooltip="Edit" *ngIf="this.sessionService.actionAllowed('EDIT_WORKORDER')"
+                                    [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                    <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="editClick()">
+                                        <i class="material-icons">edit</i>
+                                    </button>
+                                </div>
+                                <div class="tooltip" matTooltip="Refresh" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                    <button class="app-icon-button" (click)="refreshClick()">
+                                      <i class="material-icons">refresh</i>
+                                    </button>
+                                </div>    
+                            </div>
+                    </div>
+                </div>
+                          
+                <div fxLayout="row" class="SecondColumnData">
+                    <p-table #dt [columns]="cols" [value]="dataGridList" sortField="ProjectID" selectionMode="single" [scrollable]="true" [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()" 
+                    [style.width]="this.sessionService.getScreenWidthInPx()"
+                    [(selection)]="selectedData" [paginator]="true" [rows]="sessionService.NoOfRowsPerPage" 
+                    [rowsPerPageOptions]="sessionService.RowsPerPageOptions" datakey="ProjectID">    
+                        <ng-template pTemplate="header" let-columns>
+                            <tr> 
+                                <th [pSortableColumn]="'ProjectName'" [style.width]="'10%'">
+                                    Project Name
+                                    <p-sortIcon [field]="'ProjectName'"></p-sortIcon>
+                                </th>
+                                <th [pSortableColumn]="'BuyerName'" [style.width]="'8%'">
+                                    Buyer Name
+                                    <p-sortIcon [field]="'BuyerName'"></p-sortIcon>
+                                </th>
+                                <th [pSortableColumn]="'StyleName'" [style.width]="'8%'">
+                                    Style Name
+                                    <p-sortIcon [field]="'StyleName'"></p-sortIcon>
+                                </th>
+                                <th *ngFor="let col of columns"  [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+                                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                            <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                <td pEditableColumn [style.width]="'10%'" [style.text-align]="'left'" [style.word-wrap]="'break-word'" 
+                                    *ngIf="rowData.sizeCount != null" [attr.rowspan]="rowData.sizeCount">
+                                    {{rowData.ProjectName}}
+                                </td>
+                                <td pEditableColumn [style.width]="'8%'" [style.text-align]="'left'" [style.word-wrap]="'break-word'" 
+                                    *ngIf="rowData.sizeCount != null" [attr.rowspan]="rowData.sizeCount">
+                                    {{rowData.BuyerName}}
+                                </td>
+                                <td pEditableColumn [style.width]="'8%'" [style.text-align]="'left'" [style.word-wrap]="'break-word'" 
+                                    *ngIf="rowData.sizeCount != null" [attr.rowspan]="rowData.sizeCount">
+                                    {{rowData.StyleName}}
+                                </td>
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                                    [style.word-wrap]="col.wrap" [style.background-color]="rowData.bgColor">
+                                    {{rowData[col.field]}}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>  
+        </div>
+
+    </div>
+
+</div>
+

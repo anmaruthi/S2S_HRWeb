@@ -1,0 +1,24 @@
+﻿<div fxLayout="row" class="dialogContainer" fxFlex=100% fxLayoutAlign="center center">  
+
+  <div fxLayout="column" fxLayoutAlign="center" fxLayoutGap="10px"> 
+
+    <div fxLayout="row" fxLayoutAlign="center right">
+        <div fxLayout="column" fxFlex=98%>
+          <h3 class="matDialogHeader" align="center">{{this.header}}</h3>
+        </div>
+        <div fxLayout="column" fxFlex=2%>
+          <mat-icon matSuffix matTooltip="Close" class="closeIcon" (click)="closeClick()">close</mat-icon>
+        </div>
+      </div>
+
+    <div fxFlex="row" fxLayoutAlign="center center"> 
+        <img [src]="this.ImageData" class="image">
+    </div>
+
+    <div fxFlex="row" fxLayoutAlign="center center" style ="padding-top: 10px;"> 
+      <button type="button" color="primary" mat-raised-button (click)="closeClick()">Close</button>
+    </div>
+
+  </div>
+  
+</div>

@@ -1,0 +1,28 @@
+﻿<div class="dialogContainer">
+
+  <div class="mdDialogHeader" align="center">{{Header}}</div>
+
+  <mat-dialog-content class="contentDiv">
+    
+    <div fxLayout="column">
+
+      <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="center center">
+        
+        <textarea matInput matAutosizeMinRows="2" matTextareaAutosize matAutosizeMaxRows="20"
+                  type="text" 
+                  [(ngModel)]="this.Message" maxlength="4000" readonly> </textarea>
+
+      </div>
+
+      <br>
+      <br>
+
+      <div fxFlex="row" fxLayoutGap="30px" fxLayoutAlign="center center">
+        <button autofocus tabindex="0" color="primary" mat-raised-button (click)="submitClick()">Ok</button>
+      </div>
+
+    </div>
+
+  </mat-dialog-content>
+
+</div>

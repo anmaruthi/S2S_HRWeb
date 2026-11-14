@@ -1,0 +1,325 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+
+        <div fxLayout="column" [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth)" *ngIf="Mode=='EDIT' || Mode=='ADD'" class="formColumn">
+
+                <form novalidate #dialogForm="ngForm">
+
+                    <div fxLayout="row" class="actionBarRow">
+                        <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center">
+                            <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add User</label>
+                            <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit User</label>
+                        </div>
+           
+                        <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                            <div fxLayout="row" fxLayoutGap="20px">
+                                <div class="tooltip" matTooltip="Save" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                                  *ngIf="(this.sessionService.actionAllowed('ADD_USER') && this.Mode == 'ADD') || this.sessionService.actionAllowed('EDIT_USER')">
+                                    <button type="submit" class="app-icon-button" (click)="SubmitClick(dialogForm.valid)">
+                                    <i class="material-icons logout">save</i>
+                                    </button>
+                                </div>
+                                <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                    <button class="app-icon-button" (click)="cancelClick()">
+                                        <i class="material-icons logout">cancel</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div fxLayout="row" class="FirstColumnData" [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+                        
+                        <div fxLayout="column" fxFlex=100%>
+                            <br>
+                                <div fxLayout="row" fxLayoutAlign="center center">
+                                    <div fxFlex=48%> 
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" #userName="ngModel" name="userName" maxlength="200" [(ngModel)]="selectedDataGridItem.UserName"
+                                                placeholder="User Name" required />
+            
+                                            <mat-error *ngIf="this.submitAttempt && userName.hasError('required')">
+                                                User Name is required
+                                            </mat-error>                     
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=4%></div>
+                                    <div fxFlex=48%> 
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <mat-select #gender="ngModel" name="gender" maxlength="10" [(ngModel)]="selectedDataGridItem.Gender" required
+                                                placeholder="Gender">
+                                            <mat-option *ngFor="let itm of GenderList" [value]="itm.GenderCode">
+                                                {{ itm.Gender }}
+                                            </mat-option>
+                                            </mat-select>                                  
+                                        </mat-form-field>  
+                                    </div>
+                                </div>
+            
+                                <div fxLayout="row" fxLayoutAlign="center center">
+                                    <div fxFlex=48%> 
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" #firstName="ngModel" name="firstName"  maxlength="200" [(ngModel)]="selectedDataGridItem.FirstName"
+                                                placeholder="First Name" required />   
+                                                
+                                            <mat-error *ngIf="this.submitAttempt && firstName.hasError('required')">
+                                                First Name is required
+                                            </mat-error>         
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=4%></div>
+                                    <div fxFlex=48%> 
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" #lastName="ngModel" name="lastName"  maxlength="200" [(ngModel)]="selectedDataGridItem.LastName"
+                                                placeholder="Last Name" required/>   
+                                                
+                                            <mat-error *ngIf="this.submitAttempt && lastName.hasError('required')">
+                                                Last Name is required
+                                            </mat-error>                                    
+                                        </mat-form-field> 
+                                    </div>
+                                </div>
+            
+                
+                                <div fxLayout="row" fxLayoutAlign="center center">
+                                    <div fxFlex=48%> 
+                                        <mat-form-field class="fld-mt0-w100">
+                                                <input matInput type="text" #mobile="ngModel" name="mobile" minlength="10" maxlength="15" [pattern]="this.commonService.PATTERN_MOBILE" [(ngModel)]="selectedDataGridItem.Mobile"
+                                                placeholder="Mobile Number" >
+                                            <mat-error *ngIf="this.submitAttempt && mobile.hasError('pattern')">
+                                                Invalid Mobile Number
+                                            </mat-error>      
+                                        </mat-form-field>                            
+                                    </div>
+                                    <div fxFlex=4%></div>
+                                    <div fxFlex=48%> 
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="email" #email="ngModel" name="email" maxlength="100" [pattern]="this.commonService.PATTERN_EMAIL" [(ngModel)]="selectedDataGridItem.Email"
+                                                placeholder="Email ID">
+            
+                                            <mat-error *ngIf="this.submitAttempt && email.hasError('pattern')">
+                                                Invalid Email ID
+                                            </mat-error>                              
+                                        </mat-form-field> 
+                                    </div>
+                                </div>
+                                
+                                <div fxLayout="row" fxLayoutAlign="center center">
+                                    <div fxFlex=48%> 
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <mat-select #selectedSites="ngModel" name="selectedSites" [(ngModel)]="SelectedSites" required
+                                                multiple placeholder="Site">
+                                            <mat-option *ngFor="let itm of SiteList" [value]="itm">
+                                                {{ itm.SiteName }}
+                                            </mat-option>
+                                            </mat-select>
+            
+                                            <mat-error *ngIf="this.submitAttempt && selectedSites.hasError('required')">
+                                                    Site is required
+                                            </mat-error>                               
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=4%></div>
+                                    <div fxFlex=48%> 
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <mat-select #selectedRoles="ngModel" name="selectedRoles" [(ngModel)]="SelectedRoles" required (selectionChange)="onRoleChange()"
+                                                multiple   placeholder="Role">
+                                            <mat-option *ngFor="let itm of RoleList" [value]="itm">
+                                                {{ itm.RoleName }}
+                                            </mat-option>
+                                            </mat-select>
+                                            <mat-error *ngIf="this.submitAttempt && selectedRoles.hasError('required')">
+                                                    Role is required
+                                            </mat-error>                                                              
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            
+                                <!-- <div fxLayout="row" fxLayoutAlign="center center">
+                                    <div fxFlex=48%> 
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <mat-select #primarySite="ngModel" name="primarySite" required [(ngModel)]="selectedDataGridItem.PrimarySiteID" 
+                                            placeholder="Primary Site">
+                                            <mat-option *ngFor="let itm of SelectedSites" [value]="itm.SiteID">
+                                                {{ itm.SiteName}}
+                                            </mat-option>
+                                            </mat-select>
+                                            <mat-error *ngIf="this.submitAttempt && primarySite.hasError('required')">
+                                                Primary Site is required
+                                            </mat-error>                        
+                                        </mat-form-field> 
+                                    </div>
+                                    <div fxFlex=4%></div>
+                                    <div fxFlex=48%> 
+                                        <autocomplete placeholder="Reporting Manager" required="true" [submitAttempt]="this.submitAttempt"
+                                        [InputDataList]="this.ReportingManagerFiltered" KeyID="UserID" KeyDescription="FullName"
+                                        #reportingManager="ngModel" name="reportingManager" [(ngModel)]="this.selectedDataGridItem.ManagerUserID"
+                                        debugLog="true"> </autocomplete>
+                                    </div>
+                                </div> -->
+            
+                                <div fxLayout="row" fxLayoutAlign="center center" *ngIf="Mode=='ADD'">
+                                    <div fxFlex=48%> 
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput  [type]="showPwdText ? 'text' : 'password'" #password="ngModel" name="Password" required  [(ngModel)]="selectedDataGridItem.Password"
+                                                placeholder="Password" maxlength="100">
+            
+                                            <mat-error *ngIf="this.submitAttempt && password.hasError('required') && Mode=='ADD'">
+                                                    Password is required
+                                            </mat-error>
+                                        
+                                            <mat-icon matSuffix matTooltip="Show Password" class="app-icon-button" (click)="this.showPwdText = !this.showPwdText" *ngIf="!this.showPwdText">
+                                                visibility
+                                            </mat-icon>
+                                            <mat-icon  matSuffix matTooltip="Hide Password" class="app-icon-button" (click)="this.showPwdText = !this.showPwdText" *ngIf="this.showPwdText">
+                                                visibility_off
+                                            </mat-icon>
+                                                        
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=4%></div>
+                                    <div fxFlex=48%> 
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput  [type]="showPwdText ? 'text' : 'password'" #confirmPassword="ngModel" required name="confirmPassword"  [(ngModel)]="selectedDataGridItem.ConfirmPassword"
+                                                placeholder="Confirm Password" maxlength="100">
+            
+                                            <mat-error *ngIf="this.submitAttempt && confirmPassword.hasError('required') && Mode=='ADD'">
+                                                    Confirm Password is required
+                                            </mat-error>
+                                        
+                                            <mat-icon matSuffix matTooltip="Show Password" class="app-icon-button" (click)="this.showPwdText = !this.showPwdText" *ngIf="!this.showPwdText">
+                                                visibility
+                                            </mat-icon>
+                                            <mat-icon  matSuffix matTooltip="Hide Password" class="app-icon-button" (click)="this.showPwdText = !this.showPwdText" *ngIf="this.showPwdText">
+                                                visibility_off
+                                            </mat-icon>							                                          
+                                        </mat-form-field> 
+                                    </div>
+                                </div>
+            
+                                <div fxLayout="row" fxLayoutAlign="center center">
+                                    <div fxFlex=48%> 
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <mat-select #selectedApps="ngModel" name="selectedApps" [(ngModel)]="SelectedApps" 
+                                                multiple placeholder="Apps">
+                                            <mat-option *ngFor="let itm of AppsList" [value]="itm">
+                                                {{ itm.AppName }}
+                                            </mat-option>
+                                            </mat-select>                                            
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=4%></div>
+                                    <div fxFlex=48%> 
+                                        <mat-form-field class="fld-mt0-w100">
+                                                <mat-select #statusCode="ngModel" name="statusCode" [(ngModel)]="selectedDataGridItem.StatusCode" required
+                                                placeholder="Status">
+                                            <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                                                {{ itm.StatusMessage }}
+                                            </mat-option>
+                                            </mat-select>
+            
+                                            <mat-error *ngIf="this.submitAttempt && statusCode.hasError('required')">
+                                                Status is required
+                                            </mat-error>			                                          
+                                        </mat-form-field> 
+                                    </div>
+                                </div>
+
+                                <br>
+                                <br>
+                        </div>
+            
+                    </div>
+                </form>
+        </div>
+        
+        <div class="ColumnDivider" *ngIf="Mode=='EDIT' || Mode=='ADD'"></div>
+        
+        <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()" >
+
+        <div fxLayout="row">
+
+                <div fxLayout="column">
+                
+                    <div fxLayout="row" class="actionBarRow" >
+
+                        <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                            <label class="menuBarHeading">User List</label>
+                        </div>
+                        <div fxLayout="column" class="actionBarDataColumn">
+                        </div>
+                        <div fxLayout="column" class="actionBarSearchColumn">
+                           
+                        </div>
+                        <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                            <div fxLayout="row" fxLayoutGap="20px">
+                                <div class="tooltip" matTooltip="Add" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                                  *ngIf="this.sessionService.actionAllowed('ADD_USER')">
+                                    <button class="app-icon-button" (click)="addClick()">
+                                        <i class="material-icons">add_box</i>
+                                    </button>
+                                </div>
+                                <div class="tooltip" matTooltip="Edit" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                                  *ngIf="this.sessionService.actionAllowed('EDIT_USER')">
+                                    <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="editClick()">
+                                        <i class="material-icons">edit</i>
+                                    </button>
+                                </div>
+                                <div class="tooltip" matTooltip="Delete" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                                  *ngIf="this.sessionService.actionAllowed('DELETE_USER')">
+                                    <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="deleteClick()">
+                                        <i class="material-icons">delete</i>
+                                    </button>
+                                </div>
+                                <div class="tooltip" matTooltip="Refresh" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                    <button class="app-icon-button" (click)="RefreshClick()">
+                                        <i class="material-icons">refresh</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        
+                 <div fxLayout="row" class="SecondColumnData">
+                    <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single" [scrollable]="true" [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()" 
+                    [style.width]="this.sessionService.getScreenWidthInPx()"
+                    [(selection)]="selectedData" [paginator]="true" [rows]="sessionService.NoOfRowsPerPage" 
+                    [rowsPerPageOptions]="sessionService.RowsPerPageOptions">    
+                        <ng-template pTemplate="header" let-columns>
+                            <tr> 
+                                <th *ngFor="let col of columns"  [pSortableColumn]="col.field" [style.width]="col.width">
+                                    <span>{{col.header}}</span>
+                                    <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="caption">
+                            <div fxLayout="column" fxLayoutAlign="center end">
+                                <div class="flex">
+                                    <span class="p-input-icon-left ml-auto">
+                                        <span> <i class="pi pi-search"></i></span>
+                                        <input pInputText type="text"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Search here" />
+                                    </span>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                                    [style.word-wrap]="col.wrap">
+                                    {{rowData[col.field]}}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>  
+        </div>
+
+        </div>
+
+</div>

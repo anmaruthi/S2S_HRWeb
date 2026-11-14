@@ -1,0 +1,96 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()">
+        <div fxLayout="row">
+
+            <div fxLayout="column">
+
+                <div fxLayout="row" class="actionBarRow">
+
+                    <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center">
+                        <label class="menuBarHeading">Reorder Level</label>
+                    </div>
+
+                    <!-- <div fxLayout="column" class="actionBarSearchColumn">
+                        <mat-form-field>
+                            <input inputmode="search" (keyup)="onKeyUp()"
+                                (input)="dt.filterGlobal($event.target.value, 'contains')" matInput
+                                placeholder="Text Filter" class="searchBox">
+                        </mat-form-field>
+                    </div> -->
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+
+                    </div>
+                </div>
+
+                <div fxLayout="row" class="SecondColumnData">
+                    <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single" [scrollable]="true"
+                        [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+                        [style.width]="this.sessionService.getScreenWidthInPx()" [(selection)]="selectedData"
+                        [paginator]="true" [rows]="sessionService.NoOfRowsPerPage"
+                        [rowsPerPageOptions]="sessionService.RowsPerPageOptions">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+                                    <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="caption">
+                            <div fxLayout="column" fxFlex=100% fxLayoutAlign="end end">
+                                <div fxLayout="row" fxLayoutGap="20px">
+                                    <div fxLayout="row" fxFlex=50%>
+                                        <div fxLayout="row" fxLayoutGap="10px">
+                                            <div class="tooltip">
+                                                <i class="pi pi-search"></i>
+                                            </div>
+                                            <div class="flex">
+                                                <input pInputText type="text"
+                                                    (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                                    placeholder="Search here" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div fxFlex=15%></div>
+                                    <!-- <div class="tooltip" *ngIf="InwardRouterLink!=undefined"
+                                        matTooltip="Stock Inward Transaction"
+                                        [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                        <button class="app-icon-button" [routerLink]="InwardRouterLink">
+                                            <i class="material-icons">gamepad</i>
+                                        </button>
+                                    </div>
+                                    <div class="tooltip" *ngIf="OutwardRouterLink!=undefined"
+                                        matTooltip="Stock Outward Transaction"
+                                        [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                        <button class="app-icon-button" [routerLink]="OutwardRouterLink">
+                                            <i class="material-icons">zoom_out_map</i>
+                                        </button>
+                                    </div> -->
+                                    <div class="tooltip" matTooltip="Refresh"
+                                        [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                        <button class="app-icon-button" (click)="refreshClick()">
+                                            <i class="material-icons">refresh</i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                    {{rowData[col.field]}}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

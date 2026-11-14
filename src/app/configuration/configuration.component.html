@@ -1,0 +1,267 @@
+<div fxLayout="row" fxLayoutAlign="center center">
+    <div fxFlex=80%>
+        <br>
+        <div style="size:20px;color:blue;">Fixede Salary Fields</div>
+        <p-table #dt [columns]="SalaryFieldsInfo" [value]="SalaryFieldList" selectionMode="single"
+            [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth - 20)"
+            [(selection)]="SelectedSalaryField">
+            <ng-template pTemplate="caption" class="capsegment">
+                <form novalidate #SalaryFieldForm="ngForm" *ngIf="this.Mode1 == 'ADD' || this.Mode1 == 'EDIT'">
+                    <div fxFlex=20%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="text" maxlength="100" #FieldLableName="ngModel" name="FieldLableName"
+                                [(ngModel)]="SalaryFieldDetail.FieldLableName" placeholder="Field Lable Name" required>
+                            <mat-error *ngIf="this.submitAttempt1 && FieldLableName.hasError('required')">
+                                Field Lable Name is required
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div fxFlex="2%"></div>
+                    <div fxFlex=20%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="text" maxlength="100" #Percentage="ngModel" name="Percentage"
+                                [(ngModel)]="SalaryFieldDetail.Percentage" placeholder="Percentage">
+                        </mat-form-field>
+                    </div>
+                    <div fxFlex="2%"></div>
+                    <div fxFlex=15% fxLayoutAlign="start center">
+                        PF Applicable
+                        <input type="checkbox" [(ngModel)]="SalaryFieldDetail.IsPfApplicable" name="IsPfApplicable" />
+                    </div>
+                    <div fxFlex="2%"></div>
+                    <div fxFlex=20% fxLayoutAlign="start center">
+                        ESI Applicable
+                        <input type="checkbox" [(ngModel)]="SalaryFieldDetail.IsEsiApplicable" name="IsEsiApplicable" />
+                    </div>
+                    <div fxFlex=14%></div>
+                    <div fxLayout="row" fxLayoutGap="4%" fxLayoutAlign="end  end">
+                        <div class="tooltip" matTooltip="Save"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button"
+                                (click)="updateSalaryFieldDetails(SalaryFieldForm.valid)">
+                                <i class="material-icons logout">save</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Cancel"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button class="app-icon-button" (click)="cancelSalaryFieldForm()">
+                                <i class="material-icons logout">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th>
+                        <button class="app-icon-button" (click)=" addSalaryFieldclick()">
+                            <i class="material-icons" color="accent">add_box</i>
+                        </button>
+                    </th>
+                    <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                        {{col.header}}
+                    </th>
+                    <th></th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rwitem let-columns="columns">
+                <tr [pSelectableRow]="rwitem">
+                    <td>
+                        <button [disabled]="DisableEdit()" class="app-icon-button" (click)="editSalaryFieldclick()">
+                            <i class="material-icons">edit</i>
+                        </button>
+                    </td>
+                    <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                        [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                        {{rwitem[col.field]}}
+                    </td>
+                    <td>
+                        <button [disabled]="DisableEdit()" class="app-icon-button" (click)="deleteSalaryFieldDetail()">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <td colspan="10">
+                    No records found
+                </td>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+<br>
+<br>
+<div fxLayout="row" fxLayoutAlign="center center">
+    <div fxFlex=80%>
+        <br>
+        <div style="size:20px;color:blue;">Additional Salary Fields</div>
+        <p-table #dt [columns]="AdditionalFieldsInfo" [value]="AdditionalFieldList" selectionMode="single"
+            [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth - 20)"
+            [(selection)]="SelectedAdditionalField">
+            <ng-template pTemplate="caption" class="capsegment">
+                <form novalidate #AdditionalFieldForm="ngForm" *ngIf="this.Mode2 == 'ADD' || this.Mode2 == 'EDIT'">
+                    <div fxFlex=30%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="text" maxlength="100" #FieldLableName="ngModel" name="FieldLableName"
+                                [(ngModel)]="AdditionalFieldDetail.FieldLableName" placeholder="Field Lable Name"
+                                required>
+                            <mat-error *ngIf="this.submitAttempt2 && FieldLableName.hasError('required')">
+                                Field Lable Name is required
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div fxFlex="5%"></div>
+                    <div fxFlex=20% fxLayoutAlign="start center">
+                        ESI Applicable
+                        <input type="checkbox" [(ngModel)]="AdditionalFieldDetail.IsEsiApplicable"
+                            name="IsEsiApplicable" />
+                    </div>
+                    <div fxFlex=25%></div>
+                    <div fxFlex=40%></div>
+                    <div fxLayout="row" fxLayoutGap="4%" fxLayoutAlign="end  end">
+                        <div class="tooltip" matTooltip="Save"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button"
+                                (click)="updateAdditionalFieldDetails(AdditionalFieldForm.valid)">
+                                <i class="material-icons logout">save</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Cancel"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button class="app-icon-button" (click)="cancelAdditionalFieldForm()">
+                                <i class="material-icons logout">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th>
+                        <button class="app-icon-button" (click)=" addAdditionalFieldclick()">
+                            <i class="material-icons" color="accent">add_box</i>
+                        </button>
+                    </th>
+                    <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                        {{col.header}}
+                    </th>
+                    <th></th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rwitem let-columns="columns">
+                <tr [pSelectableRow]="rwitem">
+                    <td>
+                        <button [disabled]="DisableEdit1()" class="app-icon-button"
+                            (click)="editAdditionalFieldclick()">
+                            <i class="material-icons">edit</i>
+                        </button>
+                    </td>
+                    <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                        [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                        {{rwitem[col.field]}}
+                    </td>
+                    <td>
+                        <button [disabled]="DisableEdit1()" class="app-icon-button"
+                            (click)="deleteAddditionalFieldDetail()">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <td colspan="10">
+                    No records found
+                </td>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+<br>
+<br>
+<div fxLayout="row" fxLayoutAlign="center center">
+    <div fxFlex=80%>
+        <br>
+        <div style="size:20px;color:blue;">Deduction Salary Fields</div>
+        <p-table #dt [columns]="DeductionFieldsInfo" [value]="DeductionFieldList" selectionMode="single"
+            [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth - 20)"
+            [(selection)]="SelectedDeductionField">
+            <ng-template pTemplate="caption" class="capsegment">
+                <form novalidate #DeductionFieldForm="ngForm" *ngIf="this.Mode3 == 'ADD' || this.Mode3 == 'EDIT'">
+                    <div fxFlex=30%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="text" maxlength="100" #FieldLableName="ngModel" name="FieldLableName"
+                                [(ngModel)]="DeductionFieldDetail.FieldLableName" placeholder="Field Lable Name"
+                                required>
+                            <mat-error *ngIf="this.submitAttempt3 && FieldLableName.hasError('required')">
+                                Field Lable Name is required
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div fxFlex=40%></div>
+                    <div fxFlex=40%></div>
+                    <div fxLayout="row" fxLayoutGap="4%" fxLayoutAlign="end  end">
+                        <div class="tooltip" matTooltip="Save"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button"
+                                (click)="updateDeductionFieldDetails(DeductionFieldForm.valid)">
+                                <i class="material-icons logout">save</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Cancel"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button class="app-icon-button" (click)="cancelDeductionFieldForm()">
+                                <i class="material-icons logout">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th>
+                        <button class="app-icon-button" (click)=" addDeductionFieldclick()">
+                            <i class="material-icons" color="accent">add_box</i>
+                        </button>
+                    </th>
+                    <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                        {{col.header}}
+                    </th>
+                    <th></th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rwitem let-columns="columns">
+                <tr [pSelectableRow]="rwitem">
+                    <td>
+                        <button [disabled]="DisableEdit3()" class="app-icon-button" (click)="editDeductionFieldclick()">
+                            <i class="material-icons">edit</i>
+                        </button>
+                    </td>
+                    <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                        [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                        {{rwitem[col.field]}}
+                    </td>
+                    <td>
+                        <button [disabled]="DisableEdit3()" class="app-icon-button"
+                            (click)="deleteDeductionFieldDetail()">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <td colspan="10">
+                    No records found
+                </td>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

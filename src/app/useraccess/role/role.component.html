@@ -1,0 +1,270 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+
+        <div fxLayout="column" [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth)" *ngIf="Mode=='EDIT' || Mode=='ADD'" class="formColumn">
+
+            <form novalidate #dialogForm="ngForm">
+
+                <div fxLayout="row" class="actionBarRow">
+
+                    <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                        <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Role</label>
+                        <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Role</label>
+                    </div>
+  
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                        <div fxLayout="row" fxLayoutGap="20px">
+                            <div class="tooltip" matTooltip="Save" *ngIf="(this.sessionService.actionAllowed('ADD_ROLE') && this.Mode == 'ADD')
+                                || this.sessionService.actionAllowed('EDIT_ROLE')" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button type="submit" class="app-icon-button" (click)="SubmitClick(dialogForm.valid)">
+                                    <i class="material-icons logout">save</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="cancelClick()">
+                                    <i class="material-icons logout">cancel</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div fxLayout="row" class="FirstColumnData" [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+                        
+                    <div fxLayout="column" fxFlex=100%> 
+                        <br>
+                        <div fxLayout="row" fxLayoutAlign="center center">    
+                            <div fxFlex=48%>       
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="text" #roleCode="ngModel" name="roleCode" maxlength="10" [(ngModel)]="selectedDataGridItem.RoleCode"
+                                        placeholder="Role Code" required />
+                                        <mat-error *ngIf="this.submitAttempt && roleCode.hasError('required')">
+                                            Role Code is required
+                                        </mat-error>                       
+                                </mat-form-field>
+                            </div>
+                            <div fxFlex=4%></div>
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="text" #roleName="ngModel" name="roleName"  maxlength="50" [(ngModel)]="selectedDataGridItem.RoleName"
+                                        placeholder="Role Name" required />
+                                        <mat-error *ngIf="this.submitAttempt && roleName.hasError('required')">
+                                            Role Name is required
+                                        </mat-error>                  
+                                </mat-form-field>        
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <mat-select #reportingRoleID="ngModel" name="reportingRoleID"  [(ngModel)]="selectedDataGridItem.ReportingRoleID" required
+                                            placeholder="Reporting Role">
+                                        <mat-option *ngFor="let itm of ReportingRoleList" [value]="itm.RoleID">
+                                            {{ itm.RoleName }}
+                                        </mat-option>
+                                    </mat-select>
+
+                                    <mat-error *ngIf="this.submitAttempt && reportingRoleID.hasError('required')">
+                                        Reporting Role is required
+                                    </mat-error>                       
+                                </mat-form-field>
+                            </div>
+                            <div fxFlex=4%></div>                          
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <input matInput type="number" #hierarchyID="ngModel" name="hierarchyID" [(ngModel)]="selectedDataGridItem.HierarchyID"
+                                        placeholder="Hierarchy ID" required [minValue]="this.commonService.MIN_HIERARCHY" [maxValue]="this.commonService.MAX_HIERARCHY"
+                                        [pattern]="this.commonService.PATTERN_HIERARCHY">
+
+                                    <mat-error *ngIf="this.submitAttempt && hierarchyID.hasError('required')">
+                                        Hierarchy ID is required
+                                    </mat-error>
+                                    <mat-error *ngIf="this.submitAttempt && hierarchyID.hasError('minValue')
+                                        && !hierarchyID.hasError('required') && !hierarchyID.hasError('pattern')">
+                                        Minimum {{this.commonService.MIN_HIERARCHY}} is required
+                                    </mat-error> 
+                                    <mat-error *ngIf="this.submitAttempt && hierarchyID.hasError('maxValue') && !hierarchyID.hasError('pattern')">
+                                        Maximum allowed is {{this.commonService.MAX_HIERARCHY}}
+                                    </mat-error> 
+                                    <mat-error *ngIf="this.submitAttempt && hierarchyID.hasError('pattern')">
+                                        Invalid Hierarchy ID
+                                    </mat-error> 
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <div fxFlex=48%>
+                                <mat-form-field class="fld-mt0-w100">
+                                    <mat-select #statusCode="ngModel" name="statusCode"  [(ngModel)]="selectedDataGridItem.StatusCode" required
+                                            placeholder="Status">
+                                        <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                                            {{ itm.StatusMessage }}
+                                        </mat-option>
+                                    </mat-select>
+
+                                    <mat-error *ngIf="this.submitAttempt && statusCode.hasError('required')">
+                                        Status is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div fxFlex=52%></div>
+                        </div>
+
+                        <br>
+                        <br>
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <div fxFlex=95%>
+                                <p-pickList [source]="AvailableMenus" [target]="TaggedMenus" sourceHeader="Available Menu" targetHeader="Assigned Menu"
+                                    [dragdrop]="true" (onMoveToSource)="onMoveToSource()" (onMoveToTarget)="onMoveToTarget()" dragdropScope="actions">
+                                    <ng-template let-menu pTemplate="item">
+                                        <div fxLayout="row" *ngIf="!menu.IsSelected">
+                                            <div fxLayout="column">
+                                                {{menu.MenuName}}
+                                            </div>
+                                        </div>
+        
+                                        <div fxLayout="row" *ngIf="menu.IsSelected">
+                                            <div class="roleLabeInputStyle" fxLayout="column" fxFlex="30%">
+                                                {{menu.MenuName}}  
+                                            </div>
+                                            <div fxLayout="column" fxFlex="5%"></div>
+                                            <div fxLayout="column" fxFlex="65%">
+                                                <div fxLayout="row">
+                                                    <mat-form-field floatLabel="always" class="fld-mt0-w100">
+                                                        <mat-select multiple  name="Function-{{menu.MenuID}}" placeholder="Function" [(ngModel)]="menu.AssignedFunction">
+                                                            <mat-option *ngFor="let itm of menu.AvailableFunction" [value]="itm">
+                                                                {{ itm.FunctionName }}
+                                                            </mat-option>
+                                                        </mat-select>                
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-pickList>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <div fxFlex=95%>
+                                <p-pickList [source]="AvailableReports" [target]="TaggedReports" sourceHeader="Available Reports" targetHeader="Assigned Reports"
+                                    [dragdrop]="true" (onMoveToSource)="onMoveToSourceRpt()" (onMoveToTarget)="onMoveToTargetRpt()" dragdropScope="actions">
+                                    <ng-template let-rpt pTemplate="item">
+                                        <div fxLayout="row" *ngIf="!rpt.IsSelected">
+                                            <div fxLayout="column">
+                                                {{rpt.ReportName}}
+                                            </div>
+                                        </div>
+        
+                                        <div fxLayout="row" *ngIf="rpt.IsSelected">
+                                            <div class="roleLabeInputStyle" fxLayout="column" fxFlex="30%">
+                                                {{rpt.ReportName}}  
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-pickList>
+                            </div>
+                        </div>
+
+                        <br>   
+                        <br>       
+                        <br>   
+                        <br>                 
+                    </div>
+
+                </div>
+        </form>
+    </div>
+
+    <div class="ColumnDivider" *ngIf="Mode=='EDIT' || Mode=='ADD'"></div>
+        
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()">
+
+        <div fxLayout="row">
+
+            <div fxLayout="column">
+                
+                <div fxLayout="row" class="actionBarRow" >
+
+                    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                            <label class="menuBarHeading">Role</label>
+                    </div>
+                    <div fxLayout="column" class="actionBarDataColumn">
+                        </div>
+                    <div fxLayout="column" class="actionBarSearchColumn">
+                            
+                    </div>
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                            <div fxLayout="row" fxLayoutGap="20px">
+                                <div class="tooltip" matTooltip="Add" *ngIf="this.sessionService.actionAllowed('ADD_ROLE')" 
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                    <button class="app-icon-button" (click)="addClick()">
+                                        <i class="material-icons">add_box</i>
+                                    </button>
+                                </div>
+                                <div class="tooltip" matTooltip="Edit" *ngIf="this.sessionService.actionAllowed('EDIT_ROLE')" 
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                    <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="editClick()">
+                                        <i class="material-icons">edit</i>
+                                    </button>
+                                </div>
+                                <div class="tooltip" matTooltip="Delete" *ngIf="this.sessionService.actionAllowed('DELETE_ROLE')" 
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                    <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="deleteClick()">
+                                        <i class="material-icons">delete</i>
+                                    </button>
+                                </div>
+                                <div class="tooltip" matTooltip="Refresh" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                    <button class="app-icon-button" (click)="refreshClick()">
+                                      <i class="material-icons">refresh</i>
+                                    </button>
+                                </div>    
+                            </div>
+                    </div>
+                </div>
+                        
+                <div fxLayout="row" class="SecondColumnData">
+                        <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single" [scrollable]="true" [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()" 
+                        [style.width]="this.sessionService.getScreenWidthInPx()"
+                        [(selection)]="selectedData" [paginator]="true" [rows]="sessionService.NoOfRowsPerPage" 
+                        [rowsPerPageOptions]="sessionService.RowsPerPageOptions">    
+                            <ng-template pTemplate="header" let-columns>
+                                <tr> 
+                                    <th *ngFor="let col of columns"  [pSortableColumn]="col.field" [style.width]="col.width">
+                                        {{col.header}}
+                                        <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="caption">
+                                <div fxLayout="column" fxLayoutAlign="center end">
+                                    <div class="flex">
+                                        <span class="p-input-icon-left ml-auto">
+                                            <span> <i class="pi pi-search"></i></span>
+                                            <input pInputText type="text"
+                                                (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                                placeholder="Search here" />
+                                        </span>
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-columns="columns">
+                                <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                    <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                                        [style.word-wrap]="col.wrap">
+                                        {{rowData[col.field]}}
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                No records found
+                            </ng-template>
+                        </p-table>
+                    </div>
+            </div>  
+        </div>
+
+    </div>
+
+</div>

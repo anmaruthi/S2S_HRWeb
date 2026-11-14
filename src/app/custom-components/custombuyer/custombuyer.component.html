@@ -1,0 +1,255 @@
+﻿<div>
+  <form novalidate #dialogForm="ngForm">
+
+    <div fxLayout="row" class="actionBarRow">
+        <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center">
+            <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Buyer</label>
+            <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Buyer</label>
+        </div>
+
+        <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+            <div fxLayout="row" fxLayoutGap="20px">
+                <div class="tooltip" matTooltip="Save" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                  *ngIf="(this.sessionService.actionAllowed('ADD_BUYER') && this.Mode == 'ADD') || this.sessionService.actionAllowed('EDIT_BUYER')">
+                    <button type="submit" class="app-icon-button" (click)="SubmitClick(dialogForm.valid)">
+                    <i class="material-icons logout">save</i>
+                    </button>
+                </div>
+                <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                    <button class="app-icon-button" (click)="cancelClick()">
+                        <i class="material-icons logout">cancel</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div fxLayout="row" class="FirstColumnData" [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+        
+        <div fxLayout="column" fxFlex=100%>
+            <br>
+                <div fxLayout="row" fxLayoutAlign="center center">
+                    <div fxFlex=100%> 
+                        <mat-form-field class="fld-mt0-w100">
+                          <input matInput type="text" maxlength="100" #BuyerName="ngModel" name="BuyerName" [(ngModel)]="selectedBuyerItem.BuyerName"
+                          placeholder="Buyer Name" required>
+                          <mat-error *ngIf="this.submitAttempt && BuyerName.hasError('required')">
+                            Buyer Name is required
+                          </mat-error>                   
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="center center">
+                  <div fxFlex=48%>
+                    <mat-checkbox  #alsoAgent1="ngModel" name="alsoAgent1" [(ngModel)]="alsoAgent" (change)="onAgentCheckbox()">
+                      Buyer also an Agent
+                    </mat-checkbox>                              
+                  </div>
+                  <div fxFlex=4%></div>
+                  <div fxFlex=48%> 
+                    <mat-form-field class="fld-mt0-w100" *ngIf="alsoAgent != true">
+                      <mat-select required #agentName="ngModel" name="agentName"
+                        [(ngModel)]="selectedBuyerItem.AgentID" placeholder="Agent Name">
+                        <mat-option *ngFor="let itm of agentList" [value]="itm.AgentID">
+                          {{ itm.AgentName }}
+                        </mat-option>
+                      </mat-select>
+                      <mat-error *ngIf="this.submitAttempt && agentName.hasError('required')">
+                        Agent Name is required
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="fld-mt0-w100" *ngIf="alsoAgent == true">
+                      <input matInput type="text" #agentName1="ngModel" name="agentName1" [(ngModel)]="selectedBuyerItem.BuyerName"
+                      placeholder="Agent Name" readonly>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="center center">
+                  <div fxFlex=100%> 
+                    <mat-form-field class="fld-mt0-w100">
+                      <input matInput type="text" maxlength="200" #SPOC="ngModel" name="SPOC" [(ngModel)]="selectedBuyerItem.SPOC"
+                      placeholder="SPOC" required>
+                      <mat-error *ngIf="this.submitAttempt && SPOC.hasError('required')">
+                           SPOC is required
+                      </mat-error>              
+                    </mat-form-field> 
+                  </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="center center">
+                    <div fxFlex=48%> 
+                      <mat-form-field class="fld-mt0-w100">
+                        <input matInput type="text" minlength="10" maxlength="15" #MobileNumber="ngModel" name="MobileNumber"
+                          [(ngModel)]="selectedBuyerItem.MobileNumber" [pattern]="this.commonService.PATTERN_MOBILE"
+                          placeholder="Mobile Number" required>
+                        <mat-error *ngIf="this.submitAttempt && MobileNumber.hasError('required')">
+                          Mobile is required
+                        </mat-error>
+                        <mat-error *ngIf="this.submitAttempt && MobileNumber.hasError('minlength')">
+                          Invalid Mobile
+                        </mat-error> 
+                        <mat-error *ngIf="this.submitAttempt && MobileNumber.hasError('pattern')">
+                          Invalid Mobile
+                        </mat-error>          
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex=4%></div>
+                    <div fxFlex=48%> 
+                        <mat-form-field class="fld-mt0-w100">
+                          <input matInput type="text" maxlength="100" #Email="ngModel" name="Email" [(ngModel)]="selectedBuyerItem.Email"
+                            [pattern]="this.commonService.PATTERN_EMAIL" placeholder="Email" required>
+                          <mat-error *ngIf="this.submitAttempt && Email.hasError('required')">
+                            Email is required
+                          </mat-error>
+                          <mat-error *ngIf="this.submitAttempt && Email.hasError('pattern')">
+                            Invalid Email
+                          </mat-error>                                     
+                        </mat-form-field> 
+                    </div>
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="center center">
+                    <div fxFlex=48%> 
+                        <mat-form-field class="fld-mt0-w100">
+                          <input matInput type="text" maxlength="200" #Address1="ngModel" name="Address1"
+                          [(ngModel)]="selectedBuyerItem.Address1"
+                          placeholder="Address 1" required>
+                          <mat-error *ngIf="this.submitAttempt && Address1.hasError('required')">
+                            Address1 is required
+                          </mat-error>         
+                        </mat-form-field>
+                    </div>
+                    <div fxFlex=4%></div>
+                    <div fxFlex=48%> 
+                        <mat-form-field class="fld-mt0-w100">
+                          <input matInput type="text" maxlength="200" #Address2="ngModel" name="Address2"
+                          [(ngModel)]="selectedBuyerItem.Address2"
+                          placeholder="Address 2">                                 
+                        </mat-form-field> 
+                    </div>
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="center center">
+                    <div fxFlex=48%> 
+                      <mat-form-field class="fld-mt0-w100">
+                        <mat-select required #CountryCode="ngModel" name="CountryCode"
+                          [(ngModel)]="selectedBuyerItem.CountryCode" placeholder="Country"
+                          (selectionChange)="onCountrySelect()">
+                          <mat-option *ngFor="let itm of CountryList" [value]="itm.CountryCode">
+                            {{ itm.CountryName }}
+                          </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="this.submitAttempt && CountryCode.hasError('required')">
+                           Country is required
+                        </mat-error>
+                      </mat-form-field>                            
+                    </div>
+                    <div fxFlex=4%></div>
+                    <div fxFlex=48%> 
+                      <mat-form-field class="fld-mt0-w100">
+                        <mat-select required #StateID="ngModel" name="StateID"
+                          [(ngModel)]="selectedBuyerItem.StateID" placeholder="State">
+                          <mat-option *ngFor="let itm of StateListFiltered" [value]="itm.StateID">
+                            {{ itm.StateName }}
+                          </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="this.submitAttempt && StateID.hasError('required')">
+                          State is required
+                        </mat-error>                      
+                      </mat-form-field> 
+                    </div>
+                </div>
+                
+                <div fxLayout="row" fxLayoutAlign="center center">
+                    <div fxFlex=48%> 
+                      <mat-form-field class="fld-mt0-w100">
+                        <input matInput type="text" maxlength="100" #City="ngModel" name="City"
+                          [(ngModel)]="selectedBuyerItem.City"
+                          placeholder="City" required  [pattern]="this.commonService.PATTERN_CITY">
+                        <mat-error *ngIf="this.submitAttempt && City.hasError('required')">
+                          City is required
+                        </mat-error>      
+                        <mat-error *ngIf="this.submitAttempt && City.hasError('pattern')">
+                          Invalid City
+                        </mat-error>                            
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex=4%></div>
+                    <div fxFlex=48%> 
+                      <mat-form-field class="fld-mt0-w100">
+                          <input matInput type="text" minlength="3" maxlength="15" #Pincode="ngModel" name="Pincode" [(ngModel)]="selectedBuyerItem.Pincode"
+                          [pattern]="this.commonService.PATTERN_PINCODE" placeholder="Pincode" required>
+                         <mat-error *ngIf="this.submitAttempt && Pincode.hasError('required')">
+                           Pincode is required
+                         </mat-error>
+                         <mat-error *ngIf="this.submitAttempt && Pincode.hasError('minlength')">
+                           Invalid Pincode
+                         </mat-error>
+                          <mat-error *ngIf="this.submitAttempt && Pincode.hasError('pattern')">
+                           Invalid Pincode
+                         </mat-error>              
+                      </mat-form-field> 
+                    </div>
+                </div>
+            
+                <div fxLayout="row" fxLayoutAlign="center center">
+                    <div fxFlex=48%> 
+                        <mat-form-field class="fld-mt0-w100">
+                          <input matInput type="text" #Lat="ngModel" name="Lat"
+                          [(ngModel)]="selectedBuyerItem.Lat"
+                          placeholder="Latitude" [pattern]="this.commonService.PATTERN_LAT">    
+                          <mat-error *ngIf="this.submitAttempt && Lat.hasError('pattern')">
+                             Invalid Latitude
+                          </mat-error>                                                          
+                        </mat-form-field>
+                    </div>
+                    <div fxFlex=4%></div>
+                    <div fxFlex=48%> 
+                        <mat-form-field class="fld-mt0-w100">
+                          <input matInput type="text" #Lng="ngModel" name="Lng"
+                          [(ngModel)]="selectedBuyerItem.Lng"
+                          placeholder="Longitude" [pattern]="this.commonService.PATTERN_LNG">    
+                          <mat-error *ngIf="this.submitAttempt && Lng.hasError('pattern')">
+                            Invalid Longitude
+                          </mat-error>                                      
+                        </mat-form-field> 
+                    </div>
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="center center">
+                    <div fxFlex=48%> 
+                      <mat-form-field class="fld-mt0-w100">
+                        <mat-select required #CurrencyCode="ngModel" name="CurrencyCode"
+                          [(ngModel)]="selectedBuyerItem.CurrencyCode" placeholder="Currency Code">
+                          <mat-option *ngFor="let itm of CountryList" [value]="itm.CurrencyCode">
+                            {{ itm.CurrencyCode }}
+                          </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="this.submitAttempt && CurrencyCode.hasError('required')">
+                            Currency Code is required
+                        </mat-error>                                                  
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex=4%></div>
+                    <div fxFlex=48%> 
+                      <mat-form-field class="fld-mt0-w100">
+                        <mat-select required #StatusCode="ngModel" name="StatusCode"
+                          [(ngModel)]="selectedBuyerItem.StatusCode" placeholder="Status">
+                          <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                            {{ itm.StatusMessage }}
+                          </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="this.submitAttempt && StatusCode.hasError('required')">
+                            Status is required
+                        </mat-error>                                         
+                     </mat-form-field> 
+                    </div>
+                </div>
+
+                <br>
+                <br>
+        </div>
+
+    </div>
+  </form>
+
+</div>

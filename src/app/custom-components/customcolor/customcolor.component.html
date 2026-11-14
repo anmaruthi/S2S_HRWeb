@@ -1,0 +1,63 @@
+<div>
+    <form novalidate #dialogForm="ngForm">
+            <div fxLayout="row" class="actionBarRow">
+
+                <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                    <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Color</label>
+                    <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Color</label>
+                </div>
+  
+                <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                    <div fxLayout="row" fxLayoutGap="20px">
+                        <div class="tooltip" matTooltip="Save" *ngIf="(this.sessionService.actionAllowed('ADD_COLOR') && this.Mode == 'ADD')
+                                || this.sessionService.actionAllowed('EDIT_COLOR')" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button" (click)="submitClick(dialogForm.valid)">
+                                <i class="material-icons logout">save</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button class="app-icon-button" (click)="cancelClick()">
+                                <i class="material-icons logout">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div fxLayout="row" class="FirstColumnData" [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+                      
+                <div fxLayout="column" fxFlex=100%>
+                    <br>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=60%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" maxlength="50" #ColorName="ngModel" name="ColorName"
+                                    [(ngModel)]="selectedDataGridItem.ColorName" placeholder="Color" required>
+                                <mat-error *ngIf="this.submitAttempt && ColorName.hasError('required')">
+                                    Color Name is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>       
+        
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=60%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <mat-select #StatusCode="ngModel" name="StatusCode" [(ngModel)]="selectedDataGridItem.StatusCode" required
+                                    placeholder="Status">
+                                    <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                                        {{ itm.StatusMessage }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="this.submitAttempt && StatusCode.hasError('required')">
+                                    Status is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>      
+                    </div>
+                    <br>
+                    <br>
+                </div>          
+            </div>
+        </form>
+</div>

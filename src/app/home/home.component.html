@@ -1,0 +1,122 @@
+﻿<div class="homeContainer">
+
+    <div fxLayout="row" id="headerContainer">
+    <div fxLayout="column" fxLayoutAlign="center center">
+        <div class="tooltip" matTooltip="SHOW TEXT LABEL" matTooltipPosition="above" [matTooltipDisabled]="this.sessionService.showMenuBar">
+            <button class="app-icon-button-home" (click)="toggleMenuBar('HTML')">
+                <i class="material-icons">menu</i>
+            </button>
+        </div>
+    </div>
+    <div fxLayout="column" fxFlex="20%" fxLayoutAlign="center start" >
+        <span class="SubHeadingText">MMX ERP</span>     
+    </div>
+    <div fxLayout="column" fxFlex="35%"  fxLayoutAlign="center center">
+        <div fxLayout="row" fxLayoutGap="20px">
+            <div fxLayout="column" class="SiteText">
+                Site Name
+            </div>
+            <div fxLayout="column">
+                <div class="whizbangselect">
+                    <select name="SiteID" [(ngModel)]="SelectedSiteID" required
+                            (change)="OnSiteChange()"
+                            shouldLabelFloat="false"
+                            color="accent">
+                        <option *ngFor="let itm of UserSiteInfo" [value]="itm.SiteID">
+                            {{ itm.SiteName }}
+                        </option>
+                    </select>                
+                </div>
+            </div>
+        </div>
+    </div>
+    <div fxLayout="column" fxFlex="25%"  class="welcome"  fxLayoutAlign="center center">
+        <div fxLayout="row">
+            Welcome, {{ this.sessionService.FullName}}
+        </div>
+    </div>
+    <div fxLayout="column" fxFlex="20%"  fxLayoutAlign="center end">
+        <div fxLayout="row" fxLayoutGap="20px" >
+                <div class="tooltip" matTooltip="Home" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                    <button class="app-icon-button-home" (click)="viewModules()">
+                        <i class="material-icons iconfocus">apps</i>
+                    </button>
+                </div>
+        
+                <div class="tooltip" matTooltip="Change Password" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                    <button class="app-icon-button-home" (click)="this.commonService.changePasswordClick()">
+                        <i class="material-icons">lock</i>
+                    </button>
+                </div>
+          
+                <div class="tooltip" matTooltip="Logout" [matTooltipPosition]="this.sessionService.ToolTipPosition" style="margin-right:15px">
+                    <button class="app-icon-button-home" (click)="this.commonService.logout()">
+                      <i class="material-icons">power_settings_new</i>
+                    </button>
+                </div>
+           
+        </div>
+    </div>
+    </div>
+  <div fxLayout="row" class="rootContainer">
+      <div fxLayout="column" [ngClass]="this.sessionService.showMenuBar ? 'sideNaveContainerExpanded' : 'sideNaveContainer'">
+          <div fxLayout="row">
+          </div>
+          <div fxLayout="row">
+              <div fxLayout="column" fxFlex="100%">
+                  <mat-nav-list style="padding:0px" >
+                      <div *ngFor="let menu of sessionService.GroupMenuList">
+                          <div>
+                              <a mat-list-item class="list" *ngIf="menu.MenuList && menu.MenuList.length>1" (click)="menuClick(menu)">
+                                  <div fxFlex=20%>
+                                      <mat-icon class="iconAlign" matListIcon matTooltipPosition="right" [matTooltipDisabled]="this.sessionService.showMenuBar" [matTooltip]="menu.DisplayName">
+                                          <i class="material-icons md-light" >{{menu.MenuList[0].IconName}}</i>
+                                      </mat-icon>
+                                  </div>
+                                  <div fxFlex=70% fxLayoutAlign="start">
+                                      <span [ngClass]="this.sessionService.showMenuBar ? 'leftMenuShowLabel' : 'leftMenuHideLabel'"> {{menu.DisplayName}} </span>
+                                  </div>
+                                  <div fxFlex=10%>
+                                      <mat-icon [ngClass]="this.sessionService.showMenuBar ? 'leftMenuShowLabel' : 'leftMenuHideLabel'" [@indicatorRotate]="menu.IsExpanded ? 'expanded': 'collapsed'">
+                                          <i class="material-icons md-light"> expand_more</i> 
+                                      </mat-icon>
+                                  </div>
+                              </a> 
+                          </div>
+                          <div *ngIf="menu.IsExpanded" [@menuToggle]>
+                              <a mat-list-item class="list" *ngFor="let subMenu of menu.MenuList"  routerLink="{{subMenu.RouterLink}}">                      
+                                  <div fxFlex=20%>
+
+                                  </div>
+                                  <div fxFlex=70% fxLayoutAlign="start" [ngClass]="this.sessionService.showMenuBar ? 'leftMenuShowLabel' : 'leftMenuHideLabel'">
+                                      <span> {{subMenu.DisplayName}}</span>
+                                  </div>
+                                  <div fxFlex=10%></div>                                                                    
+                              </a>
+                          </div>
+                          <div  *ngIf="menu.MenuList.length  == 1">
+                              <a mat-list-item  class="list" *ngFor="let subMenu of menu.MenuList" routerLink="{{subMenu.RouterLink}}">
+                                  <div fxFlex=20%>
+                                      <mat-icon mat-list-icon matTooltipPosition="right" class="iconAlign" [matTooltipDisabled]="this.sessionService.showMenuBar" [matTooltip]="subMenu.DisplayName">
+                                          <i class="material-icons md-light">{{subMenu.IconName}}</i>
+                                      </mat-icon>
+                                  </div>
+                                  <div fxFlex=70% fxLayoutAlign="start" [ngClass]="this.sessionService.showMenuBar ? 'leftMenuShowLabel' : 'leftMenuHideLabel'">
+                                      <span>{{subMenu.DisplayName}}</span>
+                                  </div>
+                                  <div fxFlex=10%></div>
+                              </a>
+                          </div>
+                      </div>
+                  </mat-nav-list>
+              </div>
+          </div>
+        
+      </div>
+
+      <div fxLayout="column" class="router-Container" id="routerContainer">
+          <router-outlet></router-outlet>
+      </div>
+    
+  </div>
+</div>

@@ -1,0 +1,135 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)" class="rpts">
+
+  <div fxLayout="column" fxFlex="100%" >
+    <div fxLayout="row" fxLayoutGap="10px">    
+
+      <div fxLayout="column" fxFlex="10%" fxLayoutAlign="center left">
+        <label class="menuBarHeading">Reports</label>
+      </div>
+
+      <div fxLayout="column" fxFlex="80%" fxLayoutAlign="center left">
+        <form novalidate #rptForm="ngForm">
+        <div fxLayout="row" fxLayoutGap="15px" fxLayoutWrap="wrap">
+
+          <div fxLayout="column" fxFlex="24%" fxLayoutAlign="center left">
+            <mat-form-field  class="fld-mt0-w100">
+              <mat-select placeholder="ReportName" #rptname="ngModel" name="rptname" 
+                  [(ngModel)]="this.SelectedReport" (selectionChange)="selectReport()">
+                <mat-option *ngFor="let rpt of ReportsList" [value]="rpt">
+                  {{ rpt.ReportName }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field> 
+          </div>
+
+            <div fxLayout="column" fxFlex="24%" fxLayoutAlign="start left"  *ngFor="let itm of parameterList"   >
+              <div *ngIf="itm.ParameterType=='DATE'">
+                  <div fxLayout="row">
+                    <customdate class="fld-mt0-w90" [placeholder]="itm.ParameterName" required="true" 
+                        #dtpick{{itm.ParameterId}}="ngModel" name="dtpick{{itm.ParameterId}}" 
+                        [(ngModel)]="itm.ParameterValue" [ReadOnlyControl]="false"
+                        [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true"
+                        [submitAttempt]="this.submitAttempt"> 
+                    </customdate>                
+                  </div>
+                  <!-- <div fxLayout="row" class="errorMsg">
+                      <mat-error *ngIf="submitAttempt && !itm.ParameterValue">
+                        Value is required
+                      </mat-error>
+                  </div> -->
+              </div>
+
+              <div *ngIf="itm.ParameterType=='CHECKBOX'">
+                  <div fxLayout="row">
+                    <div class="fld-mt5-w90">
+                      <mat-checkbox [(ngModel)]="itm.IsSelected">{{itm.ParameterName}} </mat-checkbox>                           
+                    </div>
+                  </div>
+              </div>
+
+              <div *ngIf="itm.ParameterType=='DROPDOWN-MULTISELECT'">   
+                <mat-form-field class="fld-mt0-w90">
+                    <mat-select #ddm{{itm.ParameterId}}="ngModel" name="ddm{{itm.ParameterId}}" 
+                        [(ngModel)]="itm.SelectedDataList" required
+                        [placeholder]="itm.ParameterName" multiple >
+                    <mat-option *ngFor="let lx of itm.MasterDataList" [value]="lx">
+                        {{ lx.MasterName }}
+                    </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="this.submitAttempt && this.hasError(rptForm,'ddm' + itm.ParameterId,'required')">
+                      {{itm.ParameterName}} is required
+                    </mat-error>                           
+                </mat-form-field>                  
+                  <!-- <div fxLayout="row" *ngIf="submitAttempt" class="errorMsg">
+                    <mat-error *ngIf="!itm.SelectedDataList || itm.SelectedDataList.length == 0">
+                      Value is required
+                    </mat-error>
+                  </div> -->
+              </div>
+
+              <div *ngIf="itm.ParameterType=='DROPDOWN'">
+                <mat-form-field class="fld-mt0-w90">
+                    <mat-select #dd{{itm.ParameterId}}="ngModel" name="dd{{itm.ParameterId}}" 
+                        [(ngModel)]="itm.SelectedDataListSingle" required
+                        [placeholder]="itm.ParameterName" >
+                    <mat-option *ngFor="let lx of itm.MasterDataList" [value]="lx">
+                        {{ lx.MasterName }}
+                    </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="this.submitAttempt && this.hasError(rptForm,'dd' + itm.ParameterId,'required')">
+                      {{itm.ParameterName}} is required
+                    </mat-error>                           
+                </mat-form-field>                           
+                  <!-- <div fxLayout="row" *ngIf="submitAttempt" class="errorMsg">
+                    <mat-error *ngIf="!itm.SelectedDataListSingle || itm.SelectedDataListSingle.length == 0">
+                      Value is required
+                    </mat-error>
+                  </div> -->
+              </div>  
+          </div>
+
+
+
+          <div fxLayout="column" fxFlex="10%" *ngIf="this.SelectedReport.ReportID != null" fxLayoutAlign="center left">
+              <div class="fld-mtb5-w100">
+                  <button type="button" color="primary" mat-raised-button (click)="GetReport()">Show Report</button>
+              </div>  
+          </div>
+
+          <!-- <div fxLayout="column" fxFlex="3%" *ngIf="this.SelectedReport.ReportID != null && this.SelectedReport.IsDownloadable == true" fxLayoutAlign="center left">
+              <div class="tooltip" matTooltip="Download" [matTooltipPosition]="ToolTipPosition">
+                  <div class="fld-mt5-w100">
+                    <button class="app-icon-button" (click)="DownloadClick(dt)" >
+                      <i class="material-icons">file_download</i>
+                    </button>
+                  </div>
+              </div>
+          </div> -->
+
+        </div>   
+        </form> 
+      </div>
+
+      <div fxLayout="column" fxFlex="10%" fxLayoutAlign="center left">
+        <div class="tooltip" matTooltip="Back" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.showReport">
+          <button class="app-icon-button" (click)="reportCloseClick()">
+            <i class="material-icons">arrow_back</i>
+          </button>
+        </div>
+      </div>
+
+    </div>  
+  </div>
+  
+</div>
+
+
+<div fxLayout="row" class="rpts">
+    <div fxLayout="column" fxFlex="100%"  fxLayoutAlign="center">
+      <div fxLayout="row"  *ngIf="this.showReport">
+        <iframe [height]="this.getIframHeight()" class="iframeClass" [src]="reportUrl"
+        [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)"></iframe>
+      </div>
+    </div>  
+</div>

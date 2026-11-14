@@ -1,0 +1,280 @@
+<style>
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+    }
+</style>
+
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()"
+        *ngIf="(Mode=='EDIT' || Mode=='ADD')" class="formColumn">
+
+        <form novalidate #dialogForm="ngForm">
+            <div fxLayout="row" class="actionBarRow  actionBarRowCustom">
+
+                <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                    <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Material </label>
+                    <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Material
+                    </label>
+                </div>
+
+                <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                    <div fxLayout="row" fxLayoutGap="20px">
+                        <div class="tooltip" matTooltip="Save"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition" *ngIf="(this.sessionService.actionAllowed('ADD_STOCKTRANSFER') || this.sessionService.actionAllowed('EDIT_STOCKTRANSFER') ) &&
+                             (this.Mode=='ADD'|| this.Mode=='EDIT') && selectedDataGridItem.StatusCode==900">
+                            <button type="submit" class="app-icon-button"
+                                (click)="SubmitClick(dialogForm.valid,'save')">
+                                <i class="material-icons logout">save</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Submit"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                            *ngIf="(this.sessionService.actionAllowed('ADD_STOCKTRANSFER') || this.sessionService.actionAllowed('EDIT_STOCKTRANSFER'))  && 
+                            (this.Mode=='ADD'|| this.Mode=='EDIT') && 
+                            ((this.selectedTab == 'OUTWARD' && selectedDataGridItem.StatusCode==900) || (this.selectedTab == 'INWARD' && selectedDataGridItem.StatusCode==940)) ">
+                            <button type="submit" class="app-icon-button iconImage"
+                                (click)="SubmitClick(dialogForm.valid,'submit')">
+                                <i class="material-icons">check_circle</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Approve"
+                            *ngIf="this.sessionService.actionAllowed('APPROVE_STOCKTRANSFER')  &&  this.Mode == 'EDIT'  && 
+                                ((this.selectedTab == 'OUTWARD' && selectedDataGridItem.StatusCode==910) || (this.selectedTab == 'INWARD' && selectedDataGridItem.StatusCode==950)) "
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button"
+                                (click)="SubmitClick(dialogForm.valid,'approve')">
+                                <i class="material-icons">thumb_up</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Reject"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                            *ngIf="this.sessionService.actionAllowed('APPROVE_STOCKTRANSFER')  &&  this.Mode == 'EDIT' && 
+                                ((this.selectedTab == 'OUTWARD' && selectedDataGridItem.StatusCode==910) || (this.selectedTab == 'INWARD' && selectedDataGridItem.StatusCode==950)) ">
+                            <button type="submit" class="app-icon-button"
+                                (click)="SubmitClick(dialogForm.valid,'reject')">
+                                <i class="material-icons">thumb_down</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Cancel"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button class="app-icon-button" (click)="cancelClick()">
+                                <i class="material-icons logout">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div fxLayout="row" class="FirstColumnData"
+                [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+
+                <div fxLayout="column" fxFlex=100%>
+                    <br>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <customdate class="fld-mt0-w60" placeholder="Transfer Date" required="false"
+                            [submitAttempt]="this.submitAttempt" #retfromDate="ngModel" name="retfromDate"
+                            [ReadOnlyControl]="this.selectedTab == 'INWARD' ? true : false"
+                            [(ngModel)]="this.selectedDataGridItem.FromDate" [allowFutureDate]="true"
+                            [allowCurrentDate]="true" [allowPastDate]="true">
+                        </customdate>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center" *ngIf="this.selectedTab == 'INWARD'">
+                        <customdate class="fld-mt0-w60" placeholder="Received Date" required="false"
+                            [submitAttempt]="this.submitAttempt" #rettodate="ngModel" name="rettodate"
+                            [(ngModel)]="this.selectedDataGridItem.ToDate" [allowFutureDate]="true"
+                            [allowCurrentDate]="true" [allowPastDate]="true">
+                        </customdate>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div class="fld-mt0-w60">
+                            <autocomplete placeholder="Material" required="true" [submitAttempt]="this.submitAttempt"
+                                [InputDataList]="this.ItemList" KeyID="ItemID" KeyDescription="ItemName"
+                                [ReadOnlyControl]="this.selectedTab == 'INWARD' ? true : false" #ItemID="ngModel"
+                                name="ItemID" [(ngModel)]="selectedDataGridItem.ItemID">
+                            </autocomplete>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div class="fld-mt0-w60">
+                            <autocomplete class="fld-mt0-w100" placeholder="Transfer From" required="true"
+                                [submitAttempt]="this.submitAttempt" [InputDataList]="this.SiteList" KeyID="SiteID"
+                                KeyDescription="SiteCode" #FromSite="ngModel" name="FromSite" [ReadOnlyControl]="true"
+                                [(ngModel)]="selectedDataGridItem.FromSiteID" (SelectionDone)="SelectFromSite($event)">
+                            </autocomplete>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div class="fld-mt0-w60">
+                            <autocomplete class="fld-mt0-w100" placeholder="Transfer To" required="true"
+                                [submitAttempt]="this.submitAttempt" [InputDataList]="this.SiteList" KeyID="SiteID"
+                                KeyDescription="SiteCode" #ToSite="ngModel" name="ToSite"
+                                [ReadOnlyControl]="this.selectedTab == 'INWARD' ? true : false"
+                                [(ngModel)]="selectedDataGridItem.ToSiteID" (SelectionDone)="SelectToSite($event)">
+                            </autocomplete>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <mat-form-field class="fld-mt0-w60">
+                            <input matInput type="number" #QuantityTransfer="ngModel" name="QuantityTransfer"
+                                [(ngModel)]="selectedDataGridItem.QuantityTransfer" placeholder="Transfer Quantity"
+                                required />
+                            <mat-error *ngIf="this.submitAttempt && QuantityTransfer.hasError('required')">
+                                Transfer Quantity is required
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center" *ngIf="this.selectedTab == 'INWARD'">
+                        <mat-form-field class="fld-mt0-w60">
+                            <input matInput type="number" #QuantityRecd="ngModel" name="QuantityRecd"  minValue=1
+                                [(ngModel)]="selectedDataGridItem.QuantityReceived" placeholder="Received Quantity"
+                                required />
+                            <mat-error *ngIf="this.submitAttempt && QuantityRecd.hasError('required')">
+                                Received Quantity is required
+                            </mat-error>
+                            <mat-error *ngIf="this.submitAttempt && QuantityRecd.hasError('minValue')">
+                                Received Quantity should not be 0
+                            </mat-error>                            
+                        </mat-form-field>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <mat-form-field class="fld-mt0-w60">
+                            <textarea matInput type="text" #fcomments="ngModel" name="fcomments"
+                                [(ngModel)]="selectedDataGridItem.FromRemarks" placeholder="From-Site Remarks"
+                                maxlength="200"></textarea>
+                        </mat-form-field>
+                    </div>
+                    <br>
+                    <br>
+                    <div fxLayout="row" fxLayoutAlign="center center" *ngIf="this.selectedTab == 'INWARD'">
+                        <mat-form-field class="fld-mt0-w60">
+                            <textarea matInput type="text" #tcomments="ngModel" name="tcomments"
+                                [(ngModel)]="selectedDataGridItem.ToRemarks" placeholder="To-Site Remarks"
+                                maxlength="200"></textarea>
+                        </mat-form-field>
+                    </div>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()">
+        <div fxLayout="row">
+            <div fxLayout="column">
+                <div fxLayout="row" class="actionBarRow  actionBarRowCustom">
+
+                    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                        <label class="menuBarHeading">Site Transfer</label>
+                    </div>
+                    <div fxLayout="column" class="actionBarDataColumn">
+
+                        <div fxLayout="row" fxFlex=100% fxLayoutAlign="center center">
+                            <customdate class="fld-mt0-w100" placeholder="From Date" required="false"
+                                [submitAttempt]="this.submitAttempt" #fromDate1="ngModel" name="fromDate1"
+                                [(ngModel)]="this.searchRequest.FromDate" [allowFutureDate]="true"
+                                [allowCurrentDate]="true" [allowPastDate]="true">
+                            </customdate>
+                            <div fxFlex=10%>
+                            </div>
+                            <customdate class="fld-mt0-w100" placeholder="To Date" [submitAttempt]="this.submitAttempt"
+                                #toDate1="ngModel" name="toDate1" [(ngModel)]="this.searchRequest.ToDate"
+                                [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true">
+                            </customdate>
+                            <div fxFlex=10%></div>
+                        </div>
+
+                    </div>
+
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end"></div>
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                        <div fxLayout="row" fxLayoutGap="20px">
+                            <div class="tooltip" matTooltip="Add"
+                                *ngIf="this.sessionService.actionAllowed('ADD_STOCKTRANSFER')&& this.selectedTab=='OUTWARD'"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="addClick()">
+                                    <i class="material-icons">add_box</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Edit"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                                *ngIf="this.sessionService.actionAllowed('EDIT_STOCKTRANSFER')">
+                                <button class="app-icon-button" [disabled]="!isRowSelected()" (click)=" editClick()">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Refresh"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="refreshClick()">
+                                    <i class="material-icons">refresh</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div fxLayout="row" class="SecondColumnData">
+                    <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single"
+                        [style.width]="this.sessionService.getScreenWidthInPx()" [(selection)]="selectedData"
+                        [paginator]="true" [rows]="sessionService.NoOfRowsPerPage">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="caption">
+                            <div fxLayout="column" fxFlex=50% fxLayoutAlign="center start">
+                                <div *ngIf="(this.commonService.getLength(this.TabViewList)>1)">
+                                    <mat-tab-group (selectedTabChange)="onSelectTab($event)">
+                                        <mat-tab *ngFor="let itm of TabViewList" [label]="itm.TabTitle">
+                                        </mat-tab>
+                                    </mat-tab-group>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxFlex=50% fxLayoutAlign="center start">
+
+                            </div>
+                            <div fxLayout="column" fxFlex=50% fxLayoutAlign="center end">
+                                <div fxLayout="row" fxLayoutGap="10px">
+                                    <div class="tooltip">
+                                        <i class="pi pi-search"></i>
+                                    </div>
+                                    <div class="flex">
+                                        <input pInputText type="text"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Search here" />
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                    {{rowData[col.field]}}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+</div>

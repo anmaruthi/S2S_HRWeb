@@ -1,0 +1,429 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+
+    <div fxLayout="column" [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth)"
+        *ngIf="(Mode=='EDIT' || Mode=='ADD') && this.showReport != true" class="formColumn">
+
+        <form novalidate #dialogForm="ngForm">
+            <div fxLayout="row" class="actionBarRow">
+
+                <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                    <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Outward Transaction</label>
+                    <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Outward Transaction</label>
+                </div>
+
+                <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                    <div fxLayout="row" fxLayoutGap="20px">
+                        <div class="tooltip" matTooltip="Save"
+                            *ngIf="(this.sessionService.actionAllowed('ADD_STOCKOUTWARD') && this.Mode == 'ADD')"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button"
+                                (click)="SubmitClick(dialogForm.valid,'APPROVE')">
+                                <i class="material-icons logout">save</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Approve"
+                            *ngIf="(this.sessionService.actionAllowed('APPROVE_STOCKOUTWARD') && this.Mode=='EDIT' && selectedDataGridItem.StatusCode=='705')"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="button" class="app-icon-button"
+                                (click)="SubmitClick(dialogForm.valid,'APPROVE')" #approveButton>
+                                <i class="material-icons logout">thumb_up</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Reject"
+                            *ngIf="(this.sessionService.actionAllowed('APPROVE_STOCKOUTWARD')&& this.Mode=='EDIT' && selectedDataGridItem.StatusCode=='705')"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="button" class="app-icon-button"
+                                (click)="SubmitClick(dialogForm.valid,'REJECT')" #rejectButton>
+                                <i class="material-icons logout">thumb_down</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Issue-Slip/Delivery-Challan" [matTooltipPosition]="this.sessionService.ToolTipPosition"                           
+                            *ngIf="selectedDataGridItem.StatusCode==730 ">
+                            <button type="button" class="app-icon-button" (click)="printReport()">
+                                <i class="material-icons logout">assignment</i>
+                            </button>
+                        </div>                        
+                        <div class="tooltip" matTooltip="Cancel"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button class="app-icon-button" (click)="cancelClick()">
+                                <i class="material-icons logout">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div fxLayout="row" class="FirstColumnData"
+                [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+
+                <div fxLayout="column" fxFlex=100%>          
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxLayout="column" fxFlex=28%>
+                            <mat-radio-group aria-labelledby="example-radio-group-label" class="fld-mt15-w100"
+                                [(ngModel)]="selectedDataGridItem.IsInternal" #IsInt="ngModel" name="IsInt">
+                                <div fxLayout="column" fxFlex=50%  fxLayoutAlign="center start">
+                                    <mat-radio-button [value]=1> Internal</mat-radio-button>
+                                </div>
+                                <div fxLayout="column" fxFlex=50%  fxLayoutAlign="center start">
+                                    <mat-radio-button [value]=0> External</mat-radio-button>
+                                </div>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="column" fxFlex=2%></div>
+                        <div fxLayout="column" fxFlex=18%>
+                            <customdate class="fld-mt0-w100" placeholder="Outward Date" required="true"
+                                [submitAttempt]="this.submitAttempt" #outwardDate="ngModel"
+                                name="outwardDate" [(ngModel)]="selectedDataGridItem.OutwardDate"
+                                [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true">
+                            </customdate>  
+                        </div>
+                        <div fxLayout="column" fxFlex=4%></div>
+                        <div fxLayout="column" fxFlex=25%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" #Department="ngModel"
+                                    name="Department" [(ngModel)]="selectedDataGridItem.RequestedDepartmentName"
+                                    placeholder="Department Name" >
+                            </mat-form-field> 
+                        </div>
+                        <div fxLayout="column" fxFlex=4%></div>
+                        <div fxLayout="column" fxFlex=19%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" #UserNam="ngModel"
+                                    name="UserNam" [(ngModel)]="selectedDataGridItem.RequestedUserName"
+                                    placeholder="User Name" >
+                            </mat-form-field>                             
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxLayout="column" fxFlex=28%>
+                            <mat-radio-group aria-labelledby="example-radio-group-label" class="fld-mt15-w100"
+                                [(ngModel)]="selectedDataGridItem.IsReturnable" #IsRet="ngModel" name="IsRet">
+                                <div fxLayout="column" fxFlex=50%  fxLayoutAlign="center start">
+                                    <mat-radio-button [value]=1> Returnable</mat-radio-button>
+                                </div>
+                                <div fxLayout="column" fxFlex=50%  fxLayoutAlign="center start">
+                                    <mat-radio-button [value]=0> Non-Returnable</mat-radio-button>
+                                </div>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="column" fxFlex=2%></div>
+                        <div fxLayout="column" fxFlex=18%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" #VehicleNo="ngModel" name="VehicleNo"
+                                    [(ngModel)]="selectedDataGridItem.VehicleNo" placeholder="Container No / track No" />
+                            </mat-form-field>
+                        </div>
+                        <div fxLayout="column" fxFlex=4%></div>
+                        <div fxLayout="column" fxFlex=25%>
+                            <autocomplete class="fld-mt0-w100" placeholder="Customer" required="true" [submitAttempt]="this.submitAttempt"
+                                [InputDataList]="this.CustomerList" KeyID="CustomerID" KeyDescription="CustomerName"
+                                #CustomerID="ngModel" name="CustomerID" [(ngModel)]="selectedDataGridItem.CustomerID">
+                            </autocomplete>
+                        </div>
+                        <div fxLayout="column" fxFlex=4%></div>
+                        <div fxLayout="column" fxFlex=19%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <textarea matInput type="text" #comments="ngModel" name="comments"
+                                    [(ngModel)]="selectedDataGridItem.Comments" placeholder="Comments"
+                                    maxlength="200"></textarea>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="start start" style="padding-top: 10px;"
+                            *ngIf="this.sessionService.actionAllowed('ADD_STOCKOUTWARD')  && (this.Mode == 'ADD' ||  this.Mode == 'EDIT') ">
+                        <div fxLayout="column" fxFlex=94%>
+                            <p-table #newStockDT [columns]="newStockCols" [value]="selectedDataGridItemDetail"
+                                selectionMode="single" [(selection)]="selectedOWItem" 
+                                [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth - 20)">
+                            
+                                <ng-template pTemplate="caption" class="capsegment">
+                                    <form novalidate #dialogForm1="ngForm" *ngIf="this.Mode1 == 'ADD' || this.Mode1 == 'EDIT'">
+                                        <div fxLayout="row">
+                                            <div fxFlex="70%">
+                                                <autocomplete  class="fld-mt0-w100" placeholder="Material" required="true" [submitAttempt]="this.submitAttempt1"
+                                                    [InputDataList]="this.ItemList" KeyID="ItemID" KeyDescription="ItemName"
+                                                    #ItemID="ngModel" name="ItemID" [(ngModel)]="dialogItem.ItemID">
+                                                </autocomplete>
+                                            </div>
+                                            <div fxFlex="5%"></div>
+                                            <div fxFlex="10%">
+                                                <mat-form-field class="fld-mt0-w60">
+                                                    <input matInput type="number" #Quantity="ngModel" name="Quantity"
+                                                        [(ngModel)]="dialogItem.DeliveredQuantity" placeholder="Delivered Quantity"
+                                                        [minValue]="this.commonService.MIN_QUANTITY0"
+                                                        [maxValue]="this.commonService.MAX_QUANTITY"
+                                                        [pattern]="this.commonService.PATTERN_QUANTITY" required />
+                        
+                                                    <mat-error *ngIf="this.submitAttempt1 && Quantity.hasError('required')">
+                                                        Delivered Quantity is required
+                                                    </mat-error>
+                        
+                                                    <mat-error *ngIf="this.submitAttempt1 && Quantity.hasError('pattern')">
+                                                        Invalid Delivered Quantity
+                                                    </mat-error>
+                        
+                                                    <mat-error *ngIf="this.submitAttempt1 && Quantity.hasError('minValue')
+                                                        && !Quantity.hasError('required') && !Quantity.hasError('pattern')">
+                                                        Minimum {{this.commonService.MIN_QUANTITY0}} is required
+                                                    </mat-error>
+                                                    <mat-error
+                                                        *ngIf="this.submitAttempt1 && Quantity.hasError('maxValue') && !Quantity.hasError('pattern')">
+                                                        Maximum allowed is {{this.commonService.MAX_QUANTITY}}
+                                                    </mat-error>
+                        
+                                                </mat-form-field>                                                
+                                            </div>
+                                            <div fxFlex="5%"></div>
+                                            <div fxFlex="10%">
+                                                <div fxLayout="row" fxLayoutGap="4%" fxLayoutAlign="end  end">
+                                                  <div class="tooltip" matTooltip="Save" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                    <button type="submit" class="app-icon-button" (click)="updateMaterialDetails(dialogForm1.valid)">
+                                                      <i class="material-icons logout">save</i>
+                                                    </button>
+                                                  </div>
+                              
+                                                  <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                    <button class="app-icon-button" (click)="cancelMaterialForm()">
+                                                      <i class="material-icons logout">cancel</i>
+                                                    </button>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                        </div>
+                                    </form>
+                                </ng-template>
+
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                      <th>
+                                        <button class="app-icon-button" (click)="addMaterialclick()">
+                                          <i class="material-icons" color="accent">add_box</i>
+                                        </button>
+                                      </th>
+                                      <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                                        {{col.header}}
+                                      </th>
+                                      <th></th>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template pTemplate="body" let-rwitem let-columns="columns">
+                                    <tr [pSelectableRow]="rwitem">
+                                      <td>
+                                        <button [disabled]="DisableEdit1()" class="app-icon-button" (click)="editMaterialclick()">
+                                          <i class="material-icons">edit</i>
+                                        </button>
+                                      </td>
+                                      <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                                        [style.word-wrap]="col.wrap">
+                                        {{rwitem[col.field]}}
+                                      </td>
+                                      <td>
+                                        <button class="app-icon-button" [disabled]="DisableEdit1()" (click)="deleteMaterialDetail()">
+                                          <i class="material-icons">delete</i>
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  </ng-template>
+                        
+                                  <ng-template pTemplate="emptymessage">
+                                    <td colspan="11">
+                                      No records found
+                                    </td>
+                                  </ng-template>
+                        
+                            </p-table>
+                        </div>          
+                    </div>
+
+                    <!-- <div fxLayout="row" fxLayoutAlign="center center">
+                        <mat-form-field class="fld-mt0-w60">
+                            <input matInput type="number" #RequestedQuantity="ngModel" name="RequestedQuantity"
+                                [(ngModel)]="selectedDataGridItem.RequestedQuantity" placeholder="Requested Quantity"
+                                [minValue]="this.commonService.MIN_QUANTITY1"
+                                [maxValue]="this.commonService.MAX_QUANTITY"
+                                [pattern]="this.commonService.PATTERN_QUANTITY" required />
+
+                            <mat-error *ngIf="this.submitAttempt && RequestedQuantity.hasError('required')">
+                                Requested Quantity is required
+                            </mat-error>
+
+                            <mat-error *ngIf="this.submitAttempt && RequestedQuantity.hasError('pattern')">
+                                Invalid Requested Quantity
+                            </mat-error>
+
+                            <mat-error *ngIf="this.submitAttempt && RequestedQuantity.hasError('minValue')
+                                && !RequestedQuantity.hasError('required') && !RequestedQuantity.hasError('pattern')">
+                                Minimum {{this.commonService.MIN_QUANTITY1}} is required
+                            </mat-error>
+                            <mat-error
+                                *ngIf="this.submitAttempt && RequestedQuantity.hasError('maxValue') && !RequestedQuantity.hasError('pattern')">
+                                Maximum allowed is {{this.commonService.MAX_QUANTITY}}
+                            </mat-error>
+
+                        </mat-form-field>
+                    </div> -->
+
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="ColumnDivider" *ngIf="(Mode=='EDIT' || Mode=='ADD') && this.showReport != true"></div>
+
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()" *ngIf="this.showReport != true">
+
+
+        <div fxLayout="row">
+
+            <div fxLayout="column">
+
+                <div fxLayout="row" class="actionBarRow actionBarRowCustom">
+
+                    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                        <label class="menuBarHeading">Stock Outward Transaction</label>
+                    </div>
+                    <div fxLayout="column" class="actionBarDataColumn">
+
+                        <form novalidate #searchForm="ngForm" fxFlex=100%>
+
+                            <!-- <div fxLayout="row" fxFlex=100% fxLayoutAlign="center center">
+                                <div fxFlex=20%>
+                                    <div class="tooltip" matTooltip="Search"
+                                        [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                        <button type="submit" class="app-icon-button" (click)="loadDataGrid('SEARCH')">
+                                            <i class="material-icons">search</i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div fxFlex=10%></div>
+                            </div> -->
+
+                        </form>
+
+                    </div>
+                    <div fxLayout="column" class="actionBarSearchColumn">
+                        <!-- <mat-form-field>
+                            <input inputmode="search" (keyup)="onKeyUp()"
+                                (input)="dt.filterGlobal($event.target.value, 'contains')" matInput
+                                placeholder="Text Filter" class="searchBox">
+                        </mat-form-field> -->
+                    </div>
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                        <div fxLayout="row" fxLayoutGap="20px">
+                            <div class="tooltip" matTooltip="Add"
+                                *ngIf="this.sessionService.actionAllowed('ADD_STOCKOUTWARD')"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="addClick()">
+                                    <i class="material-icons">add_box</i>
+                                </button>
+                            </div>
+                            <!-- <div class="tooltip" matTooltip="Edit"
+                                *ngIf="this.sessionService.actionAllowed('EDIT_STOCKOUTWARD')"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="editClick()">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                            </div> -->
+                            <div class="tooltip" matTooltip="Refresh"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="refreshClick()">
+                                    <i class="material-icons">refresh</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div fxLayout="row" class="SecondColumnData">
+                    <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single" [scrollable]="true"
+                        [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+                        [style.width]="this.sessionService.getScreenWidthInPx()" [(selection)]="selectedData"
+                        [paginator]="true" [rows]="sessionService.NoOfRowsPerPage"
+                        [rowsPerPageOptions]="sessionService.RowsPerPageOptions">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="caption">
+                            <div fxLayout="row" fxFlex=50% fxLayoutAlign="center start">
+                                <customdate class="fld-mt0-w100" placeholder="From Date" required="false"
+                                    [submitAttempt]="this.searchSubmitAttempt" #fromDate1="ngModel" name="fromDate1"
+                                    [(ngModel)]="this.searchRequest.FromDate" [allowFutureDate]="true"
+                                    [allowCurrentDate]="true" [allowPastDate]="true">
+                                </customdate>
+                                <div fxFlex=5%></div>
+                                <customdate class="fld-mt0-w100" placeholder="To Date"
+                                    [submitAttempt]="this.searchSubmitAttempt" #toDate1="ngModel" name="toDate1"
+                                    [(ngModel)]="this.searchRequest.ToDate" [allowFutureDate]="true"
+                                    [allowCurrentDate]="true" [allowPastDate]="true">
+                                </customdate>
+                            </div>
+                            <div fxLayout="column" fxFlex=50% fxLayoutAlign="center end">
+                                <div fxLayout="row" fxLayoutGap="10px">
+                                    <div class="tooltip">
+                                        <i class="pi pi-search"></i>
+                                    </div>
+                                    <div class="flex">
+                                        <input pInputText type="text"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Search here" />
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                    {{rowData[col.field]}}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <div fxLayout="column" fxLayoutAlign="center" *ngIf="this.showReport == true" class="rpts"
+    [style.width]="this.sessionService.getScreenWidthInPx()">
+        <br>
+        <div fxLayout="row" class="actionBarRow">
+          <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+            <label class="menuBarHeading">Issue Slip / Delivery Challan</label>
+          </div>
+          <div fxLayout="column" class="actionBarDataColumn"></div>
+          <div fxLayout="column" class="actionBarSearchColumn"></div>
+          <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end" fxLayoutGap="10px">
+            <div fxLayout="row" fxLayoutGap="20px">
+              <div class="tooltip" matTooltip="Back" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                <button class="app-icon-button" (click)="reportCloseClick()">
+                  <i class="material-icons">arrow_back</i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row">
+            <iframe [height]="this.sessionService.getIframHeight(20)" class="iframeClass" [src]="reportUrl"
+              [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)"></iframe>
+        </div>
+      </div>
+
+</div>

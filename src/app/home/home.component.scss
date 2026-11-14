@@ -1,0 +1,171 @@
+﻿@import '../../custom-theme-color.scss';
+
+.homeContainer {
+  height: 100%;
+  width: 100%;
+  background: $primary;
+}
+.welcome{
+  color:#F8FDF8;
+  font-size: 16px;
+  padding:5px;
+}
+.text{
+  color:#F8FDF8;
+  padding:5px;
+}
+
+#headerContainer{
+  height:60px;
+  width:100%;
+  background: $primary;
+  float:left;
+  padding-right: 10px;
+  padding-left: 20px;
+}
+
+.logoContainer {
+  width: 245px;
+  background-color: $primary;
+}
+
+.logoLabelText {
+  font-size: 200%;
+  color: #4A3C8A;
+  font-weight:bold;
+}
+
+.logoSubHeandingText {
+  font-size: small;
+  color: #e80b84;
+  background: $primary;
+}
+
+.headerSubContainer {
+  width: 100%;
+  background: $primary;
+}
+
+.SubHeadingText {
+  font-size: medium;
+  color: $font-color;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin: 5px 10px;
+  background: $primary;
+}
+
+.SubHeading1Text {
+  font-size: 100%;
+  color: $font-color;
+  background: $primary;
+}
+.menuIconContainer {
+  width: 50px;
+  height: 65px;
+}
+
+.headerMenuContainer {
+  width: 100%;
+}
+
+.rootContainer {
+  height: calc(100% - 60px);
+  width: 100%;
+}
+
+.sideNaveContainerExpanded {
+  width: 270px;
+  background: linear-gradient(#f8f8f8, #f8f8f8);
+  transition: 0.5s;
+  margin: 0px;
+  text-align: center;
+  padding: 0px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sideNaveContainer {
+  width: 70px;
+  background: linear-gradient(#f8f8f8, #f8f8f8);
+  transition: 0.5s;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.router-Container {
+  width: 100%;
+  height: 100%;
+  background-color: #ededed;
+  overflow-y: hidden;
+  overflow-x: auto;
+  z-index: 1;
+}
+
+.app-icon-button:hover {
+  background-color: #FFFFFF;
+}
+
+.leftMenuShowLabel {
+  visibility: visible;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.leftMenuHideLabel {
+  visibility: hidden;
+}
+
+.leftMenuShowLabel:hover {
+  color: #54357b;
+}
+
+.dropdownColor{
+  color: green !important;
+}
+
+.homeLogo {
+  width: 150px;
+  height: 50px;
+  margin-left: 0px;
+  margin-top: 5px;
+
+}
+
+.homeMenu{
+  padding: 20px 10px 20px 20px;
+}
+
+.iconAlign {
+  margin-top: -4px !important;
+  color: #54357b;
+  text-align: left;
+}
+
+.material-icons.md-light :hover{
+  color: #54357b !important;
+  font-size: 20px;
+}
+
+
+.SiteText {
+  font-size: 14px;
+  color: white;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin: 5px 10px;
+  background: $primary;
+}
+
+.list:hover {
+  background-color: #FFFFFF;
+}
+
+.list {
+ height: 42px !important;
+}
+
+// .app-icon-button-home :hover{
+//   color: $accent;
+// }

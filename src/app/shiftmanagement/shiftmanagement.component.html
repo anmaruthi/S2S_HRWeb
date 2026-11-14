@@ -1,0 +1,316 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+    <!-- <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()"
+        *ngIf="(Mode=='EDIT' || Mode=='ADD')" class="formColumn">
+        <form novalidate #dialogForm="ngForm">
+            <div fxLayout="row" class="actionBarRow  actionBarRowCustom">
+                <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                    <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Shift Management </label>
+                    <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Shift Management</label>
+                </div>
+                <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                    <div fxLayout="row" fxLayoutGap="20px">
+                        <div class="tooltip" matTooltip="Save" *ngIf="((this.sessionService.actionAllowed('ADD_SHIFT MANAGEMENT') && this.Mode == 'ADD')  || 
+                            (this.sessionService.actionAllowed('EDIT_SHIFT MANAGEMENT') && this.Mode == 'EDIT'))"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button"
+                                (click)="SubmitClick(dialogForm.valid,'save')">
+                                <i class="material-icons logout">save</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Cancel"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button class="app-icon-button" (click)="cancelClick()">
+                                <i class="material-icons logout">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div> -->
+    <div class="ColumnDivider" *ngIf="Mode=='EDIT' || Mode=='ADD'"></div>
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()">
+        <div fxLayout="row">
+
+            <div fxLayout="column">
+
+                <div fxLayout="row" class="actionBarRow  actionBarRowCustom">
+
+                    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                        <label class="menuBarHeading">Shift Management</label>
+                    </div>
+                    <div fxLayout="column" class="actionBarDataColumn">
+
+                        <form novalidate #searchForm="ngForm" fxFlex=100%>
+
+                            <div fxLayout="row" fxFlex=100% fxLayoutAlign="center center">
+                                <div fxFlex=20%>
+                                </div>
+                                <div fxFlex=10%></div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                    <div fxLayout="column" class="actionBarSearchColumn">
+                    </div>
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                        <div fxLayout="row" fxLayoutGap="20px">
+                            <!-- <div class="tooltip" matTooltip="Add"
+                                *ngIf="this.sessionService.actionAllowed('ADD_SHIFT MANAGEMENT')"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="addClick()">
+                                    <i class="material-icons">add_box</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Edit"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                                *ngIf="this.sessionService.actionAllowed('EDIT_SHIFT MANAGEMENT')">
+                                <button class="app-icon-button" (click)="cancelClick()">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                            </div>
+                            
+                            <div class="tooltip" matTooltip="Delete"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                                *ngIf="this.sessionService.actionAllowed('DELETE_SHIFT MANAGEMENT')">
+                                <button class="app-icon-button" (click)="deleteClick()">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div> -->
+                            <div class="tooltip" matTooltip="Save"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <!-- <button type="submit" class="app-icon-button" (click)="submitClick()">
+                                    <i class="material-icons logout">save</i>
+                                </button> -->
+                            </div>
+                            <div class="tooltip" matTooltip="Refresh"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="refreshClick()">
+                                    <i class="material-icons">refresh</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div fxLayout="row" class="SecondColumnData">
+                    <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single"
+                        [style.width]="this.sessionService.getScreenWidthInPx()" [(selection)]="selectedData"
+                        [paginator]="true" [rows]="sessionService.NoOfRowsPerPage"
+                        [rowsPerPageOptions]="sessionService.RowsPerPageOptions">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+
+                                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="caption">
+                            <form novalidate #ShiftForm="ngForm">
+                                <div fxLayout="row" fxLayoutAlign="start center">
+                                    <div fxFlex=10%>
+                                        <autocomplete class="fld-mt0-w100" placeholder="Emp Group"
+                                            [InputDataList]="this.EmployeeGroupList" KeyID="GroupID"
+                                            KeyDescription="GroupName" #EmpGroup="ngModel" name="EmpGroup"
+                                            [(ngModel)]="SelectedEmployeeDetails.GroupID"
+                                            (SelectionDone)="SelectEmpGroup($event)">
+                                        </autocomplete>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=10%>
+                                        <autocomplete class="fld-mt0-w100" placeholder="Emp Category"
+                                            [InputDataList]="this.EmployeeCategoryList" KeyID="CategoryID"
+                                            KeyDescription="CategoryName" #Category="ngModel" name="Category"
+                                            [(ngModel)]="SelectedEmployeeDetails.CategoryID"
+                                            (SelectionDone)="SelectEmpCategory($event)">
+                                        </autocomplete>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=10%>
+                                        <autocomplete class="fld-mt0-w100" placeholder="Emp type"
+                                            [InputDataList]="this.EmployeeTypeList" KeyID="TypeID"
+                                            KeyDescription="TypeName" #Type="ngModel" name="Type"
+                                            [(ngModel)]="SelectedEmployeeDetails.TypeID"
+                                            (SelectionDone)="SelectEmpType($event)">
+                                        </autocomplete>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=15%>
+                                        <autocomplete class="fld-mt0-w100" placeholder="Emp Department"
+                                            [InputDataList]="this.EmployeeDepartmentList" KeyID="DepartmentID"
+                                            KeyDescription="DepartmentName" #Department="ngModel" name="Department"
+                                            [(ngModel)]="SelectedEmployeeDetails.DepartmentID"
+                                            (SelectionDone)="SelectEmpDepartment($event)">
+                                        </autocomplete>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=15%>
+                                        <autocomplete class="fld-mt0-w100" placeholder="Emp Designation"
+                                            [InputDataList]="this.EmployeeDesignationList" KeyID="DesignationID"
+                                            KeyDescription="DesignationName" #Designation="ngModel" name="Designation"
+                                            [(ngModel)]="SelectedEmployeeDetails.DesignationID"
+                                            (SelectionDone)="SelectEmpDesignation($event)">
+                                        </autocomplete>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=10%>
+                                        <customdate class="fld-mt0-w100" placeholder="From Date" required="false"
+                                            #fromDate1="ngModel" name="fromDate1"
+                                            [(ngModel)]="this.SelectedEmployeeDetails.FromDate" [allowFutureDate]="true"
+                                            [allowCurrentDate]="true" [allowPastDate]="true">
+                                        </customdate>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=10%>
+                                        <customdate class="fld-mt0-w100" placeholder="To Date" #toDate1="ngModel"
+                                            name="toDate1" [(ngModel)]="this.SelectedEmployeeDetails.ToDate"
+                                            [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true">
+                                        </customdate>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=6%>
+                                        <button mat-raised-button color="primary" [disabled]="DisableEdit()"
+                                            (click)="FilterList()">
+                                            List </button>
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center">
+                                    <div fxFlex=34%>
+                                        <mat-radio-group aria-labelledby="example-radio-group-label"
+                                            class="fld-mt15-w100"
+                                            [(ngModel)]="SelectedEmployeeDetails.RadioButtonFieldID"
+                                            (change)="radioChange()" #RadioButtonFieldID="ngModel"
+                                            name="RadioButtonFieldID">
+                                            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                                <mat-radio-button *ngFor="let  itm of RadioButtonList"
+                                                    [value]="itm.RadioButtonFieldID">
+                                                    {{ itm.RadioButtonField }}
+                                                </mat-radio-button>
+                                            </div>
+                                        </mat-radio-group>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=5%>
+                                        <autocomplete placeholder="Shift" [InputDataList]="this.ShiftList"
+                                            KeyID="ShiftID" KeyDescription="Shift" #ShiftID="ngModel" name="ShiftID"
+                                            [(ngModel)]="SelectedEmployeeDetails.ShiftID"
+                                            (SelectionDone)="SelectShiftAll($event)">
+                                        </autocomplete>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=8%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" #InTime="ngModel" name="InTime"
+                                                [(ngModel)]="SelectedShiftAll.InTime" placeholder="In Time" />
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=8%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" #OutTime="ngModel" name="OutTime"
+                                                [(ngModel)]="SelectedShiftAll.OutTime" placeholder="Out Time" />
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=5%>
+                                        <!-- <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" #WeekOffDay="ngModel" name="WeekOffDay"
+                                                [(ngModel)]="SelectedShiftAll.WeekOffDay" placeholder="Week Off Day" />
+                                        </mat-form-field> -->
+                                        <autocomplete placeholder="Wf Day" [InputDataList]="this.DayList" KeyID="DayID"
+                                            KeyDescription="Day" #ShiftID="ngModel" name="WeekOffDay"
+                                            [(ngModel)]="SelectedEmployeeDetails.WeekOffDay"
+                                            (SelectionDone)="SelectedDateInDay($event)">
+                                        </autocomplete>
+
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=10%>
+                                        <customdate class="fld-mt0-w100" placeholder="Wf Date" required="false"
+                                            #WeekOffDate="ngModel" name="WeekOffDate"
+                                            [(ngModel)]="this.SelectedEmployeeDetails.WeekOffDate"
+                                            [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true">
+                                        </customdate>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=4%> <button mat-raised-button color="primary"
+                                            [disabled]="DisableEdit1()"
+                                            (click)="ApplyShift(SelectedEmployeeDetails.ShiftID)">
+                                            Apply </button></div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=4%>
+                                        <button mat-raised-button color="primary" (click)="ClearData()">
+                                            Clear </button>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=6% class="tooltip" matTooltip="Submit">
+                                        <button mat-raised-button color="primary"
+                                            (click)="submitClick(ShiftForm.valid,'SAVE')">
+                                            Submit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+
+                            <!-- <mat-checkbox #aChk{{rowIndex}}="ngModel" name="aChk{{rowIndex}}"
+                                [(ngModel)]="item.SelectedEmployeeDetails" (change)="onSelectItem()"></mat-checkbox> -->
+                            <tr [pSelectableRow]="rowData">
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                    <span *ngIf="col.field == 'Shift'">
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <mat-select [(ngModel)]="rowData.ShiftID" placeholder="Shift"
+                                                #ShiftID="ngModel" name="ShiftID"
+                                                (selectionChange)="SelectShift(rowData.ShiftID)">
+                                                <mat-option *ngFor="let itm of ShiftList" [value]="itm.ShiftID">
+                                                    {{ itm.Shift }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </span>
+                                    <span *ngIf="col.field == 'InTime'&& this.SelectedShift != null">
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" #InTime="ngModel" name="InTime"
+                                                [(ngModel)]="rowData.InTime" placeholder="In Time" required />
+                                            <mat-error *ngIf="this.submitAttempt && InTime .hasError('required')">
+                                                is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </span>
+                                    <span *ngIf="col.field == 'OutTime'&& this.SelectedShift != null ">
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" #OutTime="ngModel" name="OutTime"
+                                                [(ngModel)]="rowData.OutTime" placeholder="Out Time" />
+                                        </mat-form-field>
+                                    </span>
+                                    <span *ngIf="col.field == 'MatCheck'">
+                                        <mat-checkbox #aChk{{rowIndex}}="ngModel" name="aChk{{rowIndex}}"
+                                            [(ngModel)]="rowData.IsSelected">
+                                        </mat-checkbox>
+                                    </span>
+                                    <span *ngIf="col.field == 'EmpCode'">
+                                        {{rowData[col.field]}}
+                                    </span>
+                                    <span *ngIf="col.field == 'EmpName'">
+                                        {{rowData[col.field]}}
+                                    </span>
+                                    <span *ngIf="col.field == 'DepartmentName'">
+                                        {{rowData[col.field]}}
+                                    </span>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

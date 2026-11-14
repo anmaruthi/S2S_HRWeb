@@ -1,0 +1,45 @@
+﻿.notes
+{
+  text-align:justify;
+}
+
+
+.dialogContainer
+{
+  overflow-y: auto;
+}
+
+.cardClass
+{
+  padding-left: 0em;
+  padding-top: 0em;
+  padding-bottom: 0em;
+}
+
+.gstPanelClass
+{
+  border: 1px solid;
+  height: 40px;
+  border-color: red;
+  padding-top: 10px;
+  padding-left: 5px;
+}
+
+.highlightPanel
+{
+  border: 1px solid;
+  height: 50px;
+  border-color: darkgreen;
+  padding-top: 10px;
+  padding-left: 5px;
+}
+
+.poLay {
+  background-color: white;
+}
+
+.note2usr 
+{
+  border: 1px solid red;
+  background-color: yellow;
+}

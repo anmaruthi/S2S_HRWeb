@@ -1,0 +1,151 @@
+﻿
+
+<div fxLayout="row" class="loginContainer">
+
+  <div fxLayout="column" class="leftContainer" fxLayoutAlign ="center center">
+    <div fxLayout="row">
+      <img src="../../assets/images/maxxhr_frontleft.svg" class="loginImage">    
+    </div>
+    <div fxLayout="row" >
+      <label class="labeltextleftContainer2">© 2023 Macromaxx Technologies, All Rights Reserved.</label>
+    </div>   
+
+    <!-- <div fxLayout="row" fxFlex="5%" fxFlexAlign="center center">
+    </div>
+    <div fxLayout="row" fxFlex="50%" fxFlexAlign="center center">
+      <div fxLayout="column">
+
+      </div>
+    </div>
+    <div fxLayout="row" fxFlex="20%">      
+   
+    </div> -->
+<!-- <br>
+<br>
+    <div fxLayout="row" fxFlex="5%" fxFlexAlign="center">
+      <div fxLayout="column" fxFlexAlign="center">
+        <div fxLayout="row" fxFlexAlign="center">
+          <label class="labeltextleftContainer2">© 2022 Macromaxx Technologies, All Rights Reserved.</label>
+        </div>
+      </div>
+    </div> -->
+  </div>
+
+  <div fxLayout="column" class="middleContainer" fxLayoutAlign="center center">
+
+
+    <div fxLayout="row" fxFlex="10%">
+    </div>
+    <div fxLayout="row" class="ImageRow" fxLayoutAlign="center center" >  
+        <img class="LogoImage" src="../../assets/images/ERP.png">
+    </div>
+    <div fxLayout="row" fxFlex="15%">
+    </div>
+
+    <div *ngIf="!IsLoginSuccess" fxLayout="row" class="ImageRow" fxLayoutAlign="center center">
+      <form #dialogForm="ngForm" fxFlex="100%" fxLayoutAlign="center center">
+        <div fxLayout="column" fxFlex="100%">
+          <div fxLayout="row">
+            <div fxLayout="column" fxFlex="100%">
+              <div fxLayout="row">
+                <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100%">
+                  <mat-form-field class="loginInputContainer">
+                    <mat-icon matPrefix class="PrefixPadding">person_outline</mat-icon>
+                      <input type="text" class="test1" name="UserName" [(ngModel)]="login.UserName" required matInput placeholder="User Name" />
+                  </mat-form-field>
+                </div>
+              </div>
+              <div fxLayout="row">
+                <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100%">
+                  <mat-form-field class="loginInputContainer">
+                    <mat-icon matPrefix class="PrefixPadding">lock_outline</mat-icon>
+                    <input type="password" name="Password" [(ngModel)]="login.Password" required matInput placeholder="Password" />
+                  </mat-form-field>
+                </div>
+              </div>
+              <div fxLayout="row">
+                <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100%">
+                  <mat-form-field class="loginInputContainer">
+                    <mat-icon matPrefix class="PrefixPadding">business</mat-icon>
+                      <input type="text" name="CorporateCode" [(ngModel)]="login.CorporateCode" required matInput placeholder="Company Code" />
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="ProgressSpinner">
+            <mat-progress-spinner class="spinner-margin"
+                              color="accent"
+                              mode="indeterminate"
+                              value="75">
+            </mat-progress-spinner>
+          </div>
+          <br>
+          <br>
+          <br>
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <button color="primary" class="loginButton" mat-raised-button (click)="authenticate()" [disabled]="!dialogForm.form.valid">Login</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div *ngIf="IsLoginSuccess && this.commonService.getLength(this.sessionService.UserRoleInfo) > 1" fxLayout="row" class="ImageRow" fxLayoutAlign="center center">
+        <form #dialogForm="ngForm" fxFlex="100%"  fxLayoutAlign="center center">
+            <div fxLayout="column" fxFlex="100%">
+                <div fxLayout="row">
+                  <div fxLayout="column" fxFlex="100%" fxLayoutAlign="center center">
+                    <mat-form-field  class="loginInputContainer">
+                          <mat-select name="Site" [(ngModel)]="this.sessionService.SiteID" required
+                          placeholder="Site Name">
+                            <mat-option *ngFor="let itm of this.sessionService.UserSiteInfo" [value]="itm.SiteID">
+                              {{ itm.SiteName }}
+                            </mat-option>
+                          </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div fxLayout="row">
+                  <div fxLayout="column" fxFlex="100%" fxLayoutAlign="center center">
+                    <mat-form-field  class="loginInputContainer">
+                          <mat-select name="RoleID" [(ngModel)]="RoleID" required
+                              placeholder="Role Name">
+                            <mat-option *ngFor="let itm of this.sessionService.UserRoleInfo" [value]="itm.RoleID">
+                              {{ itm.RoleName }}
+                            </mat-option>
+                          </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div *ngIf="ProgressSpinner">
+                    <mat-progress-spinner class="spinner-margin"
+                      color="accent"
+                      mode="indeterminate"
+                      value="75">
+                    </mat-progress-spinner>
+                </div>
+                <br>
+                <br>
+                <br>
+                <br>
+                <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
+                      <button color="primary" class="loginButton" mat-raised-button (click)="submitClick()" [disabled]="!dialogForm.form.valid">Login</button>
+                      <button color="primary" class="loginButton" mat-raised-button (click)="cancelClick()">Cancel</button>
+                </div>
+            </div> 
+        </form>  
+    </div>       
+
+    <div fxLayout="row" fxFlex="35%">
+    </div>
+
+    <div *ngIf="IsLoginSuccess && this.commonService.getLength(this.sessionService.UserRoleInfo) > 1" fxLayout="column" class="middleContainer" fxLayoutAlign="center center" fxLayoutGap="20px">
+      <div fxLayout="row">
+
+      </div>
+    </div>
+  </div>
+               
+</div>

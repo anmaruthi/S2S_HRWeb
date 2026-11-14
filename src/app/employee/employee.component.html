@@ -1,0 +1,1308 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+
+    <div fxLayout="column" [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth)"
+        *ngIf="Mode=='EDIT' || Mode=='ADD'" class="formColumn">
+
+        <form novalidate #dialogForm="ngForm">
+
+            <div fxLayout="row" class="actionBarRow">
+                <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                    <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Employee</label>
+                    <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Employee</label>
+                </div>
+                <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                    <div fxLayout="row" fxLayoutGap="20px">
+                        <div></div>
+
+                        <div class="tooltip" matTooltip="Cancel"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button class="app-icon-button" (click)="cancelClick()">
+                                <i class="material-icons logout">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p-accordion>
+                <p-accordionTab header="Appoinment Info" [selected]="true">
+                    <form novalidate #AppoinmentInfoForm="ngForm">
+                        <div fxFlex="row" class="FirstColumnData"
+                            [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+                            <div fxLayout="row" fxLayoutAlign="center end">
+                                <div fxFlex=70%></div>
+                                <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                                    <div fxLayout="row" fxLayoutGap="20px">
+                                        <div class="tooltip" matTooltip="Save Appointment Info"
+                                            *ngIf="(this.sessionService.actionAllowed('ADD_EMPLOYEE') && this.Mode == 'ADD')
+                                                    || this.sessionService.actionAllowed('EDIT_EMPLOYEE') && this.Mode =='EDIT'"
+                                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                            <button type="submit" class="app-icon-button"
+                                                (click)="submitClick(AppoinmentInfoForm.valid)">
+                                                <i class="material-icons logout">save</i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex=90%>
+                                    <div fxFlex=52%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" maxlength="100" #EmpName="ngModel"
+                                                name="EmpName" [(ngModel)]="selectedDataGridItem.EmpName"
+                                                placeholder="Employee Name" required>
+                                            <mat-error *ngIf="this.submitAttempt && EmpName.hasError('required')">
+                                                Employee Name is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex="90%">
+                                    <div fxFlex=25%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" maxlength="100" #EmpCode="ngModel"
+                                                name="EmpCode" [(ngModel)]="selectedDataGridItem.EmpCode"
+                                                placeholder="Employee Code" required>
+                                            <mat-error *ngIf="this.submitAttempt && EmpCode.hasError('required')">
+                                                Employee Code is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=25%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" maxlength="100" #EmpFID="ngModel" name="EmpFID"
+                                                [(ngModel)]="selectedDataGridItem.EmpFID"
+                                                placeholder="Finger and Face ID" required>
+                                            <mat-error *ngIf="this.submitAttempt && EmpFID.hasError('required')">
+                                                Finger and Face ID is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex="90%">
+                                    <div fxFlex=25%>
+                                        <customdate class="fld-mt0-w100" placeholder="Date Of Birth" required="true"
+                                            [submitAttempt]="this.submitAttempt" #EmpDOB="ngModel" name="EmpDOB"
+                                            [(ngModel)]="selectedDataGridItem.EmpDOB" [allowFutureDate]="false"
+                                            [allowCurrentDate]="true" [allowPastDate]="true">
+                                        </customdate>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=25%>
+                                        <customdate class="fld-mt0-w100" placeholder="Date Of Join" required="true"
+                                            [submitAttempt]="this.submitAttempt" #EmpDOJ="ngModel" name="EmpDOJ"
+                                            [(ngModel)]="selectedDataGridItem.EmpDOJ" [allowFutureDate]="false"
+                                            [allowCurrentDate]="true" [allowPastDate]="true">
+                                        </customdate>
+                                    </div>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex="90%">
+                                    <div fxFlex=52%>
+                                        <autocomplete class="fld-mt0-w100" placeholder="Employee Group" required="true"
+                                            [submitAttempt]="this.submitAttempt"
+                                            [InputDataList]="this.EmployeeGroupList" KeyID="GroupID"
+                                            KeyDescription="GroupName" #EmpGroup="ngModel" name="EmpGroup"
+                                            [(ngModel)]="selectedDataGridItem.GroupID"
+                                            (SelectionDone)="SelectEmpGroup($event)">
+                                        </autocomplete>
+                                    </div>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex="90%">
+                                    <div fxFlex=52%>
+                                        <autocomplete class="fld-mt0-w100" placeholder="Employee Category"
+                                            required="true" [submitAttempt]="this.submitAttempt"
+                                            [InputDataList]="this.EmployeeCategoryList" KeyID="CategoryID"
+                                            KeyDescription="CategoryName" #Category="ngModel" name="Category"
+                                            [(ngModel)]="selectedDataGridItem.CategoryID"
+                                            (SelectionDone)="SelectEmpCategory($event)">
+                                        </autocomplete>
+                                    </div>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex="90%">
+                                    <div fxFlex=52%>
+                                        <autocomplete class="fld-mt0-w100" placeholder="Employee type" required="true"
+                                            [submitAttempt]="this.submitAttempt" [InputDataList]="this.EmployeeTypeList"
+                                            KeyID="TypeID" KeyDescription="TypeName" #Type="ngModel" name="Type"
+                                            [(ngModel)]="selectedDataGridItem.TypeID"
+                                            (SelectionDone)="SelectEmpType($event)">
+                                        </autocomplete>
+                                    </div>
+                                    <div fxFlex=4%></div>
+                                    <div fxFlex=40%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <mat-select #gender="ngModel" name="gender" maxlength="10"
+                                                [(ngModel)]="selectedDataGridItem.GenderCode" required
+                                                placeholder="Gender">
+                                                <mat-option *ngFor="let itm of GenderList" [value]="itm.GenderCode">
+                                                    {{ itm.Gender }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex="90%">
+                                    <div fxFlex=52%>
+                                        <autocomplete class="fld-mt0-w100" placeholder="Employee Department"
+                                            required="true" [submitAttempt]="this.submitAttempt"
+                                            [InputDataList]="this.EmployeeDepartmentList" KeyID="DepartmentID"
+                                            KeyDescription="DepartmentName" #Department="ngModel" name="Department"
+                                            [(ngModel)]="selectedDataGridItem.DepartmentID"
+                                            (SelectionDone)="SelectEmpDepartment($event)">
+                                        </autocomplete>
+                                    </div>
+                                    <div fxFlex=4%></div>
+                                    <div fxFlex=40%>
+                                        <autocomplete class="fld-mt0-w100" placeholder="Employee Designation"
+                                            required="true" [submitAttempt]="this.submitAttempt"
+                                            [InputDataList]="this.EmployeeDesignationList" KeyID="DesignationID"
+                                            KeyDescription="DesignationName" #Designation="ngModel" name="Designation"
+                                            [(ngModel)]="selectedDataGridItem.DesignationID"
+                                            (SelectionDone)="SelectEmpDesignation($event)">
+                                        </autocomplete>
+                                    </div>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex="90%">
+                                    <div fxFlex=30%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <mat-select #OTFlag="ngModel" name="OTFlag" maxlength="10"
+                                                [(ngModel)]="selectedDataGridItem.OTFlagID" required
+                                                placeholder="OT Payment Flag">
+                                                <mat-option *ngFor="let itm of OtFlagList" [value]="itm.OTFlagID">
+                                                    {{ itm.OTFlag }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=20% fxLayoutAlign="end center">
+                                        <!-- <mat-checkbox #AttendanceBonus="ngModel" name="AttendanceBonus"
+                                        [(ngModel)]="selectedDataGridItem.AttendanceBonus">
+                                        Attendance Bonus
+                                    </mat-checkbox> -->
+                                        Attendance Bonus
+                                        <input type="checkbox" [(ngModel)]="selectedDataGridItem.AttBonusFlag"
+                                            name="AttBonusFlag" /><br />
+                                    </div>
+                                    <div fxFlex=4%></div>
+                                    <!-- <div *ngIf="this.AttBonusFlag==true"> -->
+                                    <div fxFlex=11%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" maxlength="100" #FullDay="ngModel"
+                                                name="FullDay" [(ngModel)]="selectedDataGridItem.FullPresentBonus"
+                                                placeholder="Full Day">
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=11%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" maxlength="100" #HalfDay="ngModel"
+                                                name="HalfDay" [(ngModel)]="selectedDataGridItem.HalfDayAbsentBonus"
+                                                placeholder="1/2 Day">
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=13%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" maxlength="100" #OneDayLeave="ngModel"
+                                                name="OneDayLeave" [(ngModel)]="selectedDataGridItem.OneDayAbsentBonus"
+                                                placeholder="1 Day Leave">
+                                        </mat-form-field>
+                                    </div>
+                                    <!-- </div> -->
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex="90%">
+                                    <div fxFlex="30%">
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <mat-select #StatusCode="ngModel" name="StatusCode"
+                                                [(ngModel)]="selectedDataGridItem.StatusCode" required
+                                                placeholder="Status">
+                                                <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                                                    {{ itm.StatusMessage }}
+                                                </mat-option>
+                                            </mat-select>
+                                            <mat-error *ngIf="this.submitAttempt && StatusCode.hasError('required')">
+                                                Status is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex="2%"></div>
+                                    <div fxFlex="20%" *ngIf="this.selectedDataGridItem.StatusCode == 20">
+                                        <!-- <customdate class="fld-mt0-w100" placeholder="Last Working Date" required="true"
+                                            [submitAttempt]="this.submitAttempt" #EmpDOL="ngModel" name="EmpDOL"
+                                            [(ngModel)]="selectedDataGridItem.EmpDOL" [allowFutureDate]="false"
+                                            [allowCurrentDate]="true" [allowPastDate]="true">
+                                        </customdate> -->
+                                        <customdate class="fld-mt0-w100" placeholder="Last Working Date" required="true"
+                                            [submitAttempt]="this.submitAttempt" #EmpDOL="ngModel" name="EmpDOL"
+                                            [(ngModel)]="selectedDataGridItem.EmpDOL" [allowFutureDate]="false"
+                                            [allowCurrentDate]="true" [allowPastDate]="true">
+                                        </customdate>
+                                    </div>
+                                    <div fxFlex=4%></div>
+                                    <div fxFlex=40% *ngIf="this.selectedDataGridItem.StatusCode == 20">
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <mat-select #Reason="ngModel" name="Reason" maxlength="10"
+                                                [(ngModel)]="selectedDataGridItem.ReasonID" required
+                                                placeholder="Reason">
+                                                <mat-option *ngFor="let itm of ReasonList" [value]="itm.ReasonID">
+                                                    {{ itm.Reason }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <br>
+                    <br> <br>
+                </p-accordionTab>
+
+                <p-accordionTab header="Personal Info">
+                    <form novalidate #PersonalForm="ngForm">
+                        <div fxFlex="row" class="FirstColumnData"
+                            [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+                            <div fxLayout="row" fxLayoutAlign="center end">
+                                <div fxFlex=70%></div>
+                                <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                                    <div fxLayout="row" fxLayoutGap="20px">
+                                        <div class="tooltip" matTooltip="Save Personal Info"
+                                            *ngIf="(this.sessionService.actionAllowed('ADD_EMPLOYEE') && this.Mode == 'ADD')
+                                                    || this.sessionService.actionAllowed('EDIT_EMPLOYEE') && this.Mode =='EDIT'"
+                                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                            <button type="submit" class="app-icon-button"
+                                                (click)="personalInfoSave(PersonalForm.valid)">
+                                                <i class="material-icons logout">save</i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex="90%">
+                                    <div fxFlex=20%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" maxlength="100" #EmpContact1="ngModel"
+                                                name="EmpContact1" [(ngModel)]="personalInfoDetail.EmpContact1"
+                                                placeholder="Contact1" required>
+                                            <mat-error *ngIf="this.submitAttempt0 && EmpContact1.hasError('required')">
+                                                Contact1 is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=20%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <input matInput type="text" maxlength="100" #EmpContact2="ngModel"
+                                                name="EmpContact2" [(ngModel)]="personalInfoDetail.EmpContact2"
+                                                placeholder="Contact 2">
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=8%></div>
+                                    <div fxFlex=20%>
+                                        <mat-form-field class="fld-mt0-w100">
+                                            <mat-select required #MarriedID="ngModel" name="MarriedID"
+                                                [(ngModel)]="personalInfoDetail.MarriedID" placeholder="Married">
+                                                <mat-option *ngFor="let itm of MarriedList" [value]="itm.MarriedID">
+                                                    {{ itm.Married }}
+                                                </mat-option>
+                                            </mat-select>
+                                            <mat-error *ngIf="this.submitAttempt0 && MarriedID.hasError('required')">
+                                                Married is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxFlex=2%></div>
+                                    <div fxFlex=18% fxLayoutAlign="end center">
+                                        <mat-checkbox #IsHandicap="ngModel" name="IsHandicap"
+                                            [(ngModel)]="personalInfoDetail.IsHandicap">
+                                            Handicap
+                                        </mat-checkbox>
+                                    </div>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex=90%>
+                                    <mat-form-field class="fld-mt0-w100">
+                                        <input matInput type="text" maxlength="100" #EmpEmail="ngModel" name="EmpEmail"
+                                            [(ngModel)]="personalInfoDetail.EmpEmail"
+                                            [pattern]="this.commonService.PATTERN_EMAIL" placeholder="Email">
+                                        <!-- <mat-error *ngIf="this.submitAttempt0 && EmpEmail.hasError('required')">
+                                            Email is required
+                                        </mat-error>
+                                        <mat-error *ngIf="this.submitAttempt0 && EmpEmail.hasError('pattern')">
+                                            Invalid Email
+                                        </mat-error> -->
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex=90%>
+                                    <lable style="font-size:20px;color:Blue;">Address Info</lable>
+                                    <p-table #dt1 [columns]="AddressInfo" [value]="AddressInfoList" selectionMode="single"
+                                        [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth - 20)"
+                                        [(selection)]="SelectedAddressInfo">
+                                        <ng-template pTemplate="caption" class="capsegment">
+                                            <form novalidate #AddressInfoForm="ngForm"
+                                                *ngIf="this.Mode1 == 'ADD' || this.Mode1 == 'EDIT'">
+    
+                                                <div fxLayout="row" fxLayoutAlign="start center">
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <input matInput type="text" maxlength="100" #Address1="ngModel"
+                                                                name="Address1" [(ngModel)]="AddressInfoDetail.Address1"
+                                                                placeholder="Address1" required>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt1 && Address1.hasError('required')">
+                                                                Address1 is required
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=4%></div>
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <input matInput type="text" maxlength="100" #Address2="ngModel"
+                                                                name="Address2" [(ngModel)]="AddressInfoDetail.Address2"
+                                                                placeholder="Address2">
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=4%></div>
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <mat-select required #CountryCode="ngModel" name="CountryCode"
+                                                                [(ngModel)]="AddressInfoDetail.CountryCode"
+                                                                placeholder="Country" (selectionChange)="onCountrySelect()">
+                                                                <mat-option *ngFor="let itm of CountryList"
+                                                                    [value]="itm.CountryCode">
+                                                                    {{ itm.CountryName }}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt1 && CountryCode.hasError('required')">
+                                                                Country is required
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=10%></div>
+                                                    <div fxLayout="row" fxLayoutGap="4%" fxLayoutAlign="end  end">
+                                                        <div class="tooltip" matTooltip="Save"
+                                                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                            <button type="submit" class="app-icon-button"
+                                                                (click)="updateAddressInfoDetails(AddressInfoForm.valid)">
+                                                                <i class="material-icons logout">save</i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="tooltip" matTooltip="Cancel"
+                                                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                            <button class="app-icon-button"
+                                                                (click)="cancelAddressInfoForm()">
+                                                                <i class="material-icons logout">cancel</i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="row" fxLayoutAlign="start center">
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <mat-select required #StateID="ngModel" name="StateID"
+                                                                [(ngModel)]="AddressInfoDetail.StateID" placeholder="State">
+                                                                <mat-option *ngFor="let itm of StateListFiltered"
+                                                                    [value]="itm.StateID">
+                                                                    {{ itm.StateName }}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt1 && StateID.hasError('required')">
+                                                                State is required
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=4%></div>
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <input matInput type="text" maxlength="100" #City="ngModel"
+                                                                name="City" [(ngModel)]="AddressInfoDetail.City"
+                                                                placeholder="City" required
+                                                                [pattern]="this.commonService.PATTERN_CITY">
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt1 && City.hasError('required')">
+                                                                City is required
+                                                            </mat-error>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt1 && City.hasError('pattern')">
+                                                                Invalid City
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=4%></div>
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <input matInput type="text" minlength="3" maxlength="15"
+                                                                #Pincode="ngModel" name="Pincode"
+                                                                [(ngModel)]="AddressInfoDetail.Pincode"
+                                                                [pattern]="this.commonService.PATTERN_PINCODE"
+                                                                placeholder="Pincode" required>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt1 && Pincode.hasError('required')">
+                                                                Pincode is required
+                                                            </mat-error>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt1 && Pincode.hasError('minlength')">
+                                                                Invalid Pincode
+                                                            </mat-error>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt1 && Pincode.hasError('pattern')">
+                                                                Invalid Pincode
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="row" fxLayoutAlign="start center">
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <mat-select #StatusCode="ngModel" name="StatusCode"
+                                                                [(ngModel)]="AddressInfoDetail.StatusCode" required
+                                                                placeholder="Status">
+                                                                <mat-option *ngFor="let itm of StatusList"
+                                                                    [value]="itm.StatusCode">
+                                                                    {{ itm.StatusMessage }}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt1 && StatusCode.hasError('required')">
+                                                                Status is required
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=4%></div>
+                                                    <div fxFlex=25%>
+                                                        permanent Address
+                                                        <input type="checkbox"
+                                                            [(ngModel)]="AddressInfoDetail.IsPermanentAddr"
+                                                            name="AttBonusFlag" /><br />
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </ng-template>
+                                        <ng-template pTemplate="header" let-columns>
+                                            <tr>
+                                                <th>
+                                                    <button class="app-icon-button" (click)=" addAddressInfoclick()">
+                                                        <i class="material-icons" color="accent">add_box</i>
+                                                    </button>
+                                                </th>
+                                                <th *ngFor="let col of columns" [pSortableColumn]="col.field"
+                                                    [style.width]="col.width">
+                                                    {{col.header}}
+                                                </th>
+                                                <th></th>
+                                            </tr>
+                                        </ng-template>
+    
+                                        <ng-template pTemplate="body" let-rwitem let-columns="columns">
+                                            <tr [pSelectableRow]="rwitem">
+                                                <td>
+                                                    <button [disabled]="DisableEdit1()" class="app-icon-button"
+                                                        (click)="editAddressInfoclick()">
+                                                        <i class="material-icons">edit</i>
+                                                    </button>
+                                                </td>
+                                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                                    {{rwitem[col.field]}}
+                                                </td>
+                                                <td>
+                                                    <button [disabled]="DisableEdit1()" class="app-icon-button"
+                                                        (click)="deleteAddressInfoDetail()">
+                                                        <i class="material-icons">delete</i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="emptymessage">
+                                            <td colspan="10">
+                                                No records found
+                                            </td>
+                                        </ng-template>
+                                    </p-table>
+                                </div>
+                            </div>
+                            <br>
+                            <br>
+
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex=90%>
+                                    <lable style="font-size:20px;color:Blue;">Family Info</lable>
+                                    <p-table #dt2 [columns]="FamilyInfo" [value]="FamilyInfoList" selectionMode="single"
+                                        [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth - 20)"
+                                        [(selection)]="SelectedFamilyInfo">
+                                        <ng-template pTemplate="caption" class="capsegment">
+                                            <form novalidate #FamilyInfoForm="ngForm"
+                                                *ngIf="this.Mode2 == 'ADD' || this.Mode2 == 'EDIT'">
+                                                <div fxLayout="row" fxLayoutAlign="start center">
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <input matInput type="text" maxlength="100"
+                                                                #RelationshipName="ngModel" name="RelationshipName"
+                                                                [(ngModel)]="FamilyInfoDetail.RelationshipName"
+                                                                placeholder="Reletion Name" required>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt2 && RelationshipName.hasError('required')">
+                                                                Reletion Name is required
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=2%></div>
+                                                    <div fxFlex=20%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <mat-select required #RelationshipID="ngModel"
+                                                                name="RelationshipID"
+                                                                [(ngModel)]="FamilyInfoDetail.RelationshipID"
+                                                                placeholder="Relatioship">
+                                                                <mat-option *ngFor="let itm of RelationshipList"
+                                                                    [value]="itm.RelationshipID">
+                                                                    {{ itm.Relationship }}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt2 && RelationshipID.hasError('required')">
+                                                                Relatioship is required
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=2%></div>
+                                                    <div fxFlex=15%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <input matInput type="text" maxlength="100" #RAge="ngModel"
+                                                                name="RAge" [(ngModel)]="FamilyInfoDetail.RAge"
+                                                                placeholder=" Age" required>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt2 && RAge.hasError('required')">
+                                                                Relation Age is required
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=2%></div>
+                                                    <div fxFlex=15%>
+                                                        <customdate class="fld-mt0-w90" placeholder="Relation DOB"
+                                                            [submitAttempt]="this.submitAttempt2" #RDOB="ngModel"
+                                                            name="RDOB" [(ngModel)]="FamilyInfoDetail.RDOB"
+                                                            [allowFutureDate]="false" [allowCurrentDate]="true"
+                                                            [allowPastDate]="true">
+                                                        </customdate>
+                                                    </div>
+                                                    <div fxFlex=2%></div>
+                                                    <div fxFlex=10%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <mat-select #StatusCode="ngModel" name="StatusCode"
+                                                                [(ngModel)]="FamilyInfoDetail.StatusCode" required
+                                                                placeholder="Status">
+                                                                <mat-option *ngFor="let itm of StatusList"
+                                                                    [value]="itm.StatusCode">
+                                                                    {{ itm.StatusMessage }}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt2 && StatusCode.hasError('required')">
+                                                                Status is required
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+    
+                                                    <div fxFlex=10%></div>
+                                                    <div fxLayout="row" fxLayoutGap="4%" fxLayoutAlign="end  end">
+                                                        <div class="tooltip" matTooltip="Save"
+                                                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                            <button type="submit" class="app-icon-button"
+                                                                (click)="updateFamilyInfoDetails(FamilyInfoForm.valid)">
+                                                                <i class="material-icons logout">save</i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="tooltip" matTooltip="Cancel"
+                                                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                            <button class="app-icon-button"
+                                                                (click)="cancelFamilyInfoForm()">
+                                                                <i class="material-icons logout">cancel</i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </ng-template>
+                                        <ng-template pTemplate="header" let-columns>
+                                            <tr>
+                                                <th>
+                                                    <button class="app-icon-button" (click)=" addFamilyInfoclick()">
+                                                        <i class="material-icons" color="accent">add_box</i>
+                                                    </button>
+                                                </th>
+                                                <th *ngFor="let col of columns" [pSortableColumn]="col.field"
+                                                    [style.width]="col.width">
+                                                    {{col.header}}
+                                                </th>
+                                                <th></th>
+                                            </tr>
+                                        </ng-template>
+    
+                                        <ng-template pTemplate="body" let-rwitem let-columns="columns">
+                                            <tr [pSelectableRow]="rwitem">
+                                                <td>
+                                                    <button [disabled]="DisableEdit2()" class="app-icon-button"
+                                                        (click)="editFamilyInfoclick()">
+                                                        <i class="material-icons">edit</i>
+                                                    </button>
+                                                </td>
+                                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                                    {{rwitem[col.field]}}
+                                                </td>
+                                                <td>
+                                                    <button [disabled]="DisableEdit2()" class="app-icon-button"
+                                                        (click)="deleteFamilyInfoDetail()">
+                                                        <i class="material-icons">delete</i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="emptymessage">
+                                            <td colspan="10">
+                                                No records found
+                                            </td>
+                                        </ng-template>
+                                    </p-table>
+                                </div>
+                            </div>
+                            <br>
+                            <br>
+
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex=90%>
+                                    <lable style="font-size:20px;color:Blue;">Education Info</lable>
+                                    <p-table #dt3 [columns]="EducationInfo" [value]="EducationInfoList"
+                                        selectionMode="single"
+                                        [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth - 20)"
+                                        [(selection)]="SelectedEducationInfo">
+                                        <ng-template pTemplate="caption" class="capsegment">
+                                            <form novalidate #EducationInfoForm="ngForm"
+                                                *ngIf="this.Mode3 == 'ADD' || this.Mode3 == 'EDIT'">
+                                                <div fxLayout="row" fxLayoutAlign="start center">
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <mat-select required #QualificationID="ngModel"
+                                                                name="QualificationID"
+                                                                [(ngModel)]="EducationInfoDetail.QualificationID"
+                                                                placeholder="Qualification">
+                                                                <mat-option *ngFor="let itm of QualificationList"
+                                                                    [value]="itm.QualificationID">
+                                                                    {{ itm.Qualification }}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt3 && QualificationID.hasError('required')">
+                                                                Qualification is required
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=2%></div>
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <input matInput type="text" maxlength="100"
+                                                                #Description="ngModel" name="Description"
+                                                                [(ngModel)]="EducationInfoDetail.Description"
+                                                                placeholder=" Description">
+                                                            <!-- <mat-error *ngIf="this.submitAttempt3 && Percentage.hasError('required')">
+                                                                Percentage is required
+                                                            </mat-error> -->
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=2%></div>
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <input matInput type="text" maxlength="100" #institute="ngModel"
+                                                                name="institute" [(ngModel)]="EducationInfoDetail.Institute"
+                                                                placeholder="institute" required>
+                                                            <!-- <mat-error
+                                                            *ngIf="this.submitAttempt3 && Institute.hasError('required')">
+                                                            Institute Name is required
+                                                        </mat-error> -->
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=10%></div>
+                                                    <div fxLayout="row" fxLayoutGap="4%" fxLayoutAlign="end  end">
+                                                        <div class="tooltip" matTooltip="Save"
+                                                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                            <button type="submit" class="app-icon-button"
+                                                                (click)="updateEducationInfoDetails(EducationInfoForm.valid)">
+                                                                <i class="material-icons logout">save</i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="tooltip" matTooltip="Cancel"
+                                                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                            <button class="app-icon-button"
+                                                                (click)="cancelEducationInfoForm()">
+                                                                <i class="material-icons logout">cancel</i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="row" fxLayoutAlign="start center">
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <input matInput type="text" maxlength="100" #Location="ngModel"
+                                                                name="Location" [(ngModel)]="EducationInfoDetail.Location"
+                                                                placeholder="Location" required>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt3 && Location.hasError('required')">
+                                                                Location is required
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=2%></div>
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <input matInput type="number" maxlength="100"
+                                                                #PassingYear="ngModel" name="PassingYear"
+                                                                [(ngModel)]="EducationInfoDetail.PassingYear"
+                                                                placeholder="Passing Year">
+                                                            <!-- <mat-error
+                                                                *ngIf="this.submitAttempt3 && PassingYear.hasError('required')">
+                                                                PassingYear is required
+                                                            </mat-error> -->
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=2%></div>
+                                                    <div fxFlex=25%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <input matInput type="text" maxlength="100"
+                                                                #Parcentage="ngModel" name="Parcentage"
+                                                                [(ngModel)]="EducationInfoDetail.Percentage"
+                                                                placeholder="Percentage (%)" required>
+                                                            <!-- <mat-error *ngIf="this.submitAttempt3 && Percentage.hasError('required')">
+                                                            Percentage is required
+                                                        </mat-error> -->
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div fxFlex=2%></div>
+                                                    <div fxFlex=20%>
+                                                        <mat-form-field class="fld-mt0-w100">
+                                                            <mat-select #StatusCode="ngModel" name="StatusCode"
+                                                                [(ngModel)]="EducationInfoDetail.StatusCode" required
+                                                                placeholder="Status">
+                                                                <mat-option *ngFor="let itm of StatusList"
+                                                                    [value]="itm.StatusCode">
+                                                                    {{ itm.StatusMessage }}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                            <mat-error
+                                                                *ngIf="this.submitAttempt3 && StatusCode.hasError('required')">
+                                                                Status is required
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+    
+                                                </div>
+                                            </form>
+                                        </ng-template>
+                                        <ng-template pTemplate="header" let-columns>
+                                            <tr>
+                                                <th>
+                                                    <button class="app-icon-button" (click)=" addEducationInfoclick()">
+                                                        <i class="material-icons" color="accent">add_box</i>
+                                                    </button>
+                                                </th>
+                                                <th *ngFor="let col of columns" [pSortableColumn]="col.field"
+                                                    [style.width]="col.width">
+                                                    {{col.header}}
+                                                </th>
+                                                <th></th>
+                                            </tr>
+                                        </ng-template>
+    
+                                        <ng-template pTemplate="body" let-rwitem let-columns="columns">
+                                            <tr [pSelectableRow]="rwitem">
+                                                <td>
+                                                    <button [disabled]="DisableEdit3()" class="app-icon-button"
+                                                        (click)="editEducationInfoclick()">
+                                                        <i class="material-icons">edit</i>
+                                                    </button>
+                                                </td>
+                                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                                    {{rwitem[col.field]}}
+                                                </td>
+                                                <td>
+                                                    <button [disabled]="DisableEdit3()" class="app-icon-button"
+                                                        (click)="deleteEducationInfoDetail()">
+                                                        <i class="material-icons">delete</i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="emptymessage">
+                                            <td colspan="10">
+                                                No records found
+                                            </td>
+                                        </ng-template>
+                                    </p-table>
+                                    <br> <br>
+                                    <br>
+                                    <br>
+                                </div>
+                            </div>
+    
+                        </div>
+                    </form>
+
+
+                </p-accordionTab>
+
+                <p-accordionTab header="KYC Particulars">
+                    <div fxFlex="row" class="FirstColumnData"
+                        [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+                        <div fxLayout="row" fxLayoutAlign="center end">
+                            <div fxFlex=70%></div>
+                            <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                                <div fxLayout="row" fxLayoutGap="20px">
+                                    <div class="tooltip" matTooltip="Save KYC Data"
+                                        *ngIf="(this.sessionService.actionAllowed('ADD_EMPLOYEE') && this.Mode == 'ADD')
+                                                || this.sessionService.actionAllowed('EDIT_EMPLOYEE') && this.Mode =='EDIT'"
+                                        [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                        <button type="submit" class="app-icon-button"
+                                            (click)="kycInfoSave(AppoinmentInfoForm.valid)">
+                                            <i class="material-icons logout">save</i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <div fxFlex=90%>
+                                <lable style="font-size:20px;color:Blue;">Bank Info</lable>
+                                <p-table #dt4 [columns]="BankInfo" [value]="BankInfoDetailList" selectionMode="single"
+                                    [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth - 20)"
+                                    [(selection)]="SelectedBankDetail">
+                                    <ng-template pTemplate="caption" class="capsegment">
+                                        <form novalidate #BankInfoForm="ngForm"
+                                            *ngIf="this.Mode4 == 'ADD' || this.Mode4 == 'EDIT'">
+                                            <div fxLayout="row" fxLayoutAlign="start center">
+                                                <div fxFlex=25%>
+                                                    <mat-form-field class="fld-mt0-w100">
+                                                        <mat-select required #BankID="ngModel" name="BankID"
+                                                            [(ngModel)]="BankInfoDetail.BankID" placeholder="Bank Name">
+                                                            <mat-option *ngFor="let itm of BankList"
+                                                                [value]="itm.BankID">
+                                                                {{ itm.BankName }}
+                                                            </mat-option>
+                                                        </mat-select>
+                                                        <mat-error
+                                                            *ngIf="this.submitAttempt4 && BankID.hasError('required')">
+                                                            Bank is required
+                                                        </mat-error>
+                                                    </mat-form-field>
+                                                </div>
+                                                <div fxFlex=2%></div>
+                                                <div fxFlex=25%>
+                                                    <mat-form-field class="fld-mt0-w100">
+                                                        <input matInput type="text" maxlength="100"
+                                                            #AccountNumber="ngModel" name="AccountNumber"
+                                                            [(ngModel)]="BankInfoDetail.AccountNumber"
+                                                            placeholder="AccountNumber" required>
+                                                        <mat-error
+                                                            *ngIf="this.submitAttempt4 && AccountNumber.hasError('required')">
+                                                            Account Number is required
+                                                        </mat-error>
+                                                    </mat-form-field>
+                                                </div>
+                                                <div fxFlex=2%></div>
+                                                <div fxFlex=25%>
+                                                    <mat-form-field class="fld-mt0-w100">
+                                                        <mat-select required #AccountTypeID="ngModel"
+                                                            name="AccountTypeID"
+                                                            [(ngModel)]="BankInfoDetail.AccountTypeID"
+                                                            placeholder="Account Type"
+                                                            (SelectionDone)="SelectedAccountTypeList($event)">
+                                                            <mat-option *ngFor="let itm of AccountTypeList"
+                                                                [value]="itm.AccountTypeID">
+                                                                {{ itm.AccountType }}
+                                                            </mat-option>
+                                                        </mat-select>
+                                                        <mat-error
+                                                            *ngIf="this.submitAttempt4 && AccountTypeID.hasError('required')">
+                                                            Account Type is required
+                                                        </mat-error>
+                                                    </mat-form-field>
+                                                </div>
+                                                <div fxFlex=10%></div>
+                                                <div fxLayout="row" fxLayoutGap="4%" fxLayoutAlign="end  end">
+                                                    <div class="tooltip" matTooltip="Save"
+                                                        [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                        <button type="submit" class="app-icon-button"
+                                                            (click)="updateBankInfoDetails(BankInfoForm.valid)">
+                                                            <i class="material-icons logout">save</i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="tooltip" matTooltip="Cancel"
+                                                        [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                        <button class="app-icon-button" (click)="cancelBankInfoForm()">
+                                                            <i class="material-icons logout">cancel</i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div fxLayout="row" fxLayoutAlign="start center">
+                                                <div fxFlex=25%>
+                                                    <mat-form-field class="fld-mt0-w100">
+                                                        <input matInput type="text" maxlength="100" #IFSCCode="ngModel"
+                                                            name="IFSCCode" [(ngModel)]="BankInfoDetail.IFSCCode"
+                                                            placeholder="IFSC Code" required>
+                                                        <mat-error
+                                                            *ngIf="this.submitAttempt4 && IFSCCode.hasError('required')">
+                                                            IFSC Code is required
+                                                        </mat-error>
+                                                    </mat-form-field>
+                                                </div>
+                                                <div fxFlex=2%></div>
+                                                <div fxFlex=25%>
+                                                    <mat-form-field class="fld-mt0-w100">
+                                                        <input matInput type="text" maxlength="100" #Branch="ngModel"
+                                                            name="Branch" [(ngModel)]="BankInfoDetail.Branch"
+                                                            placeholder="Branch">
+                                                        <!-- <mat-error
+                                                        *ngIf="this.submitAttempt4 && Branch.hasError('required')">
+                                                        Branch is required
+                                                    </mat-error> -->
+                                                    </mat-form-field>
+                                                </div>
+                                                <div fxFlex=2%></div>
+                                                <div fxFlex=25%>
+                                                    <mat-checkbox #SetAsDefault="ngModel" name="SetAsDefault"
+                                                        [(ngModel)]="BankInfoDetail.IsDefault">
+                                                        Set As Default
+                                                    </mat-checkbox>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </ng-template>
+                                    <ng-template pTemplate="header" let-columns>
+                                        <tr>
+                                            <th>
+                                                <button class="app-icon-button" (click)="addBankInfoclick()">
+                                                    <i class="material-icons" color="accent">add_box</i>
+                                                </button>
+                                            </th>
+                                            <th *ngFor="let col of columns" [pSortableColumn]="col.field"
+                                                [style.width]="col.width">
+                                                {{col.header}}
+                                            </th>
+                                            <th></th>
+                                        </tr>
+                                    </ng-template>
+
+                                    <ng-template pTemplate="body" let-rwitem let-columns="columns">
+                                        <tr [pSelectableRow]="rwitem">
+                                            <td>
+                                                <button [disabled]="DisableEdit4()" class="app-icon-button"
+                                                    (click)="editBankInfoclick()">
+                                                    <i class="material-icons">edit</i>
+                                                </button>
+                                            </td>
+                                            <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                                [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                                {{rwitem[col.field]}}
+                                            </td>
+                                            <td>
+                                                <button [disabled]="DisableEdit4()" class="app-icon-button"
+                                                    (click)="deleteBankInfoDetail()">
+                                                    <i class="material-icons">delete</i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="emptymessage">
+                                        <td colspan="10">
+                                            No records found
+                                        </td>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <div fxFlex=90%>
+                                <lable style="font-size:20px;color:Blue;">KYC Info</lable>
+                                <p-table #dt5 [columns]="KYCInfo" [value]="KycGridList" selectionMode="single"
+                                    [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth - 20)"
+                                    [(selection)]="SelectedKycInfoDetail">
+                                    <ng-template pTemplate="caption" class="capsegment">
+                                        <form novalidate #KycInfoForm="ngForm"
+                                            *ngIf="this.Mode5 == 'ADD' || this.Mode5 == 'EDIT'">
+                                            <div fxFlex=20%>
+                                                <autocomplete class="fld-mt0-w100" placeholder="Type" required="true"
+                                                    [submitAttempt]="this.submitAttempt5" [InputDataList]="this.KycList"
+                                                    KeyID="KycID" KeyDescription="KycTitle" #Type="ngModel" name="Type"
+                                                    [(ngModel)]="KycInfoDetail.KycID"
+                                                    (SelectionDone)="SelectKYCDocumentType($event)">
+                                                </autocomplete>
+                                            </div>
+                                            <div fxFlex=2%></div>
+                                            <div fxFlex=20%>
+                                                <mat-form-field class="fld-mt0-w100">
+                                                    <input matInput type="text" maxlength="100"
+                                                        #NameAsInDocument="ngModel" name="NameAsInDocument"
+                                                        [(ngModel)]="KycInfoDetail.NameAsInDocument"
+                                                        placeholder="Name As In Document" required>
+                                                    <mat-error
+                                                        *ngIf="this.submitAttempt5 && NameAsInDocument.hasError('required')">
+                                                        Name As In Document is required
+                                                    </mat-error>
+                                                </mat-form-field>
+                                            </div>
+                                            <div fxFlex=2%></div>
+                                            <div fxFlex=20%>
+                                                <mat-form-field class="fld-mt0-w100">
+                                                    <input matInput type="text" maxlength="100"
+                                                        #DocumentNumber="ngModel" name="DocumentNumber"
+                                                        [(ngModel)]="KycInfoDetail.DocumentNumber"
+                                                        placeholder="Document Number" required>
+                                                    <mat-error
+                                                        *ngIf="this.submitAttempt5 && DocumentNumber.hasError('required')">
+                                                        Document Number is required
+                                                    </mat-error>
+                                                </mat-form-field>
+                                            </div>
+                                            <div fxFlex=2%></div>
+                                            <div fxFlex=20% *ngIf="this.SelectedKyc.KycID == 6">
+                                                <customdate class="fld-mt0-w90" placeholder="Expiry Date"
+                                                    required="true" [submitAttempt]="this.submitAttempt5"
+                                                    #ExpiryDate="ngModel" name="ExpiryDate"
+                                                    [(ngModel)]="KycInfoDetail.ExpiryDate" [allowFutureDate]="true"
+                                                    [allowCurrentDate]="true" [allowPastDate]="true">
+                                                </customdate>
+                                            </div>
+                                            <div fxFlex=10%></div>
+                                            <div fxLayout="row" fxLayoutGap="4%" fxLayoutAlign="end  end">
+                                                <div class="tooltip" matTooltip="Save"
+                                                    [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                    <button type="submit" class="app-icon-button"
+                                                        (click)="updateKycInfoDetails(KycInfoForm.valid)">
+                                                        <i class="material-icons logout">save</i>
+                                                    </button>
+                                                </div>
+                                                <div class="tooltip" matTooltip="Cancel"
+                                                    [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                    <button class="app-icon-button" (click)="cancelKycInfoForm()">
+                                                        <i class="material-icons logout">cancel</i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </ng-template>
+                                    <ng-template pTemplate="header" let-columns>
+                                        <tr>
+                                            <th>
+                                                <button class="app-icon-button" (click)=" addKYCInfoclick()">
+                                                    <i class="material-icons" color="accent">add_box</i>
+                                                </button>
+                                            </th>
+                                            <th *ngFor="let col of columns" [pSortableColumn]="col.field"
+                                                [style.width]="col.width">
+                                                {{col.header}}
+                                            </th>
+                                            <th></th>
+                                        </tr>
+                                    </ng-template>
+
+                                    <ng-template pTemplate="body" let-rwitem let-columns="columns">
+                                        <tr [pSelectableRow]="rwitem">
+                                            <td>
+                                                <button [disabled]="DisableEdit5()" class="app-icon-button"
+                                                    (click)="editKycInfoclick()">
+                                                    <i class="material-icons">edit</i>
+                                                </button>
+                                            </td>
+                                            <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                                [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                                {{rwitem[col.field]}}
+                                            </td>
+                                            <td>
+                                                <button [disabled]="DisableEdit5()" class="app-icon-button"
+                                                    (click)="deleteKycInfoDetail()">
+                                                    <i class="material-icons">delete</i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+
+                                    <ng-template pTemplate="emptymessage">
+                                        <td colspan="10">
+                                            No records found
+                                        </td>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </div>
+                    <br> <br>
+                    <br>
+                    <br>
+                </p-accordionTab>
+
+                <p-accordionTab header="CTC/Salary Particulars">
+                    No data
+                </p-accordionTab>
+
+                <p-accordionTab header="Preferences">
+                    No data
+                </p-accordionTab>
+            </p-accordion>
+        </form>
+    </div>
+
+
+    <div class="ColumnDivider" *ngIf="Mode=='EDIT' || Mode=='ADD'"></div>
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()">
+        <div fxLayout="row">
+            <div fxLayout="column">
+                <div fxLayout="row" class="actionBarRow">
+                    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                        <label class="menuBarHeading">Employee</label>
+                    </div>
+
+                    <div fxLayout="column" class="actionBarDataColumn">
+                    </div>
+
+                    <div fxLayout="column" class="actionBarSearchColumn">
+                    </div>
+
+                    <div fxLayout="column" >
+
+                    </div>
+
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                        <div fxLayout="row" fxLayoutGap="17px">
+                            <div class="tooltip" matTooltip="Import XL"
+                                *ngIf="this.sessionService.actionAllowed('ADD_EMPLOYEE') && this.empUpdateFlag == 0"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="getFile()">
+                                    <i class="material-icons">file_upload</i>
+                                </button>
+                                <div style='height: 0px;width: 0px; overflow:hidden;'><input id="xlUpdate" type="file" value="upload" (change)="chooseFile($event)" /></div>
+                            </div>
+                            <div class="tooltip" matTooltip="Update XL"
+                                *ngIf="this.sessionService.actionAllowed('ADD_EMPLOYEE') && this.empUpdateFlag == 1"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="bulkEmplistUpdate()">
+                                    <i class="material-icons">input</i>
+                                </button>
+                            </div>                            
+                            <div class="tooltip" matTooltip="Download Template"
+                                *ngIf="this.sessionService.actionAllowed('ADD_EMPLOYEE')"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="addClick()">
+                                    <i class="material-icons">file_download</i>
+                                </button>
+                            </div>                            
+                            <div class="tooltip" matTooltip="Add"
+                                *ngIf="this.sessionService.actionAllowed('ADD_EMPLOYEE')"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="addClick()">
+                                    <i class="material-icons">add_box</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Edit"
+                                *ngIf="this.sessionService.actionAllowed('EDIT_EMPLOYEE')"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button [disabled]="DisableEdit()" class="app-icon-button" (click)="editClick()">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Delete"
+                                *ngIf="this.sessionService.actionAllowed('DELETE_EMPLOYEE')"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button [disabled]="DisableEdit()" class="app-icon-button" (click)="deleteClick()">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Refresh"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="refreshClick()">
+                                    <i class="material-icons">refresh</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div fxLayout="row" class="SecondColumnData">
+
+                    <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single" [scrollable]="true"
+                        [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+                        [style.width]="this.sessionService.getScreenWidthInPx()"
+                        [globalFilterFields]="['EmpName','EmpCode','EmpDepartment','EmpDesctination','StatusMessage']"
+                        [(selection)]="selectedData" [paginator]="true" [rows]="sessionService.NoOfRowsPerPage"
+                        [rowsPerPageOptions]="sessionService.RowsPerPageOptions">
+                        <ng-template class="globalFilterFields" pTemplate="header" let-columns>
+                            <tr>
+                                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+
+                                    <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
+                                </th>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="caption">
+                            <div fxLayout="column" fxLayoutAlign="center end">
+                                <div class="flex">
+                                    <span class="p-input-icon-left ml-auto">
+                                        <span> <i class="pi pi-search"></i></span>
+                                        <input pInputText type="text"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Search here" />
+                                    </span>
+                                </div>
+                            </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                    {{rowData[col.field]}}
+                                </td>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

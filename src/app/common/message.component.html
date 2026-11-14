@@ -1,0 +1,37 @@
+﻿<div fxLayout="column" fxFlex=100%>
+
+  <!-- <custom-header [title]="this.productName"></custom-header> -->
+
+  <br />
+  <br />
+
+  <div class="dialogContainer">
+
+    <div fxLayout="row" fxFlex=100% fxLayoutAlign="center center">
+
+      <form #dialogForm="ngForm" novalidate [class]="this.sessionService.DeviceType != 'Mobile'?'fs_form':'mobile_form'">
+
+        <div fxLayout="row" fxFlex="100%" fxLayoutGap="10px" fxLayoutAlign="center center">
+
+          <div fxLayout="column" fxLayoutAlign="center center">
+            <img [src]="this.imagename" width="33px" height="33px">
+          </div>
+
+          <div fxLayout="column" fxLayoutAlign="center center" class="notes">
+            <h3>
+              {{txtMessage}}             
+            </h3>
+          </div>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <!-- <custom-footer [position]="this.getDisplayPosition()"></custom-footer> -->
+
+</div>
+

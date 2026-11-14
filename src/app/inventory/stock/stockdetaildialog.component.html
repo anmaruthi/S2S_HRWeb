@@ -1,0 +1,76 @@
+﻿<div class="dialogContainer">
+  
+<h3 mat-dialog-title class="matDialogHeader" align="center"> Item Name : {{this.selectedDataGridItem.ItemName}}</h3>
+
+
+<div mat-dialog-content>
+
+    <mat-tab-group>
+        <mat-tab label="History">
+            <div>
+                <p-table #dt [columns]="historyCols" [value]="HistoryList" selectionMode="single" [scrollable]="true"  
+                    [(selection)]="selectedData" [paginator]="true" [rows]="sessionService.NoOfRowsPerPage" 
+                    scrollHeight="300px" scrollWidth="100%"
+                    [rowsPerPageOptions]="sessionService.RowsPerPageOptions">    
+                        <ng-template pTemplate="header" let-columns>
+                            <tr> 
+                                <th *ngFor="let col of columns"  [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+                                    <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                                    [style.word-wrap]="col.wrap">
+                                    {{rowData[col.field]}}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+            </div>
+        </mat-tab>
+        <mat-tab label="Balance-Sheet">
+            <div>
+                <p-table #dt [columns]="balanceCols" [value]="BalanceInfo" selectionMode="single" [scrollable]="true"  
+                    [(selection)]="selectedData" [paginator]="true" [rows]="sessionService.NoOfRowsPerPage" 
+                    scrollHeight="300px" scrollWidth="100%"
+                    [rowsPerPageOptions]="sessionService.RowsPerPageOptions">    
+                        <ng-template pTemplate="header" let-columns>
+                            <tr> 
+                                <th *ngFor="let col of columns"  [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+                                    <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                                    [style.word-wrap]="col.wrap">
+                                    {{rowData[col.field]}}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+            </div>
+        </mat-tab>
+
+    </mat-tab-group>
+
+</div>
+  
+
+</div>
+<div fxLayout="row" fxLayoutAlign="center center">
+        <mat-dialog-actions>
+                <button type="button" color="primary" mat-raised-button (click)="cancelClick()">Close</button>
+        </mat-dialog-actions>
+</div>

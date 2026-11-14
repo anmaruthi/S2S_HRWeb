@@ -1,0 +1,81 @@
+<h3 mat-dialog-title class="mdDialogHeader" align="center">{{this.DialogHeader}}</h3>
+
+<div class="div-marign-top-10-space" *ngFor="let category of settingCategoryList">
+  
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+         {{category.CategoryName}}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+   
+      <div *ngFor="let setting of category.SettingList">
+        <div fxLayout="row" *ngIf="setting.Datatype == 'int'">
+          <div fxFlex=50% fxLayoutAlign="start center">
+               {{setting.DisplayName}}
+          </div>
+          <div fxFlex=50% >
+              <mat-form-field fxFlex=60%>
+                  <input matInput type="number" name="setting-{{setting.SettingID}}" [(ngModel)]="setting.SettingsValue"/>
+              </mat-form-field>
+          </div>
+        </div>
+        <div fxLayout="row" class="formError" *ngIf="setting.Datatype == 'int' && setting.HasError">
+            {{setting.ErrorMessage}}
+        </div> 
+        <div fxLayout="row" *ngIf="setting.Datatype == 'string'">
+            <div fxFlex=50% fxLayoutAlign="start center">
+                  {{setting.DisplayName}}
+            </div>
+            <div fxFlex=50% >
+                <mat-form-field fxFlex=60%>
+                    <input matInput type="text" name="setting-{{setting.SettingID}}" [(ngModel)]="setting.SettingsValue"/>
+                </mat-form-field>
+            </div>
+          </div>  
+          <div fxLayout="row" class="formError" *ngIf="setting.Datatype == 'string' && setting.HasError">
+              {{setting.ErrorMessage}}
+          </div>
+          <div fxLayout="row" *ngIf="setting.Datatype == 'password'">
+            <div fxFlex=50% fxLayoutAlign="start center">
+                  {{setting.DisplayName}}
+            </div>
+            <div fxFlex=50% >
+                    <mat-form-field fxFlex=95%>
+                    <input matInput type="password" name="setting-{{setting.SettingID}}" [(ngModel)]="setting.SettingsValue"/>
+                </mat-form-field>
+            </div>
+          </div>  
+          <div fxLayout="row" *ngIf="setting.Datatype == 'bool'">
+              <div fxFlex=50% fxLayoutAlign="start center">
+                    {{setting.DisplayName}}
+              </div>
+              <div fxFlex=50% >
+                  <mat-checkbox color="primary" name="setting-{{setting.SettingID}}" [(ngModel)]="setting.IsSelected"></mat-checkbox>
+              </div>
+          </div>  
+         
+          <div fxLayout="row" *ngIf="setting.Datatype == 'array'">
+              <div fxFlex=50% fxLayoutAlign="start center">
+                    {{setting.DisplayName}}
+              </div>
+              <div fxFlex=50% >
+                  <mat-form-field fxFlex=60%>
+                      <mat-select [placeholder]="setting.DisplayName" name="setting-{{setting.SettingID}}" [(ngModel)]="setting.SettingsValue">
+                          <mat-option *ngFor="let itm of setting.RangeList" [value]="itm">
+                            {{ itm }}
+                          </mat-option>
+                        </mat-select>
+                  </mat-form-field>
+              </div>
+          </div>  
+        </div>
+  </mat-expansion-panel>
+</div>
+<br />
+<div class="div-marign-top-10-space" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="center center">
+  <button type="button" color="primary" mat-raised-button (click)="submitClick()">Submit</button>
+  <button type="button" color="primary" mat-raised-button (click)="cancelClick()">Cancel</button>
+</div>
+
+

@@ -1,0 +1,194 @@
+﻿/* Field Styles - Starting */
+
+
+// Width 25
+
+.fld-mt0-w5 {
+  margin-top: 0px;
+  width: 5%;
+}
+
+.fld-mt0-w25 {
+  margin-top: 0px;
+  width: 25%;
+}
+
+.fld-mt0-w30 {
+  margin-top: 0px;
+  width: 30%;
+}
+
+// Width 50
+
+.fld-mt0-w50 {
+  margin-top: 0px;
+  width: 50%;
+}
+
+.fld-mt0-w60 {
+  margin-top: 0px;
+  width: 60%;
+}
+
+.fld-mt0-w70 {
+  margin-top: 0px;
+  width: 70%;
+}
+
+// Width 80
+
+.fld-mt0-w80 {
+  margin-top: 0px;
+  width: 80%;
+}
+
+.fld-mt5-w80 {
+  margin-top: 5px;
+  width: 80%;
+}
+
+.fld-mt20-w80 {
+  margin-top: 20px;
+  width: 80%;
+}
+
+
+.fld-mt-5-w80 {
+  margin-top: -5px;
+  width: 80%;
+}
+
+.fld-mt-8-w80 {
+  margin-top: -10px;
+  width: 80%;
+}
+
+.fld-mt-10-w80 {
+  margin-top: -10px;
+  width: 80%;
+}
+
+.fld-mt-20-w80 {
+  margin-top: -20px;
+  width: 80%;
+}
+
+// Width 85
+
+.fld-mt0-ml-11-w84 {
+  margin-top: 0px;
+  width: 84%;
+  margin-left: -11px;
+}
+
+
+// Width 90
+
+.fld-mt0-w90 {
+  width: 90%;
+}
+
+.fld-mt20-w90 {
+  margin-top: 20px;
+  width: 90%;
+}
+
+.fld-mt-20-w90 {
+  margin-top: -20px;
+  width: 90%;
+}
+
+
+// Width 95
+
+.fld-mt0-w95 {
+  width: 95%;
+}
+
+.fld-mt20-w95 {
+  margin-top: 20px;
+  width: 95%;
+}
+
+.fld-mt-20-w95 {
+  width: 95%;
+}
+
+.fld-mt20-ml-11-w95 {
+  margin-top: 20px;
+  width: 95%;
+  margin-left: -11px;
+}
+
+// Width 100
+
+.fld-mt-05-w100 {
+  margin-top: -5px;
+  width: 100%;
+}
+
+.fld-mt0-w100 {
+  margin-top: 0px;
+  width: 100%;
+}
+
+.fld-mt15-w100 {
+  margin-top: 15px;
+  width: 100%;
+}
+
+.fld-mt-20-w100 {
+  margin-top: -20px;
+  width: 100%;
+}
+
+.fld-mt20-w100 {
+  margin-top: 20px;
+  width: 100%;
+}
+
+//special case
+.fld-mt-10-ml-10-w100 {
+  width: 100%;
+  margin-top: -10px;
+  margin-left: -10px;
+}
+
+.fld-mt-10-w90 {
+  width: 100%;
+  margin-top: -10px;
+}
+
+.fld-sufixPadding {
+  padding-left: 10px;
+  cursor: pointer;
+}
+
+.fld-clear {
+  padding-right: 10px;
+  cursor: pointer;
+  color: red;
+  font-size: smaller;
+  align-self: baseline;
+}
+
+.fld-tip {
+  //padding-right: 10px;
+  cursor: pointer;
+  color: green;
+  font-size: smaller;
+  align-self: auto;
+  margin: 0px;
+  width:1px;
+  //height:1px;
+}
+
+//primeng
+// Width 100
+.fld-pr0-w100 {
+  margin-top: -15px;
+  width: 100%;
+}
+
+
+/* Field Styles - End */

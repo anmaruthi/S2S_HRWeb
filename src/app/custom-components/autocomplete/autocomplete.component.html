@@ -1,0 +1,26 @@
+﻿<mat-form-field class="fld-mt0-w100">
+
+  <input matInput type="text" [placeholder]="this.placeholder" [matAutocomplete]="autoControl" [(ngModel)]="this.descriptionString" [readonly]="ReadOnlyControl"
+         [required]="this.required" #inputText="ngModel" (ngModelChange)="this.DataListFiltered = doFilter(descriptionString, inputText);this.changeEventEmit();">
+  
+  <mat-autocomplete #autoControl="matAutocomplete">
+    <mat-option *ngFor="let itm of DataListFiltered" [value]="itm.Description">
+      {{ itm.Description }}
+    </mat-option>
+  </mat-autocomplete>
+  
+  <!-- <button type="button"  mat-button matSuffix mat-icon-button>
+    <i class="material-icons md-light">flag</i>
+  </button> -->
+
+  <!-- <mat-icon *ngIf="suffixButton==true" matSuffix [matTooltip]="suffixButtonText" class="fld-sufixPadding" (click)="SuffixButtonClicked()">{{suffixButtonIcon}}</mat-icon> -->
+
+  <mat-error *ngIf="this.submitAttempt && inputText.hasError('required')">
+    {{this.placeholder}} is required
+  </mat-error>
+
+  <mat-error *ngIf="this.submitAttempt && inputText.hasError('descriptionParseError')">
+    {{this.placeholder}} is invalid
+  </mat-error>
+  
+</mat-form-field>

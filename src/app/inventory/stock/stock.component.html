@@ -1,0 +1,128 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()">
+        <div fxLayout="row">
+
+            <div fxLayout="column">
+
+                <div fxLayout="row" class="actionBarRow">
+
+                    <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center">
+                        <label class="menuBarHeading">Stock</label>
+                    </div>
+
+                    <!-- <div fxLayout="column" class="actionBarSearchColumn">
+                        <mat-form-field>
+                            <input inputmode="search" (keyup)="onKeyUp()"
+                                (input)="dt.filterGlobal($event.target.value, 'contains')" matInput
+                                placeholder="Text Filter" class="searchBox">
+                        </mat-form-field>
+                    </div> -->
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+
+                    </div>
+                </div>
+
+                <div fxLayout="row" class="SecondColumnData">
+                    <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single" [scrollable]="true"
+                        [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+                        [style.width]="this.sessionService.getScreenWidthInPx()" [(selection)]="selectedData"
+                        [paginator]="true" [rows]="sessionService.NoOfRowsPerPage"
+                        [rowsPerPageOptions]="sessionService.RowsPerPageOptions">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+                                    <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="caption">
+                            <div fxLayout="row"  fxLayoutAlign="center start">
+                                <div fxLayout="column" fxFlex=100%>
+                                    <div fxLayout="row" >
+                                        <div  fxFlex=60% *ngIf="this.sessionService.actionAllowed('UPDATE_STOCK') ">
+                                            <div fxLayout="row" fxLayoutGap="10px">
+                                                <div *ngIf="this.stockUpdateFlag == 0">
+                                                    <button type="button" color="primary" mat-raised-button (click)="getFile()">Choose stock data file</button>
+                                                    <div style='height: 0px;width: 0px; overflow:hidden;'><input id="xlUpdate" type="file" value="upload" (change)="chooseFile($event)" /></div>
+                                                </div>
+                                                <div *ngIf="this.stockUpdateFlag == 1">                                                                                                      
+                                                    <div  fxLayout="row" id="file_upload" hidden="hidden"  fxLayoutGap="10px">
+                                                        <div><button type="button" color="primary" mat-raised-button (click)="StockUpdateRequest()">Update Stock</button></div>
+                                                        <div>
+                                                            <customdate class="fld-mt0-w100" placeholder="Stock Update Date" required="true"  [submitAttempt]="this.submitAttempt"
+                                                                    [(ngModel)]="stockUpdateDate" [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true">
+                                                            </customdate>
+                                                        </div>
+                                                        <div><button type="button" color="primary" mat-raised-button (click)="ClearRq()">Reset</button></div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <textarea id="json-result" style='height: 0px;width: 0px; overflow:hidden;'></textarea> 
+                                                </div>
+                                            </div>
+                                            <!-- <h1>Upload an excel file to convert into JSON</h1>
+                                            <input type="file" id="file_upload" />
+                                            <button onclick="upload()">Upload</button>  
+                                            <br>
+                                            <br>
+
+                                            <textarea id="json-result" style="display:none;height:5px;width:3px;"></textarea> -->
+                                        </div>
+                                        <div  fxFlex=20%>
+                                            <div fxLayout="row" fxLayoutGap="10px">
+                                                <div class="tooltip">
+                                                    <i class="pi pi-search"></i>
+                                                </div>
+                                                <div class="flex">
+                                                    <input pInputText type="text"
+                                                        (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                                        placeholder="Search here" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div  fxFlex=20% fxLayoutGap="10px" fxLayoutAlign="center end" >
+                                            <div class="tooltip" *ngIf="InwardRouterLink!=undefined"
+                                                matTooltip="Stock Inward Transaction"
+                                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                <button class="app-icon-button" [routerLink]="InwardRouterLink">
+                                                    <i class="material-icons">gamepad</i>
+                                                </button>
+                                            </div>
+                                            <div class="tooltip" *ngIf="OutwardRouterLink!=undefined"
+                                                matTooltip="Stock Outward Transaction"
+                                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                <button class="app-icon-button" [routerLink]="OutwardRouterLink">
+                                                    <i class="material-icons">zoom_out_map</i>
+                                                </button>
+                                            </div>
+                                            <div class="tooltip" matTooltip="Refresh"
+                                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                                <button class="app-icon-button" (click)="refreshClick()">
+                                                    <i class="material-icons">refresh</i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                    {{rowData[col.field]}}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

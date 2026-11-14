@@ -1,0 +1,325 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+    <div fxLayout="column" [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth)"
+        *ngIf="Mode=='EDIT' || Mode=='ADD'" class="formColumn">
+        <form novalidate #dialogForm="ngForm">
+            <div fxLayout="row" class="actionBarRow">
+                <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                    <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Shift </label>
+                    <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Shif </label>
+                </div>
+                <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                    <div fxLayout="row" fxLayoutGap="20px">
+                        <div class="tooltip" matTooltip="Save"
+                            *ngIf="(this.sessionService.actionAllowed('ADD_SHIFT') && this.Mode == 'ADD'
+                                                    || this.sessionService.actionAllowed('EDIT_SHIFT') && this.Mode =='EDIT')"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button" (click)="submitClick(dialogForm.valid)">
+                                <i class="material-icons logout">save</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Cancel"
+                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button class="app-icon-button" (click)="cancelClick()">
+                                <i class="material-icons logout">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div fxLayout="row" class="FirstColumnData"
+                [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+                <div fxLayout="column" fxFlex=100%>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=50%>
+                            <mat-lable>Shift:</mat-lable>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=20%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" maxlength="100" #Shift="ngModel" name="Shift"
+                                    [(ngModel)]="selectedDataGridItem.Shift" placeholder="Shift" required>
+                                <mat-error *ngIf="this.submitAttempt && Shift.hasError('required')">
+                                    is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=50%>
+                            <mat-lable>InTime:</mat-lable>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=20%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" maxlength="100" #InTime="ngModel" name="InTime"
+                                    [(ngModel)]="selectedDataGridItem.InTime" placeholder="InTime" required>
+                                <mat-error *ngIf="this.submitAttempt && InTime.hasError('required')">
+                                    is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=50%>
+                            <mat-lable>OutTime:</mat-lable>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=20%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" maxlength="100" #OutTime="ngModel" name="OutTime"
+                                    [(ngModel)]="selectedDataGridItem.OutTime" placeholder="Out Time" required>
+                                <mat-error *ngIf="this.submitAttempt && OutTime.hasError('required')">
+                                    is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=50%>
+                            <mat-lable>Make morning session abset,if Intime beyond:</mat-lable>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=20%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" maxlength="100" #FirstSession="ngModel" name="FirstSession"
+                                    [(ngModel)]="selectedDataGridItem.FirstSession" placeholder="First Session"
+                                    required>
+                                <mat-error *ngIf="this.submitAttempt && FirstSession.hasError('required')">
+                                    is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=50%>
+                            <mat-lable>Make afternoon session absent,if Out-time before:</mat-lable>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=20%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" maxlength="100" #SecondSession="ngModel"
+                                    name="SecondSession" [(ngModel)]="selectedDataGridItem.SecondSession"
+                                    placeholder="Second session" required>
+                                <mat-error *ngIf="this.submitAttempt && SecondSession.hasError('required')">
+                                    is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=50%>
+                            <mat-lable>Grace Time(Minutes for late and permission):</mat-lable>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=20%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" maxlength="100" #GraceTime="ngModel" name="GraceTime"
+                                    [(ngModel)]="selectedDataGridItem.GraceTime" placeholder="Grace Time" required>
+                                <mat-error *ngIf="this.submitAttempt && GraceTime.hasError('required')">
+                                    is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=50%>
+                            <mat-lable>Make late as permission if minutes Go beyond:</mat-lable>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=20%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" maxlength="100" #LateAsPermissionGoBeyond="ngModel"
+                                    name="LateAsPermissionGoBeyond"
+                                    [(ngModel)]="selectedDataGridItem.LateAsPermissionGoBeyond"
+                                    placeholder="Late & permission" required>
+                                <mat-error *ngIf="this.submitAttempt && LateAsPermissionGoBeyond.hasError('required')">
+                                    is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=50%>
+                            <mat-lable>Total Break Hours:</mat-lable>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=20%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" maxlength="100" #TotalBreakHours="ngModel"
+                                    name="TotalBreakHours" [(ngModel)]="selectedDataGridItem.TotalBreakHours"
+                                    placeholder=" Break Hours" required>
+                                <mat-error *ngIf="this.submitAttempt && TotalBreakHours.hasError('required')">
+                                    is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=50%>
+                            <mat-lable>Add one more break if OT hrs >=</mat-lable>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=20%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" maxlength="100" #AddOneMoreBreakIfOtHours="ngModel"
+                                    name="AddOneMoreBreakIfOtHours"
+                                    [(ngModel)]="selectedDataGridItem.AddOneMoreBreakIfOtHours"
+                                    placeholder="OT Break hours " required>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=50%>
+                            <mat-lable>Make Half Day if Total Minutes Go Below:</mat-lable>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=20%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" maxlength="100" #HalfDayBelow="ngModel" name="HalfDayBelow"
+                                    [(ngModel)]="selectedDataGridItem.HalfDayBelow" placeholder="Half Day Minutes"
+                                    required>
+                                <mat-error *ngIf="this.submitAttempt && HalfDayBelow.hasError('required')">
+                                    is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=50%>
+                            <mat-lable>Make Absent if Total Minutes Go Below:</mat-lable>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=20%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" maxlength="100" #AbsentBelow="ngModel" name="AbsentBelow"
+                                    [(ngModel)]="selectedDataGridItem.AbsentBelow" placeholder="Full Day Minutes "
+                                    required>
+                                <mat-error *ngIf="this.submitAttempt && AbsentBelow.hasError('required')">
+                                    is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <br>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=35%>
+                            <mat-lable>Applicable:</mat-lable>
+                            <div fxFlex="2%"></div>
+                            <input type="checkbox" [(ngModel)]="selectedDataGridItem.ApplicableMale"
+                                name="ApplicableMale" /> Male<br>
+                            <div fxFlex="2%"></div>
+                            <input type="checkbox" [(ngModel)]="selectedDataGridItem.ApplicableFemale"
+                                name="ApplicableFemale" /> Female
+                        </div>
+                        <div fxFlex="2%"></div>
+                        <div fxFlex=37%>
+                            <mat-lable>This Shif End Next Day:</mat-lable>
+                            <input type="checkbox" [(ngModel)]="selectedDataGridItem.ShifEndNextDay"
+                                name="ShifEndNextDay" /> Yes
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="ColumnDivider" *ngIf="Mode=='EDIT' || Mode=='ADD'"></div>
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()">
+        <div fxLayout="row">
+            <div fxLayout="column">
+                <div fxLayout="row" class="actionBarRow">
+                    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                        <label class="menuBarHeading">Shift </label>
+                    </div>
+
+                    <div fxLayout="column" class="actionBarDataColumn">
+                    </div>
+
+                    <div fxLayout="column" class="actionBarSearchColumn">
+                    </div>
+
+                    <div fxLayout="column" fxLayoutGap="10px">
+                    </div>
+
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                        <div fxLayout="row" fxLayoutGap="17px">
+                            <div class="tooltip" matTooltip="Add" *ngIf="this.sessionService.actionAllowed('ADD_SHIFT')"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="addClick()">
+                                    <i class="material-icons">add_box</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Edit"
+                                *ngIf="this.sessionService.actionAllowed('EDIT_SHIFT')"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button [disabled]="DisableEdit()" class="app-icon-button" (click)="editClick()">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Delete"
+                                *ngIf="this.sessionService.actionAllowed('DELETE_SHIFT')"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button [disabled]="DisableEdit()" class="app-icon-button" (click)="deleteClick()">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Refresh"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="refreshClick()">
+                                    <i class="material-icons">refresh</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div fxLayout="row" class="SecondColumnData">
+
+                    <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single" [scrollable]="true"
+                        [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+                        [style.width]="this.sessionService.getScreenWidthInPx()" [(selection)]="selectedData"
+                        [paginator]="true" [rows]="sessionService.NoOfRowsPerPage"
+                        [rowsPerPageOptions]="sessionService.RowsPerPageOptions">
+                        <ng-template class="globalFilterFields" pTemplate="header" let-columns>
+                            <tr>
+                                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+
+                                    <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
+                                </th>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="caption">
+                            <div fxLayout="column" fxLayoutAlign="center end">
+                                <div class="flex">
+                                    <span class="p-input-icon-left ml-auto">
+                                        <span> <i class="pi pi-search"></i></span>
+                                        <input pInputText type="text"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Search here" />
+                                    </span>
+                                </div>
+                            </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                                    {{rowData[col.field]}}
+                                </td>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

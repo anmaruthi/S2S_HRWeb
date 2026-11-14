@@ -1,0 +1,110 @@
+@import '../../custom-theme-color.scss';
+
+.homeContainer {
+  height: 100%;
+  width: 100%;
+}
+
+.headerContainer {
+  height: 60px;
+  width: 100%;
+  background: $primary;
+  padding-right: 10px;
+  padding-left: 20px;
+}
+
+.logoLabelText {
+  font-size: 20px;
+  color: $font-color;
+  font-weight: bold;
+  letter-spacing: 1px;
+  background: #5c44c6;
+  margin-left: 20px;
+}
+
+.logoContainer {
+  width: 300px;
+  background: $primary;
+}
+
+.logoSubHeandingText {
+  font-size: small;
+  color: #e80b84;
+  background: $primary;
+}
+
+.headerSubContainer {
+  width: 100%;
+  background: $primary;
+}
+
+.SubHeadingText {
+  font-size: 20px;
+  color: $font-color;
+  font-weight: bold;
+  letter-spacing: 1px;
+//  background: #5c44c6;
+}
+
+.SubHeading1Text {
+  font-size: 100%;
+  color: white;
+  background: $primary;
+}
+
+.headerMenuContainer {
+  width: 100%;
+}
+
+.rootContainer {
+  height: calc(100% - 60px);
+  width: 100%;
+  background-color: white;
+}
+
+.custom-list {
+  top: 100px;
+  left: 40px;
+  right: 40px;
+  bottom: 40px;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  background: white;
+  overflow: auto;
+  font-size: 25px;
+  color: $font-color-secondary;
+}
+
+.custom-tile {
+  cursor: pointer;
+  color:white;
+  border-radius: 15px;
+}
+
+.justity-center {
+  align-items: center;
+  justify-content: center;
+}
+
+.home-material-icons {
+  //color: rgba(240, 240, 240, 1);
+  color:white;
+  font-size: 55px;
+}
+
+.iconfocus:hover {
+  color: $accent;
+}
+
+.welcome {
+  color: #F8FDF8;
+  font-size: 16px;
+}
+
+// .app-icon-button-home :hover{
+//   color: $accent;
+// }

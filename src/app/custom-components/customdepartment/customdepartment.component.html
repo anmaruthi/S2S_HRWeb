@@ -1,0 +1,84 @@
+<div>        
+    <form novalidate #dialogForm="ngForm">
+
+                <div fxLayout="row" class="actionBarRow">
+
+                    <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                        <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Department</label>
+                        <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Department</label>
+                    </div>
+    
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                        <div fxLayout="row" fxLayoutGap="20px">
+                            <div class="tooltip" matTooltip="Save" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button type="submit" class="app-icon-button" (click)="SubmitClick(dialogForm.valid)">
+                                    <i class="material-icons logout">save</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="cancelClick()">
+                                    <i class="material-icons logout">cancel</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div fxLayout="row" class="FirstColumnData" [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+                        
+                    <div fxLayout="column" fxFlex=100%>
+                    <br>
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex=60%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" #departmentName="ngModel" name="departmentName"  maxlength="50" [(ngModel)]="selectedDataGridItem.DepartmentName"
+                                          placeholder="Department Name" required />
+                                    <mat-error *ngIf="this.submitAttempt && departmentName.hasError('required')">
+                                        Department name is required
+                                    </mat-error>                  
+                            </mat-form-field>         
+                            </div>
+
+                        </div>
+        
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                                <div fxFlex=60%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <mat-select #users="ngModel" name="users" [(ngModel)]="SelectedUsers"
+                                    multiple  placeholder="Point Of Contact">
+                                <mat-option *ngFor="let itm of UserList" [value]="itm">
+                                   {{ itm.UserName }}
+                                </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="this.submitAttempt && users.hasError('required')">
+                                     User is required
+                                </mat-error>                                                              
+                            </mat-form-field>
+                            </div>
+
+                        </div>
+                  
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <div fxFlex=60%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <mat-select #statusCode="ngModel" name="statusCode"  [(ngModel)]="selectedDataGridItem.StatusCode" required
+                                          placeholder="Status">
+                                    <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                                          {{ itm.StatusMessage }}
+                                    </mat-option>
+                                </mat-select>
+        
+                                <mat-error *ngIf="this.submitAttempt && statusCode.hasError('required')">
+                                    Status is required
+                                </mat-error>
+                            </mat-form-field>
+                            </div>
+
+                        </div>
+                        <br>
+                        <br>
+                  </div>
+
+                </div>
+        </form>
+</div>

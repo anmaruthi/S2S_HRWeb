@@ -1,0 +1,33 @@
+﻿<div class="dialogContainer">
+
+  <h3 mat-dialog-title class="mdDialogHeader" align="center">{{Header}}</h3>
+
+   <mat-dialog-content class="contentDiv" role="alertdialog">
+
+     <div fxLayout="column">
+
+       <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="center center">
+         <div>
+           {{Message}}
+         </div>
+       </div>
+
+       <br>
+
+       <mat-checkbox [(ngModel)]="this.checked">Yes, I Agree</mat-checkbox>
+
+       <br>
+       <br>
+
+       <div fxFlex="row" fxLayoutGap="30px" fxLayoutAlign="center center">
+         <button color="primary" mat-raised-button (click)="SubmitClick()">Yes</button>
+         <button color="primary" mat-raised-button (click)="CancelClick()">No</button>
+       </div>
+
+       <br>
+
+     </div>
+
+     </mat-dialog-content>
+
+</div>

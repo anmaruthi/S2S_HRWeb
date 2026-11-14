@@ -1,0 +1,270 @@
+﻿<div fxLayout="column" fxFlex=100%>
+  <form #dialogForm="ngForm" novalidate>
+    <div fxLayout="row" class="actionBarRow">
+      <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+        <label *ngIf="Mode=='ADD'" class="menuBarHeading">New Purchase Request</label>
+        <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Purchase Request</label>
+      </div>
+      <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+        <div fxLayout="row" fxLayoutGap="10px">
+          <!-- <div class="tooltip" matTooltip="Report"
+            *ngIf="(this.sessionService.reportAllowed('Purchase Order')) && this.Mode == 'HOME'"
+            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+            <button type="button" class="app-icon-button" [disabled]="!rowSelected()" (click)="printPurchaseOrder()">
+              <i class="material-icons logout">assignment</i>
+            </button>
+          </div> -->
+
+          <div class="tooltip" matTooltip="Save"
+            *ngIf="(this.sessionService.actionAllowed('ADD_PURCHASEREQUEST') || this.sessionService.actionAllowed('EDIT_PURCHASEREQUEST'))"
+            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+            <button class="app-icon-button" (click)="saveClick(dialogForm.valid)" [disabled]="!canSave()" #savebutton>
+              <i class="material-icons logout">save</i>
+            </button>
+          </div>
+          <div class="tooltip" matTooltip="Submit" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+            *ngIf="(this.sessionService.actionAllowed('ADD_PURCHASEREQUEST') || this.sessionService.actionAllowed('EDIT_PURCHASEREQUEST')) && userScreen=='ENTRY'">
+            <button type="submit" class="app-icon-button" (click)="submitClick(dialogForm.valid,'SUBMIT')"
+              [disabled]="!canSubmit()" #submitbutton>
+              <i class="material-icons">check_circle</i>
+            </button>
+          </div>
+          <div class="tooltip" matTooltip="Approve"
+            *ngIf="(this.sessionService.actionAllowed('APPROVE_PURCHASEREQUEST') ) &&  (userScreen=='APPROVAL') "
+            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+            <button type="button" class="app-icon-button" (click)="submitClick(dialogForm.valid,'APPROVE')"
+              [disabled]="!canApprove()" #approveButton>
+              <i class="material-icons logout">thumb_up</i>
+            </button>
+          </div>
+          <div class="tooltip" matTooltip="Reject"
+            *ngIf="(this.sessionService.actionAllowed('APPROVE_PURCHASEREQUEST') ) &&  (userScreen=='APPROVAL') "
+            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+            <button type="button" class="app-icon-button" (click)="submitClick(dialogForm.valid,'REJECT')"
+              [disabled]="!canApprove()" #rejectButton>
+              <i class="material-icons logout">thumb_down</i>
+            </button>
+          </div>
+          <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+            <button class="app-icon-button" (click)="closeClick()">
+              <i class="material-icons logout">cancel</i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div fxLayout="row" fxLayoutAlign="start start">
+      <div fxLayout="column" fxFlex=100%>
+        <mat-form-field class="fld-mt0-w100">
+          <textarea matInput type="text" #no2usr="ngModel" name="no2usr" class="note2usr"
+            [(ngModel)]="dialogItem.NoteToUser" placeholder="Note to User"> </textarea>
+        </mat-form-field>
+      </div>
+    </div> -->
+
+    <div fxLayout="row" fxLayoutAlign="start start">
+
+      <div fxLayout="column" fxFlex=48%>
+        <autocomplete class="fld-mt0-w100" placeholder="Request From" required="true"
+          [submitAttempt]="this.submitAttempt" [InputDataList]="this.DeliveryAddressList" KeyID="DelAddrID"
+          KeyDescription="DelRefCode" #DeliveryAddress="ngModel" name="DeliveryAddress"
+          [(ngModel)]="dialogItem.RequestAddrID" (SelectionDone)="SelectDeliveryAddress($event)">
+        </autocomplete>
+        <div *ngIf="this.SelectedDeliveryAddress">
+          <mat-card class="cardClass">
+            <div>{{SelectedDeliveryAddress.Address1}}</div>
+            <div> {{SelectedDeliveryAddress.Address2}}</div>
+            <div>{{SelectedDeliveryAddress.City}}</div>
+            <div> {{SelectedDeliveryAddress.Pincode}} </div>
+            <div>{{SelectedDeliveryAddress.StateName}}</div>
+            <div>{{SelectedDeliveryAddress.CountryName}}</div>
+            <div>GSTIN: {{SelectedDeliveryAddress.GSTIN}}</div>
+          </mat-card>
+        </div>
+      </div>
+
+      <div fxLayout="column" fxFlex="4%"></div>
+      <div fxLayout="column" fxFlex=48%>
+        <br />
+        <div fxLayout="row" fxLayoutAlign="start start" *ngIf="this.SelectedDeliveryAddress">
+          <div fxLayout="column" fxFlex=48%>
+            <mat-form-field class="fld-mt0-w100">
+              <input matInput type="text" readonly #PurchaseRequestNo="ngModel" name="PurchaseRequestNo"
+                [(ngModel)]="dialogItem.PurchaseRequestNumberString" placeholder="Purchase Request Number" />
+            </mat-form-field>
+
+          </div>
+          <div fxLayout="column" fxFlex=4%></div>
+          <div fxLayout="column" fxFlex=48%>
+            <customdate class="fld-mt0-w100" placeholder="Request Date" required="true" #poDate="ngModel" name="poDate"
+              [(ngModel)]="dialogItem.PurchaseRequestDate" [ReadOnlyControl]="false" [allowFutureDate]="false"
+              [allowCurrentDate]="true" [allowPastDate]="true" [submitAttempt]="this.submitAttempt"> </customdate>
+
+          </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="start start" *ngIf="this.SelectedDeliveryAddress">
+          <div fxLayout="column" fxFlex=48%>
+
+            <autocomplete class="fld-mt0-w100" placeholder="PR Status" [ReadOnlyControl]="true"
+              [submitAttempt]="this.submitAttempt" [InputDataList]="this.StageStatusList" KeyID="StageStatusCode"
+              KeyDescription="StatusMessage" #StatusCode="ngModel" name="StatusCode"
+              [(ngModel)]="dialogItem.StatusCode">
+            </autocomplete>
+          </div>
+          <div fxLayout="column" fxFlex=4%></div>
+          <div fxLayout="column" fxFlex=48%>
+            <customdate class="fld-mt0-w100" placeholder="Expected Delivery Date" required="true" #exDate="ngModel"
+              name="exDate" [(ngModel)]="dialogItem.ExpectedDeliveryDate" [ReadOnlyControl]="false"
+              [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true" [submitAttempt]="this.submitAttempt"> </customdate>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br>
+    <br>
+
+    <div fxLayout="row" fxLayoutAlign="center center">
+      <div fxFlex=100%>
+        <p-table #dt1 [columns]="cols1" [value]="dialogItemDetailList" selectionMode="single"
+          [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth - 20)"
+          [(selection)]="selectedPOItem">
+
+          <ng-template pTemplate="caption" class="capsegment">
+            <form novalidate #dialogForm1="ngForm" *ngIf="this.Mode1 == 'ADD' || this.Mode1 == 'EDIT'">
+              <div fxLayout="row">
+                <div fxFlex=30%>
+                  <autocomplete class="fld-mt0-w100" placeholder="Material" required="true" type="editable"
+                    [submitAttempt]="this.submitAttempt1" [InputDataList]="this.MaterialList" KeyID="ItemID"
+                    KeyDescription="ItemName" #Master_Item="ngModel" name="Master_Item"
+                    [(ngModel)]="dialogItemDetail.ItemID" (SelectionDone)="SelectMaterial($event)">
+                  </autocomplete>
+                </div>
+                <div fxFlex="2%"></div>
+                <div fxFlex=30%>
+                  <mat-form-field class="fld-mt0-w100">
+                    <input matInput type="number" maxlength="100" #Quentity="ngModel" name="Quentity"
+                      [(ngModel)]="dialogItemDetail.RequestQuantity" placeholder="Quantity" required
+                      [submitAttempt]="this.submitAttempt1">
+                    <mat-error *ngIf="this.submitAttempt1 && Quentity.hasError('required')">
+                      Quantity is required
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div fxFlex="2%"></div>
+                <div fxFlex="9%">
+
+                  <autocomplete class="fld-mt0-w100" placeholder="UOM" required="true" type="editable"
+                    [submitAttempt]="this.submitAttempt1" [InputDataList]="this.UOMList" KeyID="UOMID"
+                    KeyDescription="UOM" #uom1="ngModel" name="uom1" [(ngModel)]="dialogItemDetail.PUOMID"
+                    (SelectionDone)="SelectUOM($event)">
+                  </autocomplete>
+                </div>
+                <div fxFlex="2%"></div>
+                <div fxFlex="10%">
+                  <customdate class="fld-mt0-w100" placeholder="Exp.Deliv.Date" required="true" #exDate1="ngModel"
+                    name="exDate1" [(ngModel)]="dialogItemDetail.ExpectedDeliveryDate" [ReadOnlyControl]="false"
+                    [allowFutureDate]="true" [allowCurrentDate]="true" [allowPastDate]="true"
+                    [submitAttempt]="this.submitAttempt1">
+                  </customdate>
+                </div>
+
+                <div fxFlex="10%">
+                  <div fxLayout="row" fxLayoutGap="4%" fxLayoutAlign="end  end">
+                    <div class="tooltip" matTooltip="Save" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                      <button type="submit" class="app-icon-button" (click)="updateMaterialDetails(dialogForm1.valid)">
+                        <i class="material-icons logout">save</i>
+                      </button>
+                    </div>
+
+                    <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                      <button class="app-icon-button" (click)="cancelMaterialForm()">
+                        <i class="material-icons logout">cancel</i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div fxLayout="row" *ngIf="this.SelectedMaterial != null">
+                <div fxFlex=30%>
+                  <mat-form-field class="fld-mt0-w100">
+                    <input matInput type="text" readonly #ItemCat="ngModel" name="ItemCat"
+                      [(ngModel)]="SelectedMaterial.ItemCategoryName" placeholder="Category" />
+                  </mat-form-field>
+                </div>
+                <div fxFlex="2%"></div>
+                <div fxFlex=30%>
+                  <mat-form-field class="fld-mt0-w100">
+                    <input matInput type="text" readonly #ItemTyp="ngModel" name="ItemTyp"
+                      [(ngModel)]="SelectedMaterial.ItemTypeName" placeholder="Type" />
+                  </mat-form-field>
+                </div>
+                <div fxFlex="2%"></div>
+                <div fxFlex=21%>
+                  <mat-form-field class="fld-mt0-w100">
+                    <input matInput type="text" readonly #ItemSiz="ngModel" name="ItemSiz"
+                      [(ngModel)]="SelectedMaterial.ItemSize" placeholder="Size" />
+                  </mat-form-field>
+                </div>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="center center" *ngIf="this.SelectedMaterial != null">
+                <div fxFlex=100%>
+                  <mat-form-field class="fld-mt0-w100">
+                    <input matInput type="text" #itmremarks="ngModel" name="itmremarks"
+                      [(ngModel)]="dialogItemDetail.ItemRemarks" placeholder="Remarks">
+                  </mat-form-field>
+                </div>
+              </div>
+
+            </form>
+
+          </ng-template>
+
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <th>
+                <button class="app-icon-button" (click)=" addMaterialclick()">
+                  <i class="material-icons" color="accent">add_box</i>
+                </button>
+              </th>
+              <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                {{col.header}}
+              </th>
+              <th></th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-rwitem let-columns="columns">
+            <tr [pSelectableRow]="rwitem">
+              <td>
+                <button [disabled]="DisableEdit1()" class="app-icon-button" (click)="editMaterialclick()">
+                  <i class="material-icons">edit</i>
+                </button>
+              </td>
+              <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                [style.word-wrap]="col.wrap">
+                {{rwitem[col.field]}}
+              </td>
+              <td>
+                <button class="app-icon-button" [disabled]="DisableEdit1()" (click)="deleteMaterialDetail()">
+                  <i class="material-icons">delete</i>
+                </button>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <td colspan="11">
+              No records found
+            </td>
+          </ng-template>
+
+        </p-table>
+      </div>
+    </div>
+
+
+  </form>
+</div>

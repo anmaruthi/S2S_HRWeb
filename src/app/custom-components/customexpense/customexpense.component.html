@@ -1,0 +1,63 @@
+<div>
+
+          <form novalidate #dialogForm="ngForm">
+
+              <div fxLayout="row" class="actionBarRow">
+                  <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center">
+                      <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Expense</label>
+                      <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Expense</label>
+                  </div>
+          
+                  <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                      <div fxLayout="row" fxLayoutGap="20px">
+                          <div class="tooltip" matTooltip="Save" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                            *ngIf="(this.sessionService.actionAllowed('ADD_EXPENSE') && this.Mode == 'ADD') || this.sessionService.actionAllowed('EDIT_EXPENSE')">
+                              <button type="submit" class="app-icon-button" (click)="SubmitClick(dialogForm.valid)">
+                              <i class="material-icons logout">save</i>
+                              </button>
+                          </div>
+                          <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                              <button class="app-icon-button" (click)="cancelClick()">
+                                  <i class="material-icons logout">cancel</i>
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+      
+              <div fxLayout="row" class="FirstColumnData" [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+                  
+                  <div fxLayout="column" fxFlex=100%>
+                        <br>
+
+                          <div fxLayout="row" fxLayoutAlign="center center">
+                                  <mat-form-field class="fld-mt0-w60">
+                                    <input matInput type="text" maxlength="50" #ExpenseName="ngModel" name="ExpenseName" [(ngModel)]="selectedDataGridItem.ExpenseName"
+                                    placeholder="Expense Name" required>
+                                    <mat-error *ngIf="this.submitAttempt && ExpenseName.hasError('required')">
+                                            Expense Name is required
+                                    </mat-error>                   
+                                  </mat-form-field>                            
+                          </div>
+
+                          <div fxLayout="row" fxLayoutAlign="center center">                            
+                              <mat-form-field  class="fld-mt0-w60">
+                                  <mat-select required #StatusCode="ngModel" name="StatusCode"
+                                    [(ngModel)]="selectedDataGridItem.StatusCode" placeholder="Status">
+                                    <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                                      {{ itm.StatusMessage }}
+                                    </mat-option>
+                                  </mat-select>
+                                  <mat-error *ngIf="this.submitAttempt && StatusCode.hasError('required')">
+                                      Status is required
+                                  </mat-error>                                         
+                               </mat-form-field> 
+                          </div>
+      
+                          <br>
+                          <br>
+                  </div>
+      
+              </div>
+          </form>
+  </div>

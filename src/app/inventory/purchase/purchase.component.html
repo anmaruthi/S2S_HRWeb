@@ -1,0 +1,824 @@
+<style>
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+  }
+</style>
+
+
+<div fxLayout="column" *ngIf="Mode=='HOME' || Mode=='POGEN' || Mode=='POREQ'">
+  <div fxLayout="row" class="actionBarRow" *ngIf="this.showReport != true">
+    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+      <label class="menuBarHeading">Purchase Orders</label>
+    </div>
+    <div fxLayout="column" class="actionBarDataColumn">
+      <form novalidate #searchForm="ngForm" fxFlex=100%>
+        <div fxLayout="row" *ngIf="Mode=='HOME'">
+          <div fxFlex="20%">
+            <customdate placeholder="From Date" [(ngModel)]="FromDate" [allowFutureDate]="false"
+              [allowCurrentDate]="true" [allowPastDate]="true" #StartDate="ngModel" name="StartDate"></customdate>
+          </div>
+          <div fxFlex="3%"></div>
+          <div fxFlex="20%">
+            <customdate placeholder="To Date" [(ngModel)]="ToDate" [allowFutureDate]="false" [allowCurrentDate]="true"
+              [allowPastDate]="true" #EndDate="ngModel" name="EndDate"></customdate>
+          </div>
+          <div fxFlex="3%"></div>
+          <div fxFlex="30%">
+            <!-- <mat-form-field  class="fld-mt0-w100">
+                <mat-select [(ngModel)]="StatusCode" placeholder="Status" #SearchStatus="ngModel" required name="SearchStatus">
+                  <mat-option *ngFor="let itm of StageStatusList" [value]="itm.StageStatusCode">
+                    {{ itm.StatusMessage }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="this.submitAttempt && this.hasError(searchForm, SearchStatus, 'required')">
+                    Status is required
+                </mat-error>
+              </mat-form-field>         -->
+          </div>
+          <div fxFlex="2%"></div>
+          <!-- <div class="tooltip" matTooltip="Search" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+              <button class="app-icon-button" (click)="searchClick(searchForm.valid,searchForm)">
+                <i class="material-icons">search</i>
+              </button>
+            </div>               -->
+          <!-- <div fxFlex="20%" style="margin:2px">
+              <button type="submit" color="primary" mat-raised-button (click)="searchClick(searchForm.valid,searchForm)">Search</button>
+            </div> -->
+          <div fxFlex="2%"></div>
+        </div>
+      </form>
+    </div>
+    <div fxLayout="column" class="actionBarSearchColumn">
+      <!-- <mat-form-field *ngIf="Mode=='HOME'">
+            <input inputmode="search" (keyup)="onSearchKeyUp()" (input)="dt.filterGlobal($event.target.value, 'contains')" matInput placeholder="Text Filter" class="searchBox">
+        </mat-form-field> -->
+    </div>
+    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end" fxLayoutGap="10px">
+      <div fxLayout="row" fxLayoutGap="20px">
+        <div class="tooltip" matTooltip="Add" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.sessionService.actionAllowed('ADD_PURCHASEORDER') && Mode=='HOME' && this.selectedTab=='ENTRY'">
+          <button class="app-icon-button" (click)="addClick()">
+            <i class="material-icons">add_box</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Edit" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.sessionService.actionAllowed('EDIT_PURCHASEORDER') && Mode=='HOME' && this.selectedTab=='ENTRY'">
+          <button class="app-icon-button" [disabled]="!rowSelected()"
+            (click)="onDoubleClick(this.selectedData.PurchaseOrderID)">
+            <i class="material-icons">edit</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Cancel PO" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.sessionService.actionAllowed('EDIT_PURCHASEORDER') && Mode=='HOME'">
+          <button class="app-icon-button" [disabled]="!rowSelected()" (click)="cancelPOClick()">
+            <i class="material-icons">clear</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Generate PO" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.sessionService.actionAllowed('GENERATE_PURCHASEORDER') && Mode=='HOME'" >
+          <button class="app-icon-button" (click)="LoadPOGeneratePendingList()">
+            <i class="material-icons">check_box</i>
+          </button>
+        </div>   
+
+        <!-- <div class="tooltip" matTooltip="Purchase Request Approval" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.sessionService.actionAllowed('APPROVE_PURCHASEREQUEST') && Mode=='HOME'">
+          <button class="app-icon-button" (click)="LoadPORequestPendingList()">
+            <i class="material-icons">check_box</i>
+          </button>
+        </div> -->
+        <div class="tooltip" matTooltip="Purchase Order"
+          *ngIf="(this.sessionService.reportAllowed('Purchase Order')) && this.Mode == 'HOME'"
+          [matTooltipPosition]="this.sessionService.ToolTipPosition">
+          <button type="button" class="app-icon-button" [disabled]="!isPrintable()" (click)="printPurchaseOrder()">
+            <i class="material-icons logout">assignment</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Refresh" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="Mode=='HOME'">
+          <button class="app-icon-button" (click)="refreshClick()">
+            <i class="material-icons">refresh</i>
+          </button>
+        </div>
+
+        <div class="tooltip" matTooltip="Approve" *ngIf="(this.sessionService.actionAllowed('APPROVE_PURCHASEREQUEST')) && this.Mode == 'POREQ'"
+            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+            <button type="button" class="app-icon-button" [disabled]="this.canGenPO != true" (click)="approvePORequest()">
+                <i class="material-icons logout">thumb_up</i>
+            </button>
+        </div>  
+     
+        <div class="tooltip" matTooltip="Back" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="(Mode == 'POREQ')">
+          <button class="app-icon-button" (click)="closeClick()">
+            <i class="material-icons">arrow_back</i>
+          </button>
+        </div>
+
+        <div class="tooltip" matTooltip="Create PO" *ngIf="(this.sessionService.actionAllowed('APPROVE_PURCHASEREQUEST')) && this.Mode == 'POGEN'"
+            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+            <button type="button" class="app-icon-button" [disabled]="this.canGenPO != true" (click)="generatePurchaseOrdersFromRequest()">
+                <i class="material-icons logout">thumb_up</i>
+            </button>
+        </div>          
+        <div class="tooltip" matTooltip="Back" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="(Mode == 'POGEN')">
+          <button class="app-icon-button" (click)="backClick()">
+            <i class="material-icons">arrow_back</i>
+          </button>
+        </div>
+        <!-- <div class="tooltip" matTooltip="Home" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="(Mode == 'POGEN')">
+          <button class="app-icon-button" (click)="closeClick()">
+            <i class="material-icons">home</i>
+          </button>
+        </div> -->
+
+        <!-- <div class="tooltip" matTooltip="Generate PO" *ngIf="(this.sessionService.actionAllowed('ADD_PURCHASEORDER')) && this.Mode == 'ADD' && poMode == true && showSubmit == true" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+            <button type="button" class="app-icon-button" (click)="submitbutton.click()">
+                <i class="material-icons logout">thumbs_up_down</i>
+            </button>
+        </div>
+        <div class="tooltip" matTooltip="Approve" *ngIf="(this.sessionService.actionAllowed('EDIT_PURCHASEORDER')) && this.Mode == 'EDIT' && poMode == true && showApprove == true"
+           [matTooltipPosition]="this.sessionService.ToolTipPosition">
+            <button type="button" class="app-icon-button" (click)="editPurchaseOrderSubmit('Approve',this.selectedDataGridItem)">
+                <i class="material-icons logout">thumb_up</i>
+            </button>
+        </div>  
+        <div class="tooltip" matTooltip="Reject" *ngIf="(this.sessionService.actionAllowed('EDIT_PURCHASEORDER')) && this.Mode == 'EDIT' && poMode == true && showReject == true && this.showReport == false" 
+          [matTooltipPosition]="this.sessionService.ToolTipPosition">
+          <button type="button" class="app-icon-button" (click)="editPurchaseOrderSubmit('Reject',this.selectedDataGridItem)">
+              <i class="material-icons logout">thumb_down</i>
+          </button>
+        </div>          
+        <div class="tooltip" matTooltip="Cancel" *ngIf="(this.sessionService.actionAllowed('EDIT_PURCHASEORDER')) && this.Mode == 'EDIT' && poMode == true && showCancel == true" 
+          [matTooltipPosition]="this.sessionService.ToolTipPosition">
+          <button type="button" class="app-icon-button" (click)="editPurchaseOrderSubmit('Cancel',this.selectedDataGridItem)">
+              <i class="material-icons logout">cancel</i>
+          </button>
+        </div>                     -->
+        <!-- <div class="tooltip" matTooltip="Back" [matTooltipPosition]="this.sessionService.ToolTipPosition" *ngIf="(Mode=='ADD' || Mode=='EDIT') && poMode == true">
+            <button class="app-icon-button" (click)="cancelClick()">
+                <i class="material-icons logout">arrow_back</i>
+            </button>
+        </div> -->
+
+      </div>
+    </div>
+  </div>
+  <!-- <div fxLayout="row" class="dataGridContainerDiv" *ngIf="Mode=='HOME' && this.showReport != true" >
+    <div fxLayout="column" fxFlex=100%>
+      <mat-tab-group (selectedTabChange)="onTabChange($event)">
+        <mat-tab *ngFor="let itm of TabViewList" [label]="itm.TabTitle" >
+           
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div> -->
+  <div fxLayout="row" class="dataGridContainerDiv" *ngIf="Mode=='HOME' && this.showReport != true">
+    <div fxLayout="column" fxFlex=100%>
+      <p-table #dt [columns]="cols2" [value]="dataGridList" selectionMode="single" [scrollable]="true"
+        [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+        [style.width]="this.sessionService.getScreenWidthInPx()" [(selection)]="selectedData" [paginator]="true"
+        [rows]="sessionService.NoOfRowsPerPage" [rowsPerPageOptions]="sessionService.RowsPerPageOptions"
+        dataKey="PurchaseOrderID">
+
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+              {{col.header}}
+
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="caption">
+          <div fxLayout="column" fxFlex=50% fxLayoutAlign="center start">
+            <div *ngIf="(this.commonService.getLength(this.TabViewList)>1)">
+              <mat-tab-group (selectedTabChange)="onTabChange($event)">
+                <mat-tab *ngFor="let itm of TabViewList" [label]="itm.TabTitle">
+                </mat-tab>
+              </mat-tab-group>
+            </div>
+          </div>
+          <div fxLayout="column" fxFlex=50% fxLayoutAlign="start end">
+            <div fxLayout="row" fxLayoutGap="10px">
+              <div class="tooltip">
+                <i class="pi pi-search"></i>
+              </div>
+              <div class="flex">
+                <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                  placeholder="Search here" />
+              </div>
+            </div>
+            <!-- <div class="flex" >
+                        <span class="p-input-icon-left ml-auto">                           
+                            <span> <i class="pi pi-search"></i></span>
+                            <input pInputText type="text"
+                                (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                placeholder="Search here" />
+                        </span>
+                    </div> -->
+          </div>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns">
+          <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData.PurchaseOrderID)">
+            <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+              [style.word-wrap]="col.wrap">
+              {{rowData[col.field]}}
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          No records found
+        </ng-template>
+
+      </p-table>
+    </div>
+  </div>
+
+  <div fxLayout="row" class="dataGridContainerDiv" *ngIf="this.Mode == 'POREQ'">
+    <div fxLayout="column" fxFlex=100%>
+      <form novalidate #reqForm="ngForm" name="reqForm">
+      <p-table #dtreq [columns]="cols" [value]="PendingItemsList" rowGroupMode="rowspan" groupRowsBy="RequestAddrID" sortField="ReqRefCode"
+        sortMode="single" responsiveLayout="scroll" scrollHeight="450px">
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <th style="width: 3%">
+              <mat-checkbox #aChk{{rowIndex}}="ngModel" name="aChk{{rowIndex}}" [(ngModel)]="IsSelectAll"
+                (change)="onSelectAll()"></mat-checkbox>
+            </th>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+              {{col.header}}
+            </th>
+            <!-- <th style="width: 11%">Request From</th>
+            <th style="width: 14%">Request Date</th>
+            <th style="width: 14%">Request Status</th>
+            <th style="width: 30%">Material</th>
+            <th style="width: 14%">Req. Qty.</th>
+            <th style="width: 14%">Approved Qty.</th> -->
+          </tr>
+        </ng-template>       
+        <ng-template pTemplate="body" let-item let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan" let-columns>
+          <tr>
+            <td style="width: 3%">
+              <mat-checkbox  #aChk{{rowIndex}}="ngModel" name="aChk{{rowIndex}}" [(ngModel)]="item.IsSelected" (change)="onSelectItem()"></mat-checkbox>
+            </td>
+            <!-- <td *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+              [style.word-wrap]="col.wrap">
+              {{item[col.field]}}
+            </td> -->
+            <td style="width: 11%"  style="text-align:left;" *ngIf="rowgroup" [attr.rowspan]="rowspan">
+              <span class="font-bold ml-2">{{item.ReqRefCode}}</span>
+            </td>
+            <td style="width: 14%" style="text-align:left;">
+              <span class="font-bold ml-2">{{item.PurchaseRequestDateStr}}</span>
+            </td>
+            <td style="width: 14%"  style="text-align:left;">
+              <span class="font-bold ml-2">{{item.StatusMessage}}</span>
+            </td>
+            <td style="width: 30%" style="text-align:left;">
+              {{item.ItemName}}
+            </td>
+            <td style="width: 14%" style="text-align:right;">
+              {{item.RequestQuantity}}
+            </td>
+            <td style="width: 14%" style="text-align:right;">
+              <mat-form-field class="fld-mt0-w100">
+                <input matInput type="number" #aQty{{rowIndex}}="ngModel" name="aQty{{rowIndex}}"
+                  [(ngModel)]="item.ApprovedQuantity" [required]="item.IsSelected" 
+                  [maxValue]="item.RequestQuantity" minValue=1>
+                <mat-error *ngIf="this.submitAttempt1 && this.hasError(reqForm,'aQty' + rowIndex,'required')">
+                  Quantity is required
+                </mat-error>
+                <mat-error *ngIf="this.submitAttempt1 && this.hasError(reqForm,'aQty' + rowIndex,'maxValue')">
+                  Approved quantity is greater than requested quantity
+                </mat-error>
+                <mat-error *ngIf="this.submitAttempt1 && this.hasError(reqForm,'aQty' + rowIndex,'minValue')">
+                  Approved quantity should not be 0
+                </mat-error>                
+              </mat-form-field>               
+            </td>
+            <!-- <td pEditableColumn style="width: 14%" style="text-align:right;" *ngIf="item.StatusCode == 240">              
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <mat-form-field class="fld-mt0-w100">
+                    <input matInput type="number" #aQty{{rowIndex}}="ngModel" name="aQty{{rowIndex}}"
+                      [(ngModel)]="item.ApprovedQuantity" [required]="item.IsSelected" [maxvalue]="item.RequestQuantity">
+                    <mat-error *ngIf="this.submitAttempt1 && this.hasError(reqForm,'aQty' + rowIndex,'required')">
+                      Quantity is required
+                    </mat-error>
+                    <mat-error *ngIf="this.submitAttempt1 && this.hasError(reqForm,'aQty' + rowIndex,'maxvalue')">
+                      Approved quantity is greater than requested quantity
+                    </mat-error>
+                  </mat-form-field>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{item.ApprovedQuantity}}
+                </ng-template>
+              </p-cellEditor>              
+            </td>
+            <td pEditableColumn style="width: 14%" style="text-align:right;" *ngIf="item.StatusCode != 240">              
+              {{item.ApprovedQuantity}}             
+            </td>             -->
+          </tr>
+        </ng-template>
+      </p-table>
+    </form>
+    </div>
+  </div>
+
+
+  <div fxLayout="row" class="dataGridContainerDiv" *ngIf="this.Mode == 'POGEN'">
+    <div fxLayout="column" fxFlex=100%>
+      <p-table [value]="PendingItemsList" rowGroupMode="rowspan" groupRowsBy="RequestAddrID" sortField="ReqRefCode"
+        sortMode="single" responsiveLayout="scroll"  scrollHeight="450px">
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3%">
+              <mat-checkbox #aChk{{rowIndex}}="ngModel" name="aChk{{rowIndex}}" [(ngModel)]="IsSelectAll"
+                (change)="onSelectAll()"></mat-checkbox>
+            </th>
+            <th style="width: 10%">Request From</th>
+            <th style="width: 8%">Request Date</th>
+            <th style="width: 8%">Request Status</th>
+            <th style="width: 20%">Material</th>
+            <th style="width: 10%">Supplier</th>
+            <th style="width: 5%">Req. Qty.</th>
+            <th style="width: 5%">Approved Qty.</th>
+            <th style="width: 5%">Already Ordered Qty.</th>
+            <th style="width: 5%">Balance Qty.</th>
+            <th style="width: 5%">Order Qty.</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="caption">
+          <div fxLayout="row">
+            <div fxLayout="column" fxFlex=50% fxLayoutAlign="center start">
+              Convert Approved Material Requests Into Purchase Orders
+            </div>             
+            <div fxLayout="column" fxFlex=50% fxLayoutAlign="center start">
+              <p-progressBar [value]="value" [style]="{'height': '20px','width':'500px'}" *ngIf="value>0"></p-progressBar>
+            </div>             
+          </div>          
+                   
+        </ng-template>         
+        <ng-template pTemplate="body" let-item let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
+          <tr>
+            <td style="width: 3%">
+              <mat-checkbox [(ngModel)]="item.IsSelected" (change)="onSelectItem()"></mat-checkbox>
+            </td>
+            <td style="width: 10%"  style="text-align:left;" *ngIf="rowgroup" [attr.rowspan]="rowspan">
+              <span class="font-bold ml-2">{{item.ReqRefCode}}</span>
+            </td>
+            <td style="width: 10%" style="text-align:left;">
+              <span class="font-bold ml-2">{{item.PurchaseRequestDateStr}}</span>
+            </td>
+            <td style="width: 10%"  style="text-align:left;">
+              <span class="font-bold ml-2">{{item.StatusMessage}}</span>
+            </td>
+            <td style="width: 20%" style="text-align:left;">
+              {{item.ItemName}}
+            </td>
+            <td style="width: 10%" style="text-align:right;">
+              <autocomplete class="fld-mt0-w100" placeholder="Supplier" required="true"
+                [submitAttempt]="this.submitAttempt" [InputDataList]="this.SupplierList" required="true"
+                KeyID="SupplierID" KeyDescription="SupplierName" #Supplier{{rowIndex}}="ngModel"
+                name="Supplier{{rowIndex}}" [(ngModel)]="item.SupplierID">
+              </autocomplete>
+
+              <!-- <mat-form-field class="fld-mt0-w100">
+                <mat-select #SupplierItem="ngModel" name="SupplierItem" [(ngModel)]="item.SupplierName" required
+                  placeholder="Supplier">
+                  <mat-option *ngFor="let itm of SupplierList" [value]="item.SupplierList">
+                    {{ item.SupplierName }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="this.submitAttempt1 && SupplierItem.hasError('required')">
+                  Supplier is required
+                </mat-error>
+              </mat-form-field> -->
+
+            </td>
+            <td style="width: 7%" style="text-align:right;">
+              {{item.RequestQuantity}}
+            </td>
+            <td style="width: 10%" style="text-align:right;">              
+              {{item.ApprovedQuantity}}             
+            </td>            
+            <td style="width: 10%" style="text-align:right;">
+              {{item.AlreadyOrderedQty}}
+            </td>
+            <td style="width: 10%" style="text-align:right;">
+              {{item.BalanceQty}}
+            </td>
+            <td pEditableColumn style="width: 10%" style="text-align:right;">
+              <mat-form-field class="fld-mt0-w100">
+                <input matInput type="number" #oQty{{rowIndex}}="ngModel" name="oQty{{rowIndex}}"
+                  [(ngModel)]="item.OrderQuantity" [required]="item.IsSelected" [maxValue]="item.ApprovedQuantity"
+                  minValue=1>
+                <mat-error *ngIf="this.submitAttempt1 && this.hasError(reqForm,'oQty' + rowIndex,'required')">
+                  Quantity is required
+                </mat-error>
+                <mat-error *ngIf="this.submitAttempt1 && this.hasError(reqForm,'oQty' + rowIndex,'maxValue')">
+                  OrderQuantity quantity is greater than Approved quantity
+                </mat-error>
+                <mat-error *ngIf="this.submitAttempt1 && this.hasError(reqForm,'oQty' + rowIndex,'minValue')">
+                  OrderQuantity should not be 0
+                </mat-error>
+              </mat-form-field>
+              <!-- <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <input pInputText type="number" [(ngModel)]="item.OrderQuantity">
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{item.OrderQuantity}}
+                </ng-template>
+              </p-cellEditor> -->
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <form novalidate #poForm="ngForm" fxFlex=100%>
+    <div fxLayout="row" class="dataGridContainerDiv" *ngIf="Mode=='ADD' && poMode == true">
+      <div fxLayout="column" fxFlex=100%>
+
+        <div fxLayout="row">
+          <!-- <div fxLayout="column" fxFlex=15% fxLayoutAlign="start left">
+          <span>Order No. : <button mat-stroked-button color="primary" *ngIf="selectedDataGridItem.PurchaseOrderNumber != null">{{selectedDataGridItem.PurchaseOrderNumber}}</button></span>
+        </div> -->
+          <div fxLayout="column" fxFlex=70% fxLayoutAlign="start left">
+            <div class="fld-mt0-w90">
+              <autocomplete placeholder="Supplier" required="true" [submitAttempt]="this.submitAttempt"
+                [InputDataList]="this.SupplierList" KeyID="SupplierID" KeyDescription="SupplierName"
+                #SupplierID="ngModel" name="SupplierID" (AutoCompleteChange)="onSupplierChange()"
+                [(ngModel)]="selectedDataGridItem.SupplierID">
+              </autocomplete>
+            </div>
+          </div>
+          <div fxLayout="column" fxFlex=15% fxLayoutAlign="start left">
+            <customdate class="fld-mt0-w90" placeholder="Order Date" required="true"
+              [submitAttempt]="this.submitAttempt" #PurchaseOrderDate="ngModel" name="PurchaseOrderDate"
+              [(ngModel)]="selectedDataGridItem.PurchaseOrderDate" [allowFutureDate]="false" [allowCurrentDate]="true"
+              [allowPastDate]="true">
+            </customdate>
+          </div>
+          <div fxLayout="column" fxFlex=15% fxLayoutAlign="start left">
+            <customdate class="fld-mt0-w90" placeholder="Expected Delivery Date" required="true"
+              [submitAttempt]="this.submitAttempt" #ExpectedDeliveryDate="ngModel" name="ExpectedDeliveryDate"
+              [(ngModel)]="selectedDataGridItem.ExpectedDeliveryDate" [allowFutureDate]="true" [allowCurrentDate]="true"
+              [allowPastDate]="true">
+            </customdate>
+          </div>
+
+        </div>
+
+        <!-- <div fxLayout="row" fxLayoutAlign="start left">
+          <div class="fld-mt0-w100">
+            <mat-form-field class="fld-mt0-w100">
+              <input matInput type="number" #PurchaseOrderID="ngModel" name="PurchaseOrderID" [(ngModel)]="selectedDataGridItem.PurchaseOrderID"
+                        placeholder="Order ID" readonly />
+            </mat-form-field>
+          </div>
+      </div> -->
+
+        <div fxLayout="row">
+          <p-table #podt [columns]="poCols" [value]="currentPurchaseOrderItemList" selectionMode="single"
+            [(selection)]="selectedPOItem" [scrollable]="true" rowExpandMode="multiple" pRowTogglerDisabled="true"
+            dataKey="ItemID" [expandedRowKeys]="expandedRows" [scrollable]="true"
+            [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+            [style.width]="this.sessionService.getScreenWidthInPx()">
+
+            <ng-template pTemplate="header" let-columns>
+              <tr>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.hwidth">
+                  <span *ngIf="col.hwidth != '0%'">{{col.header}}</span>
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-expanded="expanded" let-columns="columns">
+              <tr [pSelectableRow]="rowData">
+                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                  [style.word-wrap]="col.wrap">
+
+                  <span
+                    *ngIf="col.edit == 'no' && rowData[col.field] != null && col.field != 'TotalDiff'">{{rowData[col.field]}}</span>
+                  <span *ngIf="col.field == 'TotalDiff' && col.edit == 'no' && rowData[col.field] != null"
+                    [class]="rowData.TotalDiff < 0 ? 'clrLoss' : 'clrProfit'">{{rowData[col.field]}}</span>
+
+                  <p-cellEditor *ngIf="col.edit == 'yes'">
+                    <ng-template pTemplate="input">
+                      <autocomplete class="fld-mt0-w100" placeholder="" [submitAttempt]="this.submitAttempt"
+                        [InputDataList]="rowData.PUOMList" KeyID="PUOMID" KeyDescription="UOM"
+                        *ngIf="col.field == 'PUOM'" (SelectionDone)="onCompleteSelectionPUOM(rowData)"
+                        #puom{{rowData.PurchaseOrderDetailID}}="ngModel" name="puom{{rowData.PurchaseOrderDetailID}}"
+                        [(ngModel)]="rowData.PUOMID">
+                      </autocomplete>
+                      <mat-form-field class="fld-mt0-w100" *ngIf="col.field != 'PUOM'">
+                        <input matInput type="number" #{{col.field}}{{rowData.PurchaseOrderDetailID}}="ngModel"
+                          name="{{col.field}}{{rowData.PurchaseOrderDetailID}}" [(ngModel)]="rowData[col.field]"
+                          placeholder="" required (change)="onValueChanges(rowData,col.field)"
+                          [minValue]="(col.field == 'OrderQuantity'  || col.field == 'ConvertedOrderQuantity' ) ? this.commonService.MIN_QUANTITY1 : this.commonService.MIN_AMOUNT"
+                          [maxValue]="(col.field == 'OrderQuantity'  || col.field == 'ConvertedOrderQuantity' ) ? rowData.RequiredQuantity : this.commonService.MAX_AMOUNT"
+                          [pattern]="(col.field == 'OrderQuantity'  || col.field == 'ConvertedOrderQuantity' ) ? this.commonService.PATTERN_QUANTITY : this.commonService.PATTERN_CONVERSION_RATE" />
+
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(poForm, col.field+rowData.PurchaseOrderDetailID, 'required')">
+                          {{col.header}} is required
+                        </mat-error>
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(poForm, col.field+rowData.PurchaseOrderDetailID, 'pattern')">
+                          Invalid {{col.field}}
+                        </mat-error>
+                        <mat-error *ngIf="this.submitAttempt && this.hasError(poForm, col.field+rowData.PurchaseOrderDetailID, 'minValue')
+                              && !this.hasError(poForm, col.field+rowData.PurchaseOrderDetailID, 'required') 
+                              && !this.hasError(poForm, col.field+rowData.PurchaseOrderDetailID, 'pattern')">
+                          Minimum {{this.commonService.MIN_QUANTITY1}} is required
+                        </mat-error>
+                        <mat-error *ngIf="this.submitAttempt && this.hasError(poForm, col.field+rowData.PurchaseOrderDetailID, 'maxValue') 
+                              && !this.hasError(poForm, col.field+rowData.PurchaseOrderDetailID, 'pattern')">
+                          Maximum allowed is <span
+                            *ngIf="col.field == 'OrderQuantity'">{{rowData.RequiredQuantity}}</span> <span
+                            *ngIf="col.field != 'OrderQuantity'">{{this.commonService.MAX_QUANTITY}}</span>
+                        </mat-error>
+                        <mat-error *ngIf="this.submitAttempt && rowData.errTotal == true">
+                          Total mis-match
+                        </mat-error>
+                      </mat-form-field>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                      {{rowData[col.field]}}
+                      <!-- <span *ngIf="col.field == 'OrderQuantity'">{{rowData.UOM}}</span>                       -->
+                      <div class="classMatError" *ngIf="this.submitAttempt && !rowData[col.field]"> {{col.header}} is
+                        required</div>
+                      <div class="classMatError"
+                        *ngIf="this.submitAttempt &&  rowData.errTotal == true && col.field == 'OrderQuantity' ">
+                        Total mis-match
+                      </div>
+                    </ng-template>
+                  </p-cellEditor>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+              <tr *ngFor="let itm of GetPOItemDetails(rowData.ItemID)">
+                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                  [style.word-wrap]="col.wrap">
+                  <span
+                    *ngIf="col.subfield != '' && col.field != 'ItemName' && col.field != 'OrderQuantity'">{{itm[col.subfield]}}</span>
+                  <p-cellEditor *ngIf="(col.field == 'OrderQuantity')" class="projectLabel">
+                    <ng-template pTemplate="input">
+                      <mat-form-field class="fld-mt-10-ml-10-w100">
+                        <input matInput type="number" #Qty{{rowData.PurchaseOrderDetailID}}.{{itm.ProjectID}}="ngModel"
+                          name="Qty{{rowData.PurchaseOrderDetailID}}.{{itm.ProjectID}}"
+                          [(ngModel)]="itm.OrderPlacingQuantity" placeholder="" required [minValue]="0"
+                          [maxValue]="itm.RequiredQuantity" [pattern]="this.commonService.PATTERN_QUANTITY" />
+
+                        <!-- (change)="onPOItemValueChange(rowData,itm)"  -->
+
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(poForm, 'Qty' + rowData.PurchaseOrderDetailID + '.' + itm.ProjectID, 'required')">
+                          Quantity is required
+                        </mat-error>
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(poForm, 'Qty' + rowData.PurchaseOrderDetailID + '.' + itm.ProjectID, 'pattern')">
+                          Invalid Quantity
+                        </mat-error>
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(poForm, 'Qty' + rowData.PurchaseOrderDetailID + '.' + itm.ProjectID, 'minValue')
+                                && !this.hasError(poForm, 'Qty' + rowData.PurchaseOrderDetailID + '.' + itm.ProjectID, 'required') 
+                                && !this.hasError(poForm, 'Qty' + rowData.PurchaseOrderDetailID + '.' + itm.ProjectID, 'pattern')">
+                          Minimum 0 is required
+                        </mat-error>
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(poForm, 'Qty' + rowData.PurchaseOrderDetailID + '.' + itm.ProjectID, 'maxValue') 
+                                && !this.hasError(poForm, 'Qty '+ rowData.PurchaseOrderDetailID + '.' + itm.ProjectID, 'pattern')">
+                          Maximum allowed is {{itm.RequiredQuantity}}
+                        </mat-error>
+                      </mat-form-field>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                      <span *ngIf="itm.OrderPlacingQuantity != null">{{itm.OrderPlacingQuantity}}</span>
+                      <span class="classMatError" *ngIf="this.submitAttempt && !itm.OrderPlacingQuantity"> Quantity is
+                        required</span>
+                    </ng-template>
+                  </p-cellEditor>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="footer" let-columns="columns">
+              <tr>
+                <td style="margin-left:2px;text-align:left;width: 63%">
+                  Total
+                </td>
+                <td style="margin-right:-5px;text-align:right;width: 8%">{{totalPOAmt}}</td>
+                <td style="margin-right:-5px;text-align:right;width: 4%"> </td>
+                <td style="margin-right:-5px;text-align:right;width: 5%">{{totalPOGst}}</td>
+                <td style="margin-right:-5px;text-align:right;width: 8%">{{totalPOCost}}</td>
+                <td style="margin-right:-5px;text-align:right;width: 5%"></td>
+                <td style="margin-left:2px;text-align:left;width: 7%"></td>
+              </tr>
+            </ng-template>
+            <!-- <ng-template pTemplate="summary">
+              <div class="ui-grid-row">
+                  <div class="ui-grid-col-8" style="text-align:left;width: 70%">Total Cost</div>
+                  <div class="ui-grid-col-2" style="text-align:right;width: 14%">{{totalPOCost}}</div>
+                  <div class="ui-grid-col-2" style="text-align:left;width: 16%"></div>
+                </div>
+          </ng-template> -->
+          </p-table>
+        </div>
+
+      </div>
+    </div>
+
+    <button type="submit" style="display:none" (click)="addPurchaseOrderSubmit(poForm.valid, poForm, 'submit')"
+      #submitbutton></button>
+
+  </form>
+
+  <div fxLayout="row" class="dataGridContainerDiv" *ngIf="Mode=='EDIT' && poMode == true">
+    <div fxLayout="column" fxFlex=100% *ngIf="this.showReport != true">
+      <div fxLayout="row">
+
+        <div fxLayout="column" fxFlex=8% fxLayoutAlign="center left">
+          <span>Order Number : </span>
+        </div>
+        <div fxLayout="column" fxFlex=5% fxLayoutAlign="center left">
+          <span><button mat-stroked-button color="primary"
+              *ngIf="selectedDataGridItem.PurchaseOrderNumber != null">{{selectedDataGridItem.PurchaseOrderNumber}}</button></span>
+        </div>
+        <div fxLayout="column" fxFlex=7% fxLayoutAlign="center center">
+          <span>Supplier : </span>
+        </div>
+        <div fxLayout="column" fxFlex=32% fxLayoutAlign="center left">
+          <span><button mat-stroked-button color="primary"
+              *ngIf="selectedDataGridItem.SupplierName != null">{{selectedDataGridItem.SupplierName}}</button></span>
+        </div>
+        <div fxLayout="column" fxFlex=7% fxLayoutAlign="center left">
+          <span>Order Date : </span>
+        </div>
+        <div fxLayout="column" fxFlex=13% fxLayoutAlign="center left">
+          <span><button mat-stroked-button color="primary"
+              *ngIf="selectedDataGridItem.PurchaseOrderDate != null">{{selectedDataGridItem.PurchaseOrderDate}}</button></span>
+        </div>
+        <div fxLayout="column" fxFlex=15% fxLayoutAlign="center left">
+          <span>Expected Delivery Date : </span>
+        </div>
+        <div fxLayout="column" fxFlex=13% fxLayoutAlign="center left">
+          <span><button mat-stroked-button color="primary"
+              *ngIf="selectedDataGridItem.ExpectedDeliveryDate != null">{{selectedDataGridItem.ExpectedDeliveryDate}}</button></span>
+        </div>
+
+      </div>
+      <br>
+      <div fxLayout="row">
+        <p-table #podt1 [columns]="poCols1" [value]="currentPurchaseOrderItemList" selectionMode="single"
+          [(selection)]="selectedPOItem" [scrollable]="true" rowExpandMode="multiple" pRowTogglerDisabled="true"
+          dataKey="ItemID" [scrollable]="true" [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+          [style.width]="this.sessionService.getScreenWidthInPx()">
+          <ng-template pTemplate="header" let-columns>
+            <tr style="margin-right: 17px !important;">
+              <th style="width: 3%"></th>
+              <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                <span>{{col.header}}</span>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-rowData let-expanded="expanded" let-columns="columns">
+            <tr [pSelectableRow]="rowData">
+              <td style="width: 3%">
+                <a [pRowToggler]="rowData" *ngIf="expanded">
+                  <i class="material-icons">keyboard_arrow_down</i>
+                </a>
+                <a [pRowToggler]="rowData" *ngIf="!expanded">
+                  <i class="material-icons">keyboard_arrow_right</i>
+                </a>
+              </td>
+              <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                [style.word-wrap]="col.wrap">
+                <span *ngIf="col.field=='OrderQuantity'">{{rowData[col.field]}} {{rowData.UOM}}</span>
+                <span *ngIf="col.field=='ConvertedOrderQuantity'">{{rowData[col.field]}} {{rowData.PUOM}}</span>
+                <span *ngIf="col.field=='ItemName'">{{rowData[col.field]}}</span>
+                <span
+                  *ngIf="col.field=='Rate' || col.field=='ItemValue'  || col.field=='GSTAmt' || col.field=='TotalCost' || col.field=='Amt'">
+                  {{this.commonService.formatWeight2Digits(rowData[col.field])}}
+                </span>
+                <span
+                  *ngIf="col.field=='GST' || col.field=='CGST' || col.field=='SGST' || col.field=='IGST'">{{rowData[col.field]}}</span>
+
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+            <tr>
+              <td style="width: 3%">
+              <td style="text-align:left;width: 28%">
+
+                <div fxLayout="row">
+                  <div fxLayout="column" fxFlex=100%>
+                    <div fxLayout="row" fxLayoutAlign="start center" style="height: 22px">
+                      <div fxLayout="column" fxFlex=35%>
+                        <span style="text-align:left;font-weight: 600">Order ID</span>
+                      </div>
+                      <div fxLayout="column" fxFlex=35%>
+                        <span style="text-align:left;font-weight: 600">Style Information</span>
+                      </div>
+                      <div fxLayout="column" fxFlex=30%>
+                        <span style="text-align:right;font-weight: 600">Quantity</span>
+                      </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="start center" *ngFor="let itm of rowData.SubItemList"
+                      style="height: 22px">
+                      <div fxLayout="column" fxFlex=35%>
+                        <span style="text-align:left">{{itm.OrderIDText}}</span>
+                      </div>
+                      <div fxLayout="column" fxFlex=35%>
+                        <span style="text-align:left">{{itm.StyleName}} {{itm.StyleDescription}}</span>
+                      </div>
+                      <div fxLayout="column" fxFlex=30%>
+                        <span style="text-align:right">{{itm.OrderQuantity}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </td>
+              <td style="text-align:left;width: 12%"> </td>
+              <td style="text-align:left;width: 12%"> </td>
+              <td style="text-align:right;width: 7%"> </td>
+              <td style="text-align:right;width: 9%"> </td>
+              <td style="width: 5%"> </td>
+              <td style="width: 5%"> </td>
+              <td style="width: 5%"> </td>
+              <td style="text-align:right;width: 7%"> </td>
+              <td style="text-align:right;width: 9%"> </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="footer" let-columns="columns">
+            <tr>
+              <td style="width: 3%"></td>
+              <td style="text-align:left;width: 28%">Total</td>
+              <td style="text-align:left;width: 12%">
+                <span *ngIf="this.thisGst.SGSTAmt != null && this.thisGst.SGSTAmt >0">
+                  ( SGST : {{this.commonService.formatWeight2Digits(this.thisGst.SGSTAmt)}} )
+                </span>
+                <span *ngIf="this.thisGst.IGSTAmt != null && this.thisGst.IGSTAmt >0">
+                  ( IGST : {{this.commonService.formatWeight2Digits(this.thisGst.IGSTAmt)}} )
+                </span>
+              </td>
+              <td style="text-align:left;width: 12%">
+                <span *ngIf="this.thisGst.CGSTAmt != null && this.thisGst.CGSTAmt >0">
+                  ( CGST : {{this.commonService.formatWeight2Digits(this.thisGst.CGSTAmt)}} )
+                </span>
+              </td>
+              <td style="text-align:right;width: 7%"></td>
+              <td style="text-align:right;width: 9%">
+                {{this.commonService.formatWeight2Digits(totalPOAmt)}}
+              </td>
+              <td style="width: 5%"></td>
+              <td style="width: 5%"></td>
+              <td style="width: 5%"></td>
+              <td style="text-align:right;width: 7%">
+                {{this.commonService.formatWeight2Digits(totalPOGst)}}
+              </td>
+              <td style="text-align:right;width: 9%">
+                {{this.commonService.formatWeight2Digits(totalPOCost)}}
+              </td>
+
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+
+
+  <div fxLayout="column" fxFlex="100%" fxLayoutAlign="center" *ngIf="this.showReport == true" class="rpts">
+    <br>
+    <div fxLayout="row" class="actionBarRow">
+      <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+        <label class="menuBarHeading">Purchase Order Report</label>
+      </div>
+      <div fxLayout="column" class="actionBarDataColumn"></div>
+      <div fxLayout="column" class="actionBarSearchColumn"></div>
+      <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end" fxLayoutGap="10px">
+        <div fxLayout="row" fxLayoutGap="20px">
+          <div class="tooltip" matTooltip="Back" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+            <button class="app-icon-button" (click)="reportCloseClick()">
+              <i class="material-icons">arrow_back</i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div fxLayout="row">
+      <iframe [height]="this.getIframHeight()" class="iframeClass" [src]="reportUrl"
+        [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)"></iframe>
+    </div>
+  </div>
+
+</div>

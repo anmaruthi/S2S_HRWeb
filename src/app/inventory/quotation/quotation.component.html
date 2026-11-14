@@ -1,0 +1,794 @@
+<style>
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+  }
+</style>
+
+
+
+<div fxLayout="column" *ngIf="Mode=='HOME'">
+  <div fxLayout="row" class="actionBarRow">
+    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+      <label class="menuBarHeading">Quotation</label>
+    </div>
+    <div fxLayout="column" class="actionBarDataColumn">
+      <form novalidate #searchForm="ngForm" fxFlex=100%>
+        <div fxLayout="row">
+          <div fxFlex="20%">
+            <customdate placeholder="From Date" [(ngModel)]="FromDate" [allowFutureDate]="false"
+              [allowCurrentDate]="true" [allowPastDate]="true" #StartDate="ngModel" name="StartDate"></customdate>
+          </div>
+          <div fxFlex="3%"></div>
+          <div fxFlex="20%">
+            <customdate placeholder="To Date" [(ngModel)]="ToDate" [allowFutureDate]="false" [allowCurrentDate]="true"
+              [allowPastDate]="true" #EndDate="ngModel" name="EndDate"></customdate>
+          </div>
+
+          <div fxFlex="3%"></div>
+          <div fxFlex="30%">
+            <!-- <mat-form-field class="fld-mt0-w100">
+              <mat-select [(ngModel)]="StatusCode" placeholder="Status" #SearchStatus="ngModel" required name="SearchStatus">
+                <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                  {{ itm.StatusMessage }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="this.submitAttempt && this.hasError(searchForm, SearchStatus, 'required')">
+                Status is required
+              </mat-error>
+            </mat-form-field> -->
+          </div>
+          <div fxFlex="2%"></div>
+          <div class="tooltip" matTooltip="Search" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+            <!-- <button class="app-icon-button" (click)="searchClick(searchForm.valid,searchForm)">
+              <i class="material-icons">search</i>
+            </button> -->
+          </div>
+          <div fxFlex="2%"></div>
+        </div>
+      </form>
+    </div>
+    <div fxLayout="column" class="actionBarSearchColumn">
+      <!-- <mat-form-field>
+        <input inputmode="search" (keyup)="onSearchKeyUp()" (input)="dt.filterGlobal($event.target.value, 'contains')" matInput placeholder="Text Filter" class="searchBox">
+      </mat-form-field> -->
+    </div>
+    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end" fxLayoutGap="10px">
+      <div fxLayout="row" fxLayoutGap="20px">
+        <div class="tooltip" matTooltip="New Request" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.sessionService.actionAllowed('ADD_QUOTATION')">
+          <button class="app-icon-button" (click)="addClick()">
+            <i class="material-icons">add_box</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Generate Quote" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.sessionService.actionAllowed('GENERATE_QUOTEREQUEST') && Mode=='HOME'">
+          <button class="app-icon-button" (click)="LoadQuoteGeneratePendingList()">
+            <i class="material-icons">check_box</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Edit" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.sessionService.actionAllowed('EDIT_QUOTATION')">
+          <button class="app-icon-button" [disabled]="DisableEdit()" (click)="onDoubleClick(this.selectedData)">
+            <i class="material-icons">edit</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Cancel PO" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.sessionService.actionAllowed('EDIT_QUOTATION') && Mode=='HOME'">
+          <button class="app-icon-button" [disabled]="DisableEdit()" (click)="cancelQuoteClick()">
+            <i class="material-icons">clear</i>
+          </button>
+        </div>        
+        <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="this.sessionService.actionAllowed('DELETE_QUOTATION')">
+          <button [disabled]="DisableEdit()" class="app-icon-button" (click)="cancelClickButton()">
+            <i class="material-icons">cancel</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Refresh" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="Mode=='HOME'">
+          <button class="app-icon-button" (click)="refreshClick()">
+            <i class="material-icons">refresh</i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div fxLayout="row" class="dataGridContainerDiv">
+    <p-table #dt [columns]="cols2" [value]="dataGridList" selectionMode="single" [scrollable]="true"
+      [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+      [style.width]="this.sessionService.getScreenWidthInPx()" [(selection)]="selectedData" [paginator]="true"
+      [rows]="sessionService.NoOfRowsPerPage" [rowsPerPageOptions]="sessionService.RowsPerPageOptions"
+      dataKey="QuotationID">
+
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+            {{col.header}}
+            <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+          <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+            [style.word-wrap]="col.wrap">
+            {{rowData[col.field]}}
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="caption">
+        <div fxLayout="column" fxFlex=50% fxLayoutAlign="center start">
+        </div>
+        <div fxLayout="column" fxFlex=50% fxLayoutAlign="start end">
+          <div fxLayout="row" fxLayoutGap="10px">
+            <div class="tooltip">
+              <i class="pi pi-search"></i>
+            </div>
+            <div class="flex">
+              <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                placeholder="Search here" />
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        No records found
+      </ng-template>
+
+    </p-table>
+  </div>
+
+
+</div>
+
+<div fxLayout="column" *ngIf="Mode=='ADD'">
+  <div fxLayout="row" class="actionBarRow">
+    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+      <label class="menuBarHeading">Quotation</label>
+    </div>
+    <div fxLayout="column" class="actionBarDataColumn">
+    </div>
+    <div fxLayout="column" class="actionBarSearchColumn">
+    </div>
+    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end" fxLayoutGap="10px">
+      <div fxLayout="row" fxLayoutGap="20px">
+        <div class="tooltip" matTooltip="Create Quotation" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="Mode=='ADD' && quoteMode == false">
+          <button class="app-icon-button" (click)="newQuotation()" [disabled]="!this.canGenQuote">
+            <i class="material-icons">check_box</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Back" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="Mode=='ADD' && quoteMode == false">
+          <button class="app-icon-button" (click)="closeClick()">
+            <i class="material-icons">arrow_back</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Submit Quote Request"
+          [matTooltipPosition]="this.sessionService.ToolTipPosition" *ngIf="this.Mode == 'ADD' && quoteMode == true">
+          <button type="button" class="app-icon-button" (click)="submitbutton.click()">
+            <i class="material-icons logout">thumbs_up_down</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Back" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="Mode=='ADD' && quoteMode == true">
+          <button class="app-icon-button" (click)="cancelClick()">
+            <i class="material-icons logout">arrow_back</i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div fxLayout="row" class="dataGridContainerDiv" *ngIf="Mode=='ADD' && quoteMode == false">
+    <p-table #dt1 [columns]="cols" [value]="PendingItemsList" selectionMode="single" [scrollable]="true"
+      [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+      [style.width]="this.sessionService.getScreenWidthInPx()" [(selection)]="selectedPendingItemData"
+      [paginator]="true" [rows]="sessionService.NoOfRowsPerPage"
+      [rowsPerPageOptions]="sessionService.RowsPerPageOptions" dataKey="ItemID">
+
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th style="width: 3%"></th>
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.hwidth">
+            <span *ngIf="col.hwidth != '0%'">
+              {{col.header}}
+              <p-sortIcon [field]="col.field"></p-sortIcon>
+            </span>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-expanded="expanded" let-columns="columns">
+        <tr [pSelectableRow]="rowData">
+          <td style="width: 3%">
+            <a [pRowToggler]="rowData" *ngIf="expanded">
+              <i class="material-icons">keyboard_arrow_down</i>
+            </a>
+            <a [pRowToggler]="rowData" *ngIf="!expanded">
+              <i class="material-icons">keyboard_arrow_right</i>
+            </a>
+          </td>
+          <td style="width: 3%">
+            <mat-checkbox [(ngModel)]="rowData.IsSelected" (change)="onSelectItem()"></mat-checkbox>
+          </td>
+          <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+            [style.word-wrap]="col.wrap">
+            {{rowData[col.field]}}
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+        <tr>
+          <td style="width: 3%"></td>
+          <td style="width: 67%" colspan="2">
+            <div fxLayout="row">
+              <div fxLayout="column" fxFlex=100%>
+                <div fxLayout="row" fxLayoutAlign="start center" style="height: 22px">
+                  <div fxLayout="column" fxFlex=5%></div>
+                  <div fxLayout="column" fxFlex=20%>
+                    <span style="text-align:left;font-weight: 600">Order ID</span>
+                  </div>
+                  <div fxLayout="column" fxFlex=30%>
+                    <span style="text-align:left;font-weight: 600">Style Information</span>
+                  </div>
+                  <div fxLayout="column" fxFlex=15%>
+                    <span style="text-align:right;font-weight: 600">Required</span>
+                  </div>
+                  <div fxLayout="column" fxFlex=15%>
+                    <span style="text-align:right;font-weight: 600">Ordered</span>
+                  </div>
+                  <div fxLayout="column" fxFlex=15%>
+                    <span style="text-align:right;font-weight: 600">Balance</span>
+                  </div>
+
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="start center"
+                  *ngFor="let itm of itemRowExpansionDetails(rowData.ItemID)" style="height: 22px">
+                  <div fxLayout="column" fxFlex=5%></div>
+                  <div fxLayout="column" fxFlex=20%>
+                    <span style="text-align:left">{{itm.OrderIDText}}</span>
+                  </div>
+                  <div fxLayout="column" fxFlex=30%>
+                    <span style="text-align:left">{{itm.StyleName}} {{itm.StyleDescription}}</span>
+                  </div>
+                  <div fxLayout="column" fxFlex=15%>
+                    <span style="text-align:right">{{itm.OrderQuantity}}</span>
+                  </div>
+                  <div fxLayout="column" fxFlex=15%>
+                    <span style="text-align:right">{{itm.AlreadyOrderedQty}}</span>
+                  </div>
+                  <div fxLayout="column" fxFlex=15%>
+                    <span style="text-align:right">{{itm.BalanceQty}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td style="width: 30%" colspan="3"></td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        No records found
+      </ng-template>
+
+    </p-table>
+  </div>
+
+  <form novalidate #quoteForm="ngForm" fxFlex=100%>
+    <div fxLayout="row" class="dataGridContainerDiv" *ngIf="Mode=='ADD' && quoteMode == true">
+      <div fxLayout="column" fxFlex=100%>
+        <div fxLayout="row">
+          <div fxLayout="column" fxFlex=20% fxLayoutAlign="start left">
+            <div class="fld-mt0-w90">
+              <autocomplete placeholder="Supplier" [InputDataList]="this.SupplierList" KeyID="SupplierID"
+                KeyDescription="SupplierName" #SupplierID="ngModel" name="SupplierID"
+                (AutoCompleteChange)="onSupplierChange()" [(ngModel)]="SelectedSupplier.SupplierID">
+              </autocomplete>
+            </div>
+          </div>
+          <div fxLayout="column" fxFlex=50% fxLayoutAlign="start left">
+            <mat-chip-list aria-label="Selected Suppliers">
+              <mat-chip *ngFor="let supp of this.SelectedSupplierList" (removed)="remove(supp)">
+                {{supp.SupplierName}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            </mat-chip-list>
+          </div>
+          <div fxLayout="column" fxFlex=15% fxLayoutAlign="start left">
+            <customdate class="fld-mt0-w90" placeholder="Quotation Date" required="true"
+              [submitAttempt]="this.submitAttempt" #QuotationDate="ngModel" name="QuotationDate"
+              [(ngModel)]="selectedDataGridItem.QuotationDate" [allowFutureDate]="false" [allowCurrentDate]="true"
+              [allowPastDate]="true">
+            </customdate>
+          </div>
+          <div fxLayout="column" fxFlex=15% fxLayoutAlign="start left">
+            <customdate class="fld-mt0-w90" placeholder="Expected Response Date" required="true"
+              [submitAttempt]="this.submitAttempt" #ExpectedResponseDate="ngModel" name="ExpectedResponseDate"
+              [(ngModel)]="selectedDataGridItem.ExpectedResponseDate" [allowFutureDate]="true" [allowCurrentDate]="true"
+              [allowPastDate]="true">
+            </customdate>
+          </div>
+        </div>
+
+        <div fxLayout="row">
+          <p-table #qDt [columns]="QuoteCols" [value]="currentQuotationItemDetails" selectionMode="single"
+            [(selection)]="selectedQuotationItem" [scrollable]="true" pRowTogglerDisabled="true" dataKey="ItemID"
+            [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+            [style.width]="this.sessionService.getScreenWidthInPx()" sortField="ItemID" sortMode="single"
+            (onSort)="onSort()">
+
+            <ng-template pTemplate="header" let-columns>
+              <tr>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width"
+                  [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+                  {{col.header}}
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+              <tr [pSelectableRow]="rowData">
+                <td pEditableColumn *ngIf="rowGroupMetadata[rowData.ItemID].index === rowIndex"
+                  [attr.rowspan]="rowGroupMetadata[rowData.ItemID].size" [style.width]="columns[0].width"
+                  [style.text-align]="columns[0].align" [style.word-wrap]="columns[0].wrap">
+                  {{rowData.ItemName}}
+                </td>
+                <td pEditableColumn [style.width]="columns[1].width" [style.text-align]="columns[1].align"
+                  [style.word-wrap]="columns[1].wrap">
+                  {{rowData.SupplierName}}
+                </td>
+                <td pEditableColumn [style.width]="columns[2].width" [style.text-align]="columns[2].align"
+                  [style.word-wrap]="columns[2].wrap">
+                  <p-cellEditor>
+                    <ng-template pTemplate="input">
+                      <mat-form-field class="fld-mt0-w100">
+                        <input matInput type="number"
+                          #OrdQty{{rowData.QuotationDetailID}}{{rowData.SupplierID}}="ngModel"
+                          [errorStateMatcher]="this.sessionService.matcher"
+                          name="OrdQty{{rowData.QuotationDetailID}}{{rowData.SupplierID}}"
+                          [(ngModel)]="rowData.OrderQuantity" placeholder="" required
+                          (change)="onItemValueChange(rowData)" [minValue]="this.commonService.MIN_QUANTITY1"
+                          [maxValue]="this.commonService.MAX_QUANTITY"
+                          [pattern]="this.commonService.PATTERN_QUANTITY" />
+
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(quoteForm, OrdQty+rowData.QuotationDetailID+rowData.SupplierID, 'required')">
+                          Quantity is required
+                        </mat-error>
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(quoteForm, OrdQty+rowData.QuotationDetailID+rowData.SupplierID, 'pattern')">
+                          Invalid Quantity
+                        </mat-error>
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(quoteForm, OrdQty+rowData.QuotationDetailID+rowData.SupplierID, 'minValue')
+                                  && !this.hasError(quoteForm, OrdQty+rowData.QuotationDetailID+rowData.SupplierID, 'required') 
+                                  && !this.hasError(quoteForm, OrdQty+rowData.QuotationDetailID+rowData.SupplierID, 'pattern')">
+                          Minimum {{this.commonService.MIN_QUANTITY1}} is required
+                        </mat-error>
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(quoteForm, OrdQty+rowData.QuotationDetailID+rowData.SupplierID, 'maxValue') 
+                                  && !this.hasError(quoteForm, OrdQty+rowData.QuotationDetailID+rowData.SupplierID, 'pattern')">
+                          Maximum allowed is {{this.commonService.MAX_QUANTITY}}
+                        </mat-error>
+                      </mat-form-field>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                      {{rowData.OrderQuantity}}
+                      <span class="classMatError" *ngIf="this.submitAttempt && !rowData.OrderQuantity"> Quantity is
+                        required</span>
+                    </ng-template>
+                  </p-cellEditor>
+                </td>
+                <td pEditableColumn [style.width]="columns[3].width" [style.text-align]="columns[3].align"
+                  [style.word-wrap]="columns[3].wrap">
+                  <p-cellEditor>
+                    <ng-template pTemplate="input">
+                      {{rowData.UOM}}
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                      {{rowData.UOM}}
+                    </ng-template>
+                  </p-cellEditor>
+                </td>
+                <td pEditableColumn [style.width]="columns[4].width" [style.text-align]="columns[4].align"
+                  [style.word-wrap]="columns[4].wrap">
+                  <p-cellEditor>
+                    <ng-template pTemplate="input">
+                      <autocomplete class="fld-mt0-w100" placeholder="" [submitAttempt]="this.submitAttempt"
+                        [InputDataList]="rowData.PUOMList" KeyID="PUOMID" KeyDescription="UOM"
+                        (SelectionDone)="onCompleteColorSelectionPUOM(rowData)"
+                        #puom{{rowData.QuotationDetailID}}="ngModel" name="puom{{rowData.QuotationDetailID}}"
+                        [(ngModel)]="rowData.PUOMID">
+                      </autocomplete>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                      {{rowData.PUOM}}
+                    </ng-template>
+                  </p-cellEditor>
+                </td>
+                <td pEditableColumn [style.width]="columns[5].width" [style.text-align]="columns[5].align"
+                  [style.word-wrap]="columns[5].wrap">
+                  <p-cellEditor>
+                    <ng-template pTemplate="input">
+                      <mat-form-field class="fld-mt0-w100">
+                        <input matInput type="number"
+                          #ConvQty{{rowData.QuotationDetailID}}{{rowData.SupplierID}}="ngModel"
+                          name="ConvQty{{rowData.QuotationDetailID}}{{rowData.SupplierID}}"
+                          [(ngModel)]="rowData.ConvertedOrderQuantity" placeholder="" required
+                          [minValue]="this.commonService.MIN_QUANTITY1" [maxValue]="this.commonService.MAX_QUANTITY"
+                          [pattern]="this.commonService.PATTERN_QUANTITY" />
+
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(quoteForm, ConvQty+rowData.QuotationDetailID+rowData.SupplierID, 'required')">
+                          Converted Order Quantity is required
+                        </mat-error>
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(quoteForm, ConvQty+rowData.QuotationDetailID+rowData.SupplierID, 'pattern')">
+                          Invalid Quantity
+                        </mat-error>
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(quoteForm, ConvQty+rowData.QuotationDetailID+rowData.SupplierID, 'minValue')
+                                      && !this.hasError(quoteForm, ConvQty+rowData.QuotationDetailID+rowData.SupplierID, 'required') 
+                                      && !this.hasError(quoteForm, ConvQty+rowData.QuotationDetailID+rowData.SupplierID, 'pattern')">
+                          Minimum {{this.commonService.MIN_QUANTITY1}} is required
+                        </mat-error>
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(quoteForm, ConvQty+rowData.QuotationDetailID+rowData.SupplierID, 'maxValue') 
+                                      && !this.hasError(quoteForm, ConvQty+rowData.QuotationDetailID+rowData.SupplierID, 'pattern')">
+                          Maximum allowed is {{this.commonService.MAX_QUANTITY}}
+                        </mat-error>
+                      </mat-form-field>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                      {{rowData.ConvertedOrderQuantity}}
+                      <span class="classMatError" *ngIf="this.submitAttempt && !rowData.ConvertedOrderQuantity">
+                        Converted Order Quantity is required</span>
+                    </ng-template>
+                  </p-cellEditor>
+                </td>
+                <td pEditableColumn [style.width]="columns[6].width" [style.text-align]="columns[6].align"
+                  [style.word-wrap]="columns[6].wrap">
+                  <p-cellEditor>
+                    <ng-template pTemplate="input">
+                      <mat-form-field class="fld-mt0-w100">
+                        <input matInput type="number"
+                          #ExpDays{{rowData.QuotationDetailID}}{{rowData.SupplierID}}="ngModel"
+                          name="ExpDays{{rowData.QuotationDetailID}}{{rowData.SupplierID}}"
+                          [(ngModel)]="rowData.ExpectedDeliveryinDays" placeholder="" required
+                          [minValue]="this.commonService.MIN_QUANTITY1" [maxValue]="this.commonService.MAX_QUANTITY"
+                          [pattern]="this.commonService.PATTERN_QUANTITY" />
+
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(quoteForm, ExpDays+rowData.QuotationDetailID+rowData.SupplierID, 'required')">
+                          Expected Delivery in Days is required
+                        </mat-error>
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(quoteForm, ExpDays+rowData.QuotationDetailID+rowData.SupplierID, 'pattern')">
+                          Invalid Quantity
+                        </mat-error>
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(quoteForm, ExpDays+rowData.QuotationDetailID+rowData.SupplierID, 'minValue')
+                                        && !this.hasError(quoteForm, ExpDays+rowData.QuotationDetailID+rowData.SupplierID, 'required') 
+                                        && !this.hasError(quoteForm, ExpDays+rowData.QuotationDetailID+rowData.SupplierID, 'pattern')">
+                          Minimum {{this.commonService.MIN_QUANTITY1}} is required
+                        </mat-error>
+                        <mat-error
+                          *ngIf="this.submitAttempt && this.hasError(quoteForm, ExpDays+rowData.QuotationDetailID+rowData.SupplierID, 'maxValue') 
+                                        && !this.hasError(quoteForm, ExpDays+rowData.QuotationDetailID+rowData.SupplierID, 'pattern')">
+                          Maximum allowed is {{this.commonService.MAX_QUANTITY}}
+                        </mat-error>
+                      </mat-form-field>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                      {{rowData.ExpectedDeliveryinDays}}
+                      <span class="classMatError" *ngIf="this.submitAttempt && !rowData.ExpectedDeliveryinDays">
+                        Expected Delivery in Days is required</span>
+                    </ng-template>
+                  </p-cellEditor>
+
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+      </div>
+    </div>
+
+    <button type="submit" style="display:none" (click)="quoteRequestSubmit(quoteForm.valid, quoteForm, 'submit')"
+      #submitbutton></button>
+  </form>
+
+
+</div>
+
+<div fxLayout="column" *ngIf="Mode=='EDIT'">
+
+  <div fxLayout="row" class="actionBarRow">
+    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+      <label class="menuBarHeading">Quotation</label>
+    </div>
+    <div fxLayout="column" class="actionBarDataColumn">
+    </div>
+    <div fxLayout="column" class="actionBarSearchColumn">
+    </div>
+    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end" fxLayoutGap="10px">
+      <div fxLayout="row" fxLayoutGap="20px">
+        <div class="tooltip" matTooltip="Submit Quote Changes"
+          [matTooltipPosition]="this.sessionService.ToolTipPosition" *ngIf="this.Mode == 'EDIT'">
+          <button type="button" class="app-icon-button" (click)="submitbutton1.click()">
+            <i class="material-icons logout">thumbs_up_down</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Back" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="Mode=='EDIT'">
+          <button class="app-icon-button" (click)="cancelClick()">
+            <i class="material-icons logout">arrow_back</i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form novalidate #quoteForm1="ngForm" fxFlex=100%>
+    <div fxLayout="row">
+
+      <div fxLayout="column" fxFlex=8% fxLayoutAlign="center left">
+        <span>Quotation No. : </span>
+      </div>
+      <div fxLayout="column" fxFlex=5% fxLayoutAlign="center left">
+        <span><button mat-stroked-button color="primary"
+            *ngIf="selectedDataGridItem.QuotationNumber != null">{{selectedDataGridItem.QuotationNumber}}</button></span>
+      </div>
+      <div fxLayout="column" fxFlex=7% fxLayoutAlign="center center">
+        <span>Supplier : </span>
+      </div>
+      <div fxLayout="column" fxFlex=23% fxLayoutAlign="center left">
+        <span><button mat-stroked-button color="primary"
+            *ngIf="selectedDataGridItem.SupplierName != null">{{selectedDataGridItem.SupplierName}}</button></span>
+      </div>
+
+      <div fxLayout="column" fxFlex=12% fxLayoutAlign="start left">
+        <customdate class="fld-mt0-w90" placeholder="Quotation Date" required="true"
+          [submitAttempt]="this.submitAttempt" #QuotationDate1="ngModel" name="QuotationDate1"
+          [(ngModel)]="selectedDataGridItem.QuotationDate" [allowFutureDate]="false" [allowCurrentDate]="true"
+          [allowPastDate]="this.Mode == 'ADD' ? false: true">
+        </customdate>
+      </div>
+      <div fxLayout="column" fxFlex=12% fxLayoutAlign="start left">
+        <customdate class="fld-mt0-w90" placeholder="Expected Response Date" required="true"
+          [submitAttempt]="this.submitAttempt" #ExpectedResponseDate1="ngModel" name="ExpectedResponseDate1"
+          [(ngModel)]="selectedDataGridItem.ExpectedResponseDate" [allowFutureDate]="true" [allowCurrentDate]="true"
+          [allowPastDate]="this.Mode == 'ADD' ? false: true">
+        </customdate>
+      </div>
+      <div fxLayout="column" fxFlex=12% fxLayoutAlign="start left">
+        <customdate class="fld-mt0-w90" placeholder="Quotation Received Date" required="true"
+          [submitAttempt]="this.submitAttempt" #QuotationReceivedDate1="ngModel" name="QuotationReceivedDate1"
+          [(ngModel)]="selectedDataGridItem.QuotationReceivedDate" [allowFutureDate]="false" [allowCurrentDate]="true"
+          [allowPastDate]="true">
+        </customdate>
+      </div>
+      <div fxLayout="column" fxFlex=19% fxLayoutAlign="start left">
+        <mat-form-field class="fld-mt0-w100">
+          <mat-select [(ngModel)]="selectedDataGridItem.StatusCode" placeholder="Status" #SearchStatus="ngModel"
+            required name="SearchStatus">
+            <mat-option *ngFor="let itm of StatusListFiltered" [value]="itm.StatusCode">
+              {{ itm.StatusMessage }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="this.submitAttempt && this.hasError(quoteForm1, SearchStatus, 'required')">
+            Status is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div fxLayout="column" fxFlex=2% fxLayoutAlign="start left"></div>
+    </div>
+    <br>
+    <div fxLayout="row">
+      <p-table #qDt1 [columns]="QuoteCols1" [value]="currentQuotationItemDetails" selectionMode="single"
+        [(selection)]="selectedQuotationItem" [scrollable]="true" pRowTogglerDisabled="true" dataKey="ItemID"
+        [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()"
+        [style.width]="this.sessionService.getScreenWidthInPx()" sortField="ItemID" sortMode="single">
+
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width"
+              [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+              {{col.header}}
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns">
+          <tr [pSelectableRow]="rowData">
+            <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+              [style.word-wrap]="col.wrap">
+
+              <!-- <span *ngIf="col.edit == 'yes' && rowData[col.field] != null && col.format == 'rate'">{{this.commonService.formatRate(rowData[col.field])}}</span>  -->
+
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <!-- <span *ngIf="col.edit == 'yes' && rowData[col.field] != null && col.format == 'rate'">{{this.commonService.formatRate2Digits(rowData[col.field])}}</span> 
+                        <span *ngIf="col.edit == 'yes' && rowData[col.field] != null && col.format != 'rate'">{{rowData[col.field]}}</span>  -->
+                  <span *ngIf="col.edit != 'yes' && rowData[col.field] != null">{{rowData[col.dispfield]}}</span>
+                  <mat-form-field class="fld-mt0-w100" *ngIf="col.edit=='yes'">
+                    <input matInput type="number" #{{col.field}}{{rowData.QuotationDetailID}}="ngModel"
+                      name="{{col.field}}{{rowData.QuotationDetailID}}" [(ngModel)]="rowData[col.field]" placeholder=""
+                      required
+                      [minValue]="col.format == 'qty' ? this.commonService.MIN_QUANTITY1 : this.commonService.MIN_AMOUNT"
+                      [maxValue]="this.commonService.MAX_AMOUNT"
+                      [pattern]="col.format == 'qty' ? this.commonService.PATTERN_QUANTITY : this.commonService.PATTERN_CONVERSION_RATE" />
+
+                    <mat-error
+                      *ngIf="this.submitAttempt && this.hasError(quoteForm1, col.field+rowData.QuotationDetailID, 'required')">
+                      {{col.header}} is required
+                    </mat-error>
+                    <mat-error
+                      *ngIf="this.submitAttempt && this.hasError(quoteForm1, col.field+rowData.QuotationDetailID, 'pattern')">
+                      Invalid {{col.header}}
+                    </mat-error>
+                    <mat-error *ngIf="this.submitAttempt && this.hasError(quoteForm1, col.field+rowData.QuotationDetailID, 'minValue')
+                                && !this.hasError(quoteForm, col.field+rowData.QuotationDetailID, 'required') 
+                                && !this.hasError(quoteForm, col.field+rowData.QuotationDetailID, 'pattern')">
+                      Minimum <span *ngIf="col.format == 'qty'">{{this.commonService.MIN_QUANTITY1}}</span> <span
+                        *ngIf="col.format == 'rate'">{{this.commonService.MIN_AMOUNT}}</span> is required
+                    </mat-error>
+                    <mat-error *ngIf="this.submitAttempt && this.hasError(quoteForm1, col.field+rowData.QuotationDetailID, 'maxValue') 
+                                && !this.hasError(quoteForm, col.field+rowData.QuotationDetailID, 'pattern')">
+                      Maximum allowed is <span *ngIf="col.format == 'qty'">{{rowData.ExpectedDeliveryinDays}}</span>
+                      <span *ngIf="col.format == 'rate'">{{this.commonService.MAX_AMOUNT}}</span>
+                    </mat-error>
+                  </mat-form-field>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  <!-- {{rowData[col.dispfield]}} -->
+                  <span
+                    *ngIf="col.edit == 'yes' && rowData[col.field] != null && col.format == 'rate'">{{this.commonService.formatRate2Digits(rowData[col.dispfield])}}</span>
+                  <span
+                    *ngIf="col.edit == 'yes' && rowData[col.field] != null && col.format != 'rate'">{{rowData[col.dispfield]}}</span>
+                  <span *ngIf="col.edit != 'yes' && rowData[col.field] != null">{{rowData[col.dispfield]}}</span>
+                  <span class="classMatError" *ngIf="this.submitAttempt && (!rowData[col.field])"> {{col.header}} is
+                    required</span>
+                </ng-template>
+              </p-cellEditor>
+
+            </td>
+          </tr>
+        </ng-template>
+
+      </p-table>
+    </div>
+
+    <button type="submit" style="display:none" (click)="quoteUpdateSubmit(quoteForm1.valid, quoteForm1, 'submit')"
+      #submitbutton1></button>
+
+  </form>
+</div>
+
+<div fxLayout="column" *ngIf="Mode=='QUOTGEN'">
+  <div fxLayout="row" class="actionBarRow">
+    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+      <label class="menuBarHeading">Quotation</label>
+    </div>
+    <div fxLayout="column" class="actionBarDataColumn">
+    </div>
+    <div fxLayout="column" class="actionBarSearchColumn">
+    </div>
+    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end" fxLayoutGap="10px">
+      <div fxLayout="row" fxLayoutGap="20px">
+        <div class="tooltip" matTooltip="Back" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+          *ngIf="Mode == 'QUOTGEN'">
+          <button class="app-icon-button" (click)="closeClick()">
+            <i class="material-icons">arrow_back</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Create Quot"
+          *ngIf="(this.sessionService.actionAllowed('APPROVE_QUOTATION')) && this.Mode == 'QUOTGEN'"
+          [matTooltipPosition]="this.sessionService.ToolTipPosition">
+          <button type="button" class="app-icon-button" (click)="generateQuotationsFromRequest()"
+            [disabled]="this.canGenQuote != true">
+            <i class="material-icons logout">thumb_up</i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <form novalidate #genquoteForm="ngForm" fxFlex=100%>
+    <p-table [value]="PendingItemsList" rowGroupMode="rowspan" groupRowsBy="RequestAddrID" sortField="ReqRefCode"
+      sortMode="single" responsiveLayout="scroll" scrollHeight="450px">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3%">
+            <mat-checkbox #aChkMain="ngModel" name="aChkMain" [(ngModel)]="IsSelectAll"
+              (change)="onSelectAll()"></mat-checkbox>
+          </th>
+          <th style="width: 15%">Request From</th>
+          <th style="width: 8%">Request Date</th>
+          <th style="width: 8%">Request Status</th>
+          <th style="width: 25%">Material</th>
+          <th style="width: 10%">Exp.Delivery in Days</th>
+          <th style="width: 5%">Req. Qty.</th>
+          <th style="width: 5%">Approved Qty.</th>
+
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="caption">
+        <div fxLayout="row" class="dataGridContainerDiv">
+          <div fxLayout="column" fxFlex=100%>
+            <div fxLayout="row">
+              <div fxLayout="column" fxFlex=66%>
+                <div class="fld-mt0-w90">
+                  <autocomplete placeholder="Supplier(s)" [InputDataList]="this.SupplierList" KeyID="SupplierID"
+                    KeyDescription="SupplierName" #SupplierID1="ngModel" name="SupplierID1"
+                    (AutoCompleteChange)="onSupplierChange()" [(ngModel)]="SelectedSupplier.SupplierID">
+                  </autocomplete>
+                </div>
+              </div>
+              <div fxFlex=4%></div>
+              <div fxFlex=30%>
+                <customdate class="fld-mt0-w90" placeholder="Expected Response Date" required="true"
+                  [submitAttempt]="this.submitAttempt" #ExpectedResponseDate="ngModel" name="ExpectedResponseDate"
+                  [(ngModel)]="selectedDataGridItem.ExpectedResponseDate" [allowFutureDate]="true"
+                  [allowCurrentDate]="true" [allowPastDate]="true" (onDateChange)="canGen()">
+                </customdate>
+              </div>
+            </div>
+            <div fxLayout="row">
+              <div fxLayout="column" fxFlex=66% fxLayoutAlign="center start">
+                <mat-chip-list aria-label="Selected Suppliers">
+                  <mat-chip *ngFor="let supp of this.SelectedSupplierList" (removed)="remove(supp)">
+                    {{supp.SupplierName}}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                </mat-chip-list>
+              </div>
+              <div fxLayout="column" fxFlex=34% fxLayoutAlign="center start"></div>
+            </div>
+          </div>
+        </div>
+
+      </ng-template>
+      <ng-template pTemplate="body" let-item let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
+        <tr>
+          <td style="width: 3%">
+            <mat-checkbox  #aChk{{rowIndex}}="ngModel" name="aChk{{rowIndex}}" [(ngModel)]="item.IsSelected" (change)="onSelectItem()"></mat-checkbox>
+          </td>
+          <td style="width: 10%" style="text-align:left;" *ngIf="rowgroup" [attr.rowspan]="rowspan">
+            <span class="font-bold ml-2">{{item.ReqRefCode}}</span>
+          </td>
+          <td style="width: 10%" style="text-align:left;">
+            <span class="font-bold ml-2">{{item.PurchaseRequestDateStr}}</span>
+          </td>
+          <td style="width: 10%" style="text-align:left;">
+            <span class="font-bold ml-2">{{item.StatusMessage}}</span>
+          </td>
+          <td style="width: 20%" style="text-align:left;">
+            {{item.ItemName}}
+          </td>
+          <td style="width: 10%" style="text-align:right;">
+            <mat-form-field class="fld-mt0-w100">
+              <input matInput type="Number"  #aQty{{rowIndex}}="ngModel" name="aQty{{rowIndex}}"
+                [(ngModel)]="item.ExpectedDeliveryinDays" placeholder="Exp. Delivery In Days" required>
+                <mat-error *ngIf="this.submitAttempt && this.hasError(genquoteForm,'aQty' + rowIndex,'required')">
+                  Expected Delivery In Days is required
+                </mat-error>
+            </mat-form-field>
+
+          </td>
+          <td style="width: 7%" style="text-align:right;">
+            {{item.RequestQuantity}}
+          </td>
+          <td style="width: 10%" style="text-align:right;">
+            {{item.ApprovedQuantity}}
+          </td>
+
+        </tr>
+      </ng-template>
+    </p-table>
+  </form>
+
+</div>

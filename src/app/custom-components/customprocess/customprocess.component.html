@@ -1,0 +1,140 @@
+<div>
+
+          <form novalidate #dialogForm="ngForm">
+
+              <div fxLayout="row" class="actionBarRow">
+                  <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center">
+                      <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Process</label>
+                      <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Process</label>
+                  </div>
+          
+                  <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                      <div fxLayout="row" fxLayoutGap="20px">
+                          <div class="tooltip" matTooltip="Save" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                            *ngIf="(this.sessionService.actionAllowed('ADD_PROCESS') && this.Mode == 'ADD') || this.sessionService.actionAllowed('EDIT_PROCESS')">
+                              <button type="submit" class="app-icon-button" (click)="SubmitClick(dialogForm.valid)">
+                              <i class="material-icons logout">save</i>
+                              </button>
+                          </div>
+                          <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                              <button class="app-icon-button" (click)="cancelClick()">
+                                  <i class="material-icons logout">cancel</i>
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+      
+              <div fxLayout="row" class="FirstColumnData" [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+                  
+                  <div fxLayout="column" fxFlex=100% class="formColumn">
+                      <br>
+
+                      <div fxLayout="row" fxLayoutAlign="center center">
+                            <mat-form-field class="fld-mt0-w100">
+                               <input matInput type="text" maxlength="50" #ProcessName="ngModel" name="ProcessName" [(ngModel)]="selectedDataGridItem.ProcessName"
+                                    placeholder="Process Name" required>
+                                    <mat-error *ngIf="this.submitAttempt && ProcessName.hasError('required')">
+                                       Process Name is required
+                                    </mat-error>                        
+                            </mat-form-field>                            
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                      <mat-form-field class="fld-mt0-w100">
+                        <mat-select #InputUOMID="ngModel" name="InputUOMID" [(ngModel)]="selectedDataGridItem.InputUOMID" required
+                                    placeholder="Input UOM">
+                          <mat-option *ngFor="let itm of UOMResultList" [value]="itm.UOMID">
+                            {{ itm.UOM }}
+                          </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="this.submitAttempt && InputUOMID.hasError('required')">
+                          Input UOM is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <mat-form-field class="fld-mt0-w100">
+                          <mat-select #OutputUOMID="ngModel" name="OutputUOMID" [(ngModel)]="selectedDataGridItem.OutputUOMID" required
+                                      placeholder="Output UOM">
+                            <mat-option *ngFor="let itm of UOMResultList" [value]="itm.UOMID">
+                              {{ itm.UOM }}
+                            </mat-option>
+                          </mat-select>
+                          <mat-error *ngIf="this.submitAttempt && OutputUOMID.hasError('required')">
+                            Output UOM is required
+                          </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                      <mat-form-field class="fld-mt0-w100">
+                        <mat-select #CategoryName="ngModel" name="CategoryName" 
+                                    [(ngModel)]="selectedDataGridItem.CategoryName" placeholder="Category">
+                          <mat-option *ngFor="let itm of this.categoryList" [value]="itm">
+                            {{ itm }}
+                          </mat-option>
+                        </mat-select>
+
+                        <mat-error *ngIf="this.submitAttempt && CategoryName.hasError('required')">
+                          Category is required
+                        </mat-error>
+                      </mat-form-field>
+
+                        <!-- <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="text"  maxlength="50" #CategoryName="ngModel" name="CategoryName" [(ngModel)]="selectedDataGridItem.CategoryName"
+                            placeholder="Category" required>
+                            <mat-error *ngIf="this.submitAttempt && CategoryName.hasError('required')">
+                                Category is required
+                            </mat-error>
+                        </mat-form-field> -->
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                      <mat-form-field class="fld-mt0-w100">
+                        <input matInput required type="number" #CostPerUnit="ngModel" name="CostPerUnit" placeholder="Cost Per Unit"
+                               [(ngModel)]="selectedDataGridItem.CostPerUnit" [pattern]="this.commonService.PATTERN_AMOUNT"
+                               minlength="0" maxlength="999999999">
+                        <mat-error *ngIf="this.submitAttempt && CostPerUnit.hasError('required')">
+                          Cost Per Unit is required
+                        </mat-error>
+                        <mat-error *ngIf="this.submitAttempt && CostPerUnit.hasError('pattern')">
+                          Invalid Cost Per Unit
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                      <mat-form-field class="fld-mt0-w100">
+                        <mat-select #DependentItemID="ngModel" name="DependentItemID" 
+                                    [(ngModel)]="selectedDataGridItem.DependentItemID" placeholder="Dependent Item">
+                          <mat-option *ngFor="let itm of this.ItemResultList" [value]="itm.ItemID">
+                            {{ itm.ItemName }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">                            
+                        <mat-form-field  class="fld-mt0-w100">
+                            <mat-select required #StatusCode="ngModel" name="StatusCode"
+                              [(ngModel)]="selectedDataGridItem.StatusCode" placeholder="Status">
+                              <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                                {{ itm.StatusMessage }}
+                              </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="this.submitAttempt && StatusCode.hasError('required')">
+                                Status is required
+                            </mat-error>                                         
+                         </mat-form-field> 
+                    </div>
+
+    
+                          <br>
+                          <br>
+                  </div>
+      
+              </div>
+          </form>
+  </div>

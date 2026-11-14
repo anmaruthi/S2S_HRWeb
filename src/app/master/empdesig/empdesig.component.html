@@ -1,0 +1,199 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+
+    <div fxLayout="column" [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth)" *ngIf="Mode=='EDIT' || Mode=='ADD'" class="formColumn">
+        <form novalidate #dialogForm="ngForm">
+
+            <div fxLayout="row" class="actionBarRow">
+
+                <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                    <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Employee Designation</label>
+                    <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Employee Designation</label>
+                </div>
+    
+                <div fxLayout="column" class="actionBarRowDataColumn" fxLayoutAlign="center center">
+
+                </div>
+
+                <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                    <div fxLayout="row" fxLayoutGap="20px">
+                        <div class="tooltip" matTooltip="Save" *ngIf="(this.sessionService.actionAllowed('ADD_DESIGNATION') && this.Mode == 'ADD')
+                        || this.sessionService.actionAllowed('EDIT_DESIGNATION')" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button type="submit" class="app-icon-button" (click)="SubmitClick(dialogForm.valid)">
+                                <i class="material-icons logout">save</i>
+                            </button>
+                        </div>
+                        <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            <button class="app-icon-button" (click)="cancelClick()">
+                                <i class="material-icons logout">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+ 
+            </div>
+
+            <div fxLayout="row" class="FirstColumnData" [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+                        
+                <div fxLayout="column" fxFlex=100%>
+                    <br>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=100%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" #DesignationName="ngModel" name="DesignationName" [(ngModel)]="selectedDataGridItem.DesignationName"  required
+                                placeholder="DesignationName" maxlength="200"/>                            
+                                <mat-error *ngIf="this.submitAttempt && DesignationName.hasError('required')">
+                                    DesignationName is Required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=48%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="text" #DesignationShortName="ngModel" name=" DesignationShortName" [(ngModel)]="selectedDataGridItem. DesignationShortName"  required
+                                placeholder=" Designation Short Name" maxlength="200"/>
+                                <mat-error *ngIf="this.submitAttempt &&  DesignationShortName.hasError('required')">
+                                    Designation Short Name is Required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=48%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <mat-select #DepartmentID="ngModel" name="DepartmentID" [(ngModel)]="selectedDataGridItem.DepartmentID" required placeholder="Department">
+                                    <mat-option *ngFor="let itm of departmentList" [value]="itm.DepartmentID">
+                                        {{ itm.DepartmentName }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="this.submitAttempt && DepartmentID.hasError('required')">
+                                        DepartmentName is Required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=48%>
+                          <mat-form-field class="fld-mt0-w100">
+                          <mat-select #StatusCode="ngModel" name="StatusCode" [(ngModel)]="selectedDataGridItem.StatusCode" required
+                                      placeholder="Status">
+                              <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                              {{ itm.StatusMessage }}
+                              </mat-option>
+                          </mat-select>
+                          <mat-error *ngIf="this.submitAttempt && StatusCode.hasError('required')">
+                              Status is required
+                          </mat-error>
+                          </mat-form-field>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=48%></div>
+                    </div>
+
+                </div>
+            </div>
+            
+        </form>
+    </div>
+
+
+    <div class="ColumnDivider" *ngIf="Mode=='EDIT' || Mode=='ADD'"></div>
+        
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()" >  
+        <div fxLayout="row">
+            <div fxLayout="column">                
+                <div fxLayout="row" class="actionBarRow" >
+                    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                        <label class="menuBarHeading">Employee designation</label>
+                    </div>
+                    <div fxLayout="column" class="actionBarDataColumn">
+                        <div fxLayout="row" fxLayoutAlign="center center">
+                            <mat-form-field fxFlex="50%">
+                                <mat-select #deptid="ngModel" name="deptid" [(ngModel)]="selectedDepartment.DepartmentID"  (selectionChange)="onDepartmentChange()"  required placeholder="Department">
+                                    <mat-option *ngFor="let itm of departmentList" [value]="itm.DepartmentID">
+                                        {{ itm.DepartmentName }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="this.submitAttempt && deptid.hasError('required')">
+                                        DepartmentName is Required
+                                </mat-error>
+                            </mat-form-field>                                 
+                        </div>    
+                    </div>
+                    <div fxLayout="column" class="actionBarSearchColumn">
+                       
+                    </div>
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                        <div fxLayout="row" fxLayoutGap="20px">
+                            <div class="tooltip" matTooltip="Add" *ngIf="this.sessionService.actionAllowed('ADD_DESIGNATION')" 
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="addClick()">
+                                        <i class="material-icons">add_box</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Edit" *ngIf="this.sessionService.actionAllowed('EDIT_DESIGNATION')"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="editClick()">
+                                        <i class="material-icons">edit</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Delete" *ngIf="this.sessionService.actionAllowed('DELETE_DESIGNATION')" 
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="deleteClick()">
+                                        <i class="material-icons">delete</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Refresh" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="refreshClick()">
+                                      <i class="material-icons">refresh</i>
+                                </button>
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+                        
+                <div fxLayout="row" class="SecondColumnData">
+                    <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single" [scrollable]="true" [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()" 
+                    [style.width]="this.sessionService.getScreenWidthInPx()"
+                    [(selection)]="selectedData" [paginator]="true" [rows]="sessionService.NoOfRowsPerPage" 
+                    [rowsPerPageOptions]="sessionService.RowsPerPageOptions">    
+                        <ng-template pTemplate="header" let-columns>
+                            <tr> 
+                                <th *ngFor="let col of columns"  [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+                                    <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="caption">
+                            <div fxLayout="column" fxLayoutAlign="center end">
+                                <div class="flex">
+                                    <span class="p-input-icon-left ml-auto">
+                                        <span> <i class="pi pi-search"></i></span>
+                                        <input pInputText type="text"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Search here" />
+                                    </span>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                                    [style.word-wrap]="col.wrap">
+                                    {{rowData[col.field]}}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>  
+        </div>
+  
+    </div>
+</div>
+  
+  

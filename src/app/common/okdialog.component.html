@@ -1,0 +1,34 @@
+﻿<div class="dialogContainer">
+
+  <div fxLayout="row" fxLayoutAlign="center">
+    <div fxLayout="column" fxFlex=98%>
+      <h3 mat-dialog-title class="matDialogHeader" align="center">{{Header}}</h3>
+    </div>
+    <!--<div fxLayout="column" fxFlex=2%>
+      <mat-icon matSuffix matTooltip="Close" class="closeIcon" (click)="this.submitClick()">close</mat-icon>
+    </div>-->
+  </div>
+
+  <mat-dialog-content class="contentDiv">
+    
+    <div fxLayout="column">
+
+
+      <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="center center">
+        <div>
+          {{Message}}
+        </div>
+      </div>
+
+      <br>
+      <br>
+
+      <div fxFlex="row" fxLayoutGap="30px" fxLayoutAlign="center center">
+        <button color="primary" mat-raised-button (click)="submitClick()">Ok</button>
+      </div>
+
+    </div>
+
+  </mat-dialog-content>
+
+</div>

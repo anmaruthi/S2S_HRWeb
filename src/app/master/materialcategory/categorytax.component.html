@@ -1,0 +1,94 @@
+﻿<div fxLayout="column" fxFlex=100%>
+
+  <div fxLayout="row" class="actionBarRow">
+    <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+      <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Tax</label>
+      <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Tax</label>
+    </div>
+    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+      <div fxLayout="row" fxLayoutGap="10px">
+        <div class="tooltip" matTooltip="Save" *ngIf="(this.sessionService.actionAllowed('ADD_ITEMCATEGORY') && this.Mode == 'ADD')
+          || (this.sessionService.actionAllowed('EDIT_ITEMCATEGORY') && this.Mode == 'EDIT')"
+          [matTooltipPosition]="this.sessionService.ToolTipPosition">
+          <button type="submit" class="app-icon-button" (click)="submitClick(dialogForm.valid)">
+            <i class="material-icons logout">save</i>
+          </button>
+        </div>
+        <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+          <button class="app-icon-button" (click)="closeClick()">
+            <i class="material-icons logout">cancel</i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br />
+
+  <div class="dialogContainer">
+
+    <div fxLayout="row" fxFlex=100% fxLayoutAlign="center center">
+      <div fxLayout="column" fxFlex=100%>
+        <form #dialogForm="ngForm" novalidate>
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <div fxFlex=100%>
+                <autocomplete class="fld-mt0-w100" placeholder="Tax Code" required="true" [submitAttempt]="this.submitAttempt"
+                    [InputDataList]="this.TaxList" KeyID="TaxID" KeyDescription="TaxCode" #TaxCode="ngModel" name="TaxCode" [(ngModel)]="dialogItem.TaxID"
+                    (SelectionDone)="taxSelected($event)">  
+                </autocomplete>
+            </div>
+          </div>
+
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <div fxFlex=100%>
+                <autocomplete class="fld-mt0-w100" placeholder="Tax Name" required="true" [submitAttempt]="this.submitAttempt"  
+                    [InputDataList]="this.TaxList" KeyID="TaxID" KeyDescription="TaxName" #TaxName="ngModel" name="TaxName" [(ngModel)]="dialogItem.TaxID" 
+                    (SelectionDone)="taxSelected($event)"> 
+                </autocomplete>
+            </div>
+          </div>
+
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <div fxFlex=100%>
+              <mat-form-field class="fld-mt0-w100">
+                <input matInput type="text" maxlength="200" #TaxValue="ngModel" name="TaxValue"
+                  [(ngModel)]="dialogItem.TaxValue" placeholder="Tax Percentage" required>
+
+                <mat-error *ngIf="this.submitAttempt && TaxValue.hasError('required')">
+                  Material Category Name is required
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <div fxFlex=100%>
+              <customdate class="fld-mt0-w100" placeholder="Effective Date" required="true" #EffectiveDate="ngModel"
+                name="EffectiveDate" [(ngModel)]="dialogItem.EffectiveDateFrom" [allowFutureDate]="true"
+                [allowCurrentDate]="true" [allowPastDate]="true" [submitAttempt]="this.submitAttempt"
+                [ReadOnlyControl]="false"> </customdate>
+            </div>
+          </div>
+
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <div fxFlex=100%>
+              <mat-form-field class="fld-mt0-w100">
+                <mat-select required #Statuscode="ngModel" name="StatusCode" [(ngModel)]="dialogItem.StatusCode"
+                  placeholder="Status">
+                  <mat-option *ngFor="let itm of StatusList" [value]="itm.StatusCode">
+                    {{ itm.StatusMessage }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="this.submitAttempt && Statuscode.hasError('required')">
+                  Status is required
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

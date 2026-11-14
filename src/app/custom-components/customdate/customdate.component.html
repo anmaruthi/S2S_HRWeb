@@ -1,0 +1,69 @@
+﻿<mat-form-field class="fld-mt0-w100">
+
+    <input matInput type="text" 
+      [placeholder]="this.placeholder" [(ngModel)]="this.stringDate"
+      [required]="this.required" #strDate="ngModel"  [readonly]="ReadOnlyControl"
+      (ngModelChange)="txtDateChange(strDate);this.changeEventEmit();" maxlength="10" [pattern]="this.commonService.PATTERN_DATE"
+      (onchange)="test()" />
+  
+      <mat-datepicker-toggle matSuffix [for]="picker" *ngIf="ReadOnlyControl!=true" ></mat-datepicker-toggle>
+      <mat-datepicker #picker touchUi="true"></mat-datepicker>
+
+    <input type="hidden" [matDatepicker]="picker" [(ngModel)]="this.dtDate"
+          (dateInput)="dateChange(strDate)" (dateChange)="dateChange(strDate)" readonly>
+  
+  <mat-error *ngIf="this.submitAttempt && strDate.hasError('required')">
+    {{this.placeholder}} is required
+  </mat-error>
+
+  <mat-error *ngIf="this.submitAttempt && strDate.hasError('pattern')">
+      Invalid date (enter {{this.DATE_FORMAT}} )
+  </mat-error>
+  
+  <mat-error *ngIf="this.submitAttempt && strDate.hasError('DateParseError')">
+    Invalid date (enter {{this.DATE_FORMAT}} )
+  </mat-error>
+  
+  <mat-error *ngIf="this.submitAttempt && strDate.hasError('invalidDateError')">
+    Invalid date
+  </mat-error>
+
+  <mat-error *ngIf="this.submitAttempt && strDate.hasError('FutureDateError')">
+    Future date not allowed
+  </mat-error>
+  
+  <mat-error *ngIf="this.submitAttempt && strDate.hasError('CurrentDateError')">
+    Current date not allowed
+  </mat-error>
+
+  <mat-error *ngIf="this.submitAttempt && strDate.hasError('PastDateError')">
+    Past date not allowed
+  </mat-error>
+
+  <mat-error *ngIf="this.submitAttempt && strDate.hasError('PastDateYearsError')">
+    Invalid past date (< 100 years)
+  </mat-error>
+  
+  <mat-error *ngIf="this.submitAttempt && strDate.hasError('FutureDateYearsError')">
+    Invalid future date (> 100 years)
+  </mat-error>
+
+  <mat-error *ngIf="this.submitAttempt && strDate.hasError('AfterDateError')">
+    Should be greater than {{this.afterDate}}
+  </mat-error>
+
+  <mat-error *ngIf="this.submitAttempt && strDate.hasError('SameAfterDateError')">
+    Should be equal or greater than {{this.sameOrAfter}}
+  </mat-error>
+
+  <mat-error *ngIf="this.submitAttempt && strDate.hasError('BeforeDateError')">
+    Should be lesser than {{this.beforeDate}}
+  </mat-error>
+
+  <mat-error *ngIf="this.submitAttempt && strDate.hasError('SameBeforeDateError')">
+    Should be equal or lesser than {{this.sameOrBefore}}
+  </mat-error>
+  
+  <mat-hint *ngIf="this.showHint">{{this.DATE_FORMAT}}</mat-hint>
+  
+</mat-form-field>

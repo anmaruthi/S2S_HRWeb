@@ -1,0 +1,196 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+    <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()">
+        <div fxLayout="row">
+            <div fxLayout="column">
+                <div fxLayout="row" class="actionBarRow  actionBarRowCustom">
+                    <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+                        <label class="menuBarHeading">Daily Attendance</label>
+                    </div>
+                    <div fxLayout="column" class="actionBarRowDataColumn">
+                        <form novalidate #searchForm="ngForm" fxFlex=100%>
+                            <div fxLayout="row" fxFlex=100% fxLayoutAlign="center center" fxLayoutGap="20px">
+                                <div fxFlex=15%>
+                                    <autocomplete class="fld-mt0-w100" placeholder="Group" required="true"
+                                        [submitAttempt]="this.submitAttempt" [InputDataList]="this.EmployeeGroupList"
+                                        KeyID="GroupID" KeyDescription="GroupName" #EmpGroup="ngModel" name="EmpGroup"
+                                        [(ngModel)]="SelectedGroup.GroupID" (SelectionDone)="SelectEmpGroup($event)">
+                                    </autocomplete>
+                                </div>
+                                <div fxFlex=15%>
+                                    <autocomplete class="fld-mt0-w100" placeholder="Category" required="true"
+                                        [submitAttempt]="this.submitAttempt" [InputDataList]="this.EmployeeCategoryList"
+                                        KeyID="CategoryID" KeyDescription="CategoryName" #Category="ngModel"
+                                        name="Category" [(ngModel)]="SelectedCategory.CategoryID"
+                                        (SelectionDone)="SelectEmpCategory($event)">
+                                    </autocomplete>
+                                </div>
+                                <div fxFlex=15%>
+                                    <autocomplete class="fld-mt0-w100" placeholder="Type" required="true"
+                                        [submitAttempt]="this.submitAttempt" [InputDataList]="this.EmployeeTypeList"
+                                        KeyID="TypeID" KeyDescription="TypeName" #Type="ngModel" name="Type"
+                                        [(ngModel)]="SelectedType.TypeID" (SelectionDone)="SelectEmpType($event)">
+                                    </autocomplete>
+                                </div>
+                                <div fxFlex=20%>
+                                    <autocomplete class="fld-mt0-w100" placeholder="Department" required="true"
+                                        [submitAttempt]="this.submitAttempt"
+                                        [InputDataList]="this.EmployeeDepartmentList" KeyID="DepartmentID"
+                                        KeyDescription="DepartmentName" #Department="ngModel" name="Department"
+                                        [(ngModel)]="SelectedDepartment.DepartmentID"
+                                        (SelectionDone)="SelectEmpDepartment($event)">
+                                    </autocomplete>
+                                </div>
+                                <div fxFlex=20%>
+                                    <autocomplete class="fld-mt0-w100" placeholder="Designation" required="true"
+                                        [submitAttempt]="this.submitAttempt"
+                                        [InputDataList]="this.EmployeeDesignationList" KeyID="DesignationID"
+                                        KeyDescription="DesignationName" #Designation="ngModel" name="Designation"
+                                        [(ngModel)]="SelectedDesignation.DesignationID"
+                                        (SelectionDone)="SelectEmpDesignation($event)">
+                                    </autocomplete>
+                                </div>
+                                <div fxFlex=15%>
+                                    <customdate class="fld-mt0-w100" placeholder="Att-Date" required="true"
+                                        [submitAttempt]="this.submitAttempt" #attDate="ngModel" name="attDate"
+                                        [(ngModel)]="SelectedDate" [allowFutureDate]="false" [allowCurrentDate]="true"
+                                        [allowPastDate]="true">
+                                    </customdate>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                        <div fxLayout="row" fxLayoutGap="20px">
+                            <div class="tooltip" matTooltip="Save"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                            </div>
+                            <div></div>
+                            <div class="tooltip" matTooltip="Refresh"
+                                [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="refreshClick()">
+                                    <i class="material-icons">refresh</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div fxLayout="row" class="SecondColumnData">
+                    <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single" dataKey="DlyAttID"
+                        [style.width]="this.sessionService.getScreenWidthInPx()" [(selection)]="selectedData"
+                        [paginator]="true" [rows]="sessionService.NoOfRowsPerPage"
+                        [rowsPerPageOptions]="sessionService.RowsPerPageOptions">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [style.width]="col.width">
+                                    {{col.header}}
+                                    <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr [pSelectableRow]="rowData">
+                                <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width"
+                                    [style.text-align]="col.align" [style.word-wrap]="col.wrap">
+
+                                    <span *ngIf="col.header != 'In Time' && col.header != 'Out Time'">
+                                        {{rowData[col.field]}}
+                                    </span>
+                                    <!-- <span *ngIf="col.header == 'Punches'">
+                                        <div class="tooltip" matTooltip="Cancel"
+                                            [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                            <button class="app-icon-button"
+                                                (click)="getAttendanceDet('2023-12-16',rowData.AttIn,rowData.AttOut,rowData)">
+                                                <i class="material-icons logout">cancel</i>
+                                            </button>
+                                        </div>
+                                    </span> -->
+                                    <span *ngIf="col.header == 'In Time'">
+                                        <p-cellEditor>
+                                            <ng-template pTemplate="input">
+                                                <input pInputText type="text" [(ngModel)]="rowData.AttIn"
+                                                    (keydown.enter)="getAttendanceDet('2023-12-16',rowData.AttIn,rowData.AttOut,rowData)"
+                                                    placeholder="In-Time" />
+                                            </ng-template>
+                                            <ng-template pTemplate="output">
+                                                {{rowData.AttIn}}
+                                            </ng-template>
+                                        </p-cellEditor>
+                                    </span>
+                                    <!-- <span *ngIf="col.header == 'Out Time'">
+                                        <p-cellEditor>
+                                            <ng-template pTemplate="input">
+                                                <input pInputText type="text" [(ngModel)]="rowData.AttOut"
+                                                    (input)="getAttendanceDet('2023-12-16',rowData.AttIn,rowData.AttOut,rowData)"
+                                                    placeholder="Out-Time" required />
+                                            </ng-template>
+                                            <ng-template pTemplate="output">
+                                                {{rowData.AttOut}}
+                                            </ng-template>
+                                        </p-cellEditor>
+                                    </span> -->
+                                    <span *ngIf="col.header == 'Out Time'">
+                                        <p-cellEditor>
+                                            <ng-template pTemplate="input">
+                                                <input pInputText type="text" [(ngModel)]="rowData.AttOut" min="4"
+                                                    (keydown.enter)="getAttendanceDet('2023-12-16',rowData.AttIn,rowData.AttOut,rowData)"
+                                                    placeholder="Out-Time" />
+                                            </ng-template>
+                                            <ng-template pTemplate="output">
+                                                {{rowData.AttOut}}
+                                            </ng-template>
+                                        </p-cellEditor>
+                                    </span>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="caption">
+                            <div fxLayout="column" fxFlex=50% fxLayoutAlign="center start">
+                                <div fxLayout="row" fxLayoutGap="10px">
+                                    <div class="tooltip">
+                                        <i class="pi pi-search"></i>
+                                    </div>
+                                    <div class="flex">
+                                        <input pInputText type="text"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Search here" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div fxLayout="column" fxFlex=40% fxLayoutAlign="start end">
+                                <!-- <div fxFlex=5%> <p-button icon="pi pi-search" [rounded]="true" [text]="true"
+                                        severity="success "></p-button></div>
+                                <div fxFlex=5%>
+                                    <p-button icon="pi pi-times" [rounded]="true" [text]="true"
+                                        severity="danger "></p-button>
+                                </div> -->
+                            </div>
+                            <div class="export" fxLayout="column" fxFlex=3%>
+                                <p-button icon="pi pi-file-excel" [rounded]="true" [text]="true" severity="danger"
+                                    (click)="exportExcel()" pTooltip="xls" tooltipPosition="top"></p-button>
+                            </div>
+                            <div fxLayout="column" fxFlex=3%>
+                                <p-button icon="pi pi-file-pdf" [rounded]="true" [text]="true" severity="success"
+                                    (click)="exportPdf()" pTooltip="pdf" tooltipPosition="top"></p-button>
+                            </div>
+                            <div fxLayout="column" fxFlex=3%>
+                                <p-button icon="pi pi-upload" [rounded]="true" [text]="true" severity="success"
+                                    pTooltip="save" (click)="submit()" tooltipPosition="top"></p-button>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            No records found
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="htmlData" style="display:none;">
+    <div style="margin-left:100px;margin-top:85px;width:1000px;border-top: 1px solid rgb(52, 103, 235);">
+        <div class="row mt-1">
+            <div class="col-md-4 text-start">Module Name : </div>
+            <div class="col-md-8 text-start"><b> <b style="font-size:small;letter-spacing:0.5px"></b></b></div>
+        </div>
+    </div>
+</div>

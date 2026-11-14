@@ -1,0 +1,86 @@
+
+<div>
+
+        <form novalidate #dialogForm="ngForm">
+
+            <div fxLayout="row" class="actionBarRow">
+
+                <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center start">
+                        <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Lookup</label>
+                        <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Lookup</label>
+                </div>
+    
+                <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+                        <div fxLayout="row" fxLayoutGap="20px">
+                            <div class="tooltip" matTooltip="Save" *ngIf="(this.sessionService.actionAllowed('ADD_LOOKUP') && this.Mode == 'ADD')
+                            || this.sessionService.actionAllowed('EDIT_LOOKUP')" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button type="submit" class="app-icon-button" (click)="SubmitClick(dialogForm.valid)">
+                                    <i class="material-icons logout">save</i>
+                                </button>
+                            </div>
+                            <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                                <button class="app-icon-button" (click)="cancelClick()">
+                                    <i class="material-icons logout">cancel</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+            <div fxLayout="row" class="FirstColumnData" [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+                        
+                <div fxLayout="column" fxFlex=100%>
+                    <br>
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=100%>
+                        <mat-form-field class="fld-mt0-w100">
+                            <input matInput type="text" #Description="ngModel" name="Description" [(ngModel)]="selectedDataGridItem.Description"  required
+                            placeholder="Description" maxlength="200"/>                            
+                            <mat-error *ngIf="this.submitAttempt && Description.hasError('required')">
+                                Description is Required
+                            </mat-error>
+                        </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=48%>
+                            <mat-form-field class="fld-mt0-w100">
+                                <input matInput type="number" #SortOrder="ngModel" name="SortOrder" [(ngModel)]="selectedDataGridItem.SortOrder"  required
+                                placeholder="Sort Order"/>
+                                <mat-error *ngIf="this.submitAttempt && SortOrder.hasError('required')">
+                                    Sort Order is Required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div fxFlex=10%></div>
+                        <div fxFlex=42%>
+                            <div fxLayout="row" fxFlex="100%">
+                                <mat-checkbox #IsDefault="ngModel" name="IsDefault" [(ngModel)]="selectedDataGridItem.IsDefault">Is Default</mat-checkbox>              
+                            </div>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <div fxFlex=48%>
+                            <mat-form-field  class="fld-mt0-w100">
+                                <mat-select #DomainID="ngModel" name="domainID" [(ngModel)]="selectedDataGridItem.DomainID" required placeholder="Domain">
+                                    <mat-option *ngFor="let itm of DomainList" [value]="itm.DomainID">
+                                        {{ itm.Description }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="this.submitAttempt && DomainID.hasError('required')">
+                                        Domain is Required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div fxFlex=4%></div>
+                        <div fxFlex=48%></div>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </form>
+    </div>

@@ -1,0 +1,472 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'custom-theme.scss';
+@import 'custom-theme-color.scss';
+
+body .ui-state-active, body .ui-state-highlight, body ui-state-focus {
+  background-color: $datatable-state-highlight;
+  color: #ffffff;
+}
+
+.p-paginator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.p-paginator-left-content {
+margin-right: auto;
+}
+
+.p-paginator-right-content {
+margin-left: auto;
+}
+
+.p-paginator-page,
+.p-paginator-next,
+.p-paginator-last,
+.p-paginator-first,
+.p-paginator-prev,
+.p-paginator-current {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.p-paginator-element:focus {
+  z-index: 1;
+  position: relative;
+}
+
+// .p-paginator .p-paginator-first, .p-paginator .p-paginator-prev,  .p-paginator .p-paginator-next, .p-paginator .p-paginator-last {
+//   color: $datatable-state-background;
+//   transition: background-color 0.3s;
+// }
+
+// .p-paginator .p-paginator-pages .p-paginator-page {
+//   color: black;
+//   transition: background-color 0.3s;
+// }
+
+// .p-paginator .p-paginator-pages .p-paginator-page:hover.ui-state-active {
+//   background-color: $datatable-state-hover;
+//   color: black;
+// }
+
+
+// Datatable font setting
+body .ui-widget, body .ui-widget .ui-widget, body .ui-widget input, body .ui-widget select, body .ui-widget textarea, body .ui-widget button {
+  font-family: Roboto, Arial, sans-serif !important;
+  font-size: 13px;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+}
+
+/* pick list settings start */
+
+// Rule Wizard -- Rule Action Screen design
+.p-picklist {
+  font-family: Roboto, Arial, sans-serif !important;
+  font-size: 13px;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+}
+
+.p-picklist-source-controls {
+  display: none !important;
+}
+
+.p-picklist-target-controls {
+  display: none !important;
+}
+
+body .p-picklist .p-picklist-list .p-picklist-item:focus {
+  background-color: $datatable-state-highlight;
+  color: black;
+}
+
+body .p-picklist:not(.ui-state-disabled) .p-picklist-item:hover {
+  background-color: $datatable-state-hover !important;
+  color: black;
+}
+
+.p-picklist-title {
+  background-color: $datatable-state-background;
+  color: $font-color;
+  height: 30px;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.p-picklist-item {
+  display: block;
+  min-height: 40px;
+}
+
+
+.p-picklist .p-picklist-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  height: 20em;
+  width: 100%;
+}
+
+
+.p-picklist .p-picklist-buttons {
+   vertical-align: middle;
+   width: 30px;
+   color: white;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.p-button-icon-only {
+  color: white;
+}
+
+/* p-accordion */
+
+.p-accordion {
+  font-family: Roboto, Arial, sans-serif !important;
+  font-size: 13px;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+}
+
+.p-accordion-header {
+  height: 2.5em;
+  font-size: 16px;
+  font-weight: bold;
+  font-style: normal;
+  background-color: $page-background-color;
+  color: black;
+  padding: 2px;
+  border:0.5px solid #c8c8c8;
+  border-radius: 5px;
+}
+
+p-accordion-content {
+  padding: 5px;
+  margin: 5px;
+  border:0.5px solid #c8c8c8;
+}
+
+.p-accordion-header-link {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  position: relative;
+  text-decoration: none;
+}
+
+.p-accordion-header-link:focus {
+  z-index: 1;
+}
+
+.p-accordion-header-text {
+  line-height: 1.5;
+  margin-top: 3px;
+}
+
+.p-accordion .p-toggleable-content{
+  overflow: hidden;
+}
+
+.p-accordion .p-accordion-tab-active .p-toggleable-content:not(.ng-animating) {
+  overflow: inherit;
+}
+
+
+
+/* pick list settings end */
+
+
+.p-button-icon-only:hover {
+  background-color: $primary;
+  color: $datatable-state-hover !important;
+}
+
+body .ui-listbox .ui-listbox-header {
+  background-color: $datatable-state-background;
+  color: white;
+}
+
+.ui-chkbox .ui-chkbox-icon {
+  background-color: $check-box-background;
+}
+
+body .ui-listbox .ui-listbox-item.ui-state-highlight {
+  background-color: $datatable-state-highlight;
+  color: black;
+}
+
+body .ui-dialog .ui-dialog-titlebar .ui-dialog-title {
+  color: $primary
+}
+
+.p-button .p-button-text {
+  background-color: $primary;
+}
+
+body .p-button {
+  background-color: $primary;
+}
+
+body .p-button:hover {
+  background-color: $primary;
+}
+
+body .p-button:focus {
+  background-color: $primary;
+}
+
+body .ui-listbox .ui-listbox-item.ui-state-highlight .ui-chkbox {
+  border: 1px solid $check-box-background;
+}
+
+body .ui-listbox:not(.ui-state-disabled) .ui-listbox-item:hover {
+  background-color: $datatable-state-hover;
+  color: black;
+}
+
+body .ui-chkbox .ui-chkbox-box.ui-state-active {
+  border: 1px solid $check-box-background;
+  background-color: $check-box-background;
+}
+
+body .ui-listbox .ui-listbox-item.ui-state-highlight .ui-chkbox {
+  border: none;
+}
+
+body .p-button:focus, body .p-button:enabled:hover {
+  background-color: $primary;
+}
+
+/* Drop down - start */
+.ui-dropdown {
+    border: none;
+}
+
+body .ui-dropdown .ui-dropdown-label {
+  background: white;
+}
+
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
+  background-color: $datatable-state-highlight;
+  color: black;
+  border: 0px;
+}
+
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item:not(.ui-state-highlight):hover {
+  background-color: $datatable-state-hover;
+  color: black;
+}
+
+body .ui-dropdown:not(.ui-state-disabled):hover .ui-dropdown-trigger, body .ui-dropdown.ui-state-focus .ui-dropdown-trigger,
+body .ui-dropdown.ui-state-focus .ui-dropdown-label, body .ui-dropdown:not(.ui-state-disabled):hover .ui-dropdown-label {
+  background-color: $datatable-state-hover;
+  color: black;
+}
+
+/* Drop down - end */
+
+/* Multi-select - start */
+
+body .ui-multiselect {
+  // background: white;
+  //border: 0px;
+  max-height: 30px;
+}
+
+body .ui-multiselect-label-container {
+  // margin-left: -12px;
+  // margin-top: -10px;
+}
+
+body .ui-multiselect .ui-multiselect-item.ui-state-highlight {
+  background-color: $datatable-state-highlight;
+  color: black;
+  border: 0px;
+}
+
+body .ui-multiselect .ui-multiselect-items .ui-multiselect-item:not(.ui-state-highlight):hover,
+body .ui-multiselect.ui-state-focus {
+  background-color: $datatable-state-hover;
+  color: black;
+}
+
+body .ui-multiselect:not(.ui-state-disabled):hover .ui-multiselect-trigger, body .ui-multiselect.ui-state-focus .ui-multiselect-trigger,
+body .ui-multiselect.ui-state-focus .ui-multiselect-label, body .ui-multiselect:not(.ui-state-disabled):hover .ui-multiselect-label {
+  background-color: $datatable-state-hover;
+  color: black;
+}
+
+body .ui-multiselect:not(.ui-state-disabled):hover {
+  background-color: $datatable-state-hover;
+  color: black;
+}
+
+// body .ui-multiselect .ui-multiselect-item.ui-state-highlight .ui-chkbox {
+//   border: none;
+// }
+
+/* Multi-select - end */
+
+
+.ui-inputfield {
+  border-radius: 0px;
+  box-shadow: none;
+}
+
+/* input text - start */
+
+body .ui-inputtext.ui-state-focus, body .ui-inputtext:focus {
+  border: 1px solid $primary;
+}
+
+body .ui-inputtext {
+  width: 100%;
+}
+
+/* input text - end */
+
+// Turbo-Table settings - start
+
+.p-datatable .p-datatable-thead > tr > th,
+.p-datatable .p-datatable-tfoot > tr > td {
+  background-color: $datatable-state-background;
+  padding: .75em;
+  color: $font-color;
+  border: 1px solid #c7c7c7;
+  font-weight: smaller;
+}
+
+.p-datatable {
+  position: relative;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  border: 1px solid #c7c7c7;
+  padding: .50em .50em .50em .50em;
+}
+
+.p-datatable .p-datatable-tbody tr:nth-child(odd) td {
+  background-color: $datatable-odd-row-background;
+  padding: .5em;
+}
+
+.p-datatable .p-datatable-tbody tr:nth-child(even) td {
+  background-color: $datatable-even-row-background;
+  padding: .5em;
+
+}
+
+.p-datatable .p-datatable-tbody tr:hover td {
+  background-color: $datatable-state-hover;
+  transition: all .2s;
+  cursor: pointer;
+}
+
+.p-datatable .p-datatable-tbody tr:focus td {
+   color: #ffffff;
+  background-color: $datatable-state-highlight;
+}
+
+
+
+// .p-datatable .p-paginator-bottom {
+//   background: white;
+// }
+
+
+// .ui-table-scrollable-header-box {
+//   margin-right: 17px !important;
+//   }
+
+// Turbo-Table settings - end
+
+.fa-fw {
+  color: white;
+}
+
+
+.p-datatable .ui-sortable-column.ui-state-highlight {
+  background-color: $datatable-state-highlight !important;
+  color: black !important;
+}
+
+body .p-datatable .p-datatable-thead > tr > th {
+  padding: 0.5em 0.857em;
+  border: 1px solid #c8c8c8;
+  font-weight: smaller;
+  color: #ffffff;
+  background-color: $primary;
+
+}
+
+body .p-datatable .p-datatable-header {
+  padding: 0.5em 0.857em;
+  border: 1px solid #c8c8c8;
+  background-color: white;
+  color: black !important;
+}
+
+body .ui-widget-header {
+  background: #ffffff;
+  color: #2d353c;
+  border: 0px solid #cdcdcd !important;
+}
+
+body .p-datatable .ui-sortable-column .ui-sortable-column-icon {
+  color: #ffffff;
+}
+
+.p-datatable .ui-sortable-column.ui-state-highlight .ui-sortable-column-icon {
+  color: black !important;
+}
+
+// set outline to none - for cell edit
+body .p-datatable .ui-editable-column input:focus {
+  outline: none;
+}
+
+body .ui-rating a {
+  color:$primary;
+  cursor: pointer;
+}
+
+.ui-layout-unit {
+  z-index: 999  !important;
+}
+
+.ui-dialog-content {
+  background-color: white;
+}
+
+.p-progressbar {  
+  border: 1px solid #c7c7c7;
+}
+
+.p-progressbar-value {
+  background-color: $primary;
+  border: 1px solid #c7c7c7;
+}
+
+.p-progressbar-label {
+  color: white;
+}
+

@@ -1,0 +1,202 @@
+<div fxLayout="row" [style.width]="this.sessionService.getTotalScreenWidthInPx(this.Mode, this.FormColumnsWidth)">
+
+  <div fxLayout="column" [style.width]="this.sessionService.FirstColumnWidthInPx(this.FormColumnsWidth)" class="formColumn">
+
+    <form novalidate #dialogForm="ngForm" [class]="this.Mode == 'EDIT' || this.Mode == 'ADD'?'showquill':'hidequill'">
+
+      <div fxLayout="row" class="actionBarRow">
+          <div fxLayout="column" class="actionBarLabelColumnFull" fxLayoutAlign="center">
+              <label *ngIf="Mode=='ADD'" class="menuBarHeading">Add Template</label>
+              <label *ngIf="Mode=='EDIT'" class="menuBarHeading">Edit Template</label>
+          </div>
+          <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+              <div fxLayout="row" fxLayoutGap="20px">
+                  <div class="tooltip" matTooltip="Save" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                    *ngIf="(this.sessionService.actionAllowed('ADD_TEMPLATE') && this.Mode == 'ADD') || this.sessionService.actionAllowed('EDIT_TEMPLATE')">
+                      <button type="submit" class="app-icon-button" (click)="SubmitClick(dialogForm.valid)">
+                        <i class="material-icons logout">save</i>
+                      </button>
+                  </div>
+                  <div class="tooltip" matTooltip="Cancel" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                      <button class="app-icon-button" (click)="cancelClick()">
+                          <i class="material-icons logout">cancel</i>
+                      </button>
+                  </div>
+              </div>          
+          </div>   
+      </div>
+      
+      <div fxLayout="row" class="FirstColumnData" [style.height]="this.sessionService.getFormDataScrollHeightInPX()">
+                  
+        <div fxLayout="column" fxFlex=100%>
+
+          <br>
+
+          <div fxLayout="row" fxLayoutAlign="center center">
+              <div fxFlex=48%>
+                  <mat-form-field class="fld-mt0-w100">
+                      <input matInput type="text" maxlength="100" #TemplateName="ngModel" name="TemplateName"
+                      [(ngModel)]="selectedDataGridItem.TemplateName" placeholder="Template Name" required>
+                    <mat-error *ngIf="this.submitAttempt && TemplateName.hasError('required')">
+                      Template Name is required
+                    </mat-error>
+                  </mat-form-field> 
+              </div>
+              <div fxFlex=4%></div>
+              <div fxFlex=48%> 
+                  <mat-form-field class="fld-mt0-w100">
+                      <mat-select #TemplateType="ngModel" name="TemplateType" [(ngModel)]="selectedDataGridItem.TemplateType" required
+                                  placeholder="Template Type">
+                        <mat-option *ngFor="let itm of TemplateTypeList" [value]="itm.TemplateType">
+                          {{ itm.TemplateTypeName }}
+                        </mat-option>
+                      </mat-select>
+                      <mat-error *ngIf="this.submitAttempt && TemplateType.hasError('required')">
+                        Template Type is required
+                      </mat-error>                     
+                  </mat-form-field>
+              </div>          
+          </div>
+      
+          <div fxLayout="row" fxLayoutAlign="center center">
+              <div fxFlex=100% *ngIf="selectedDataGridItem.TemplateType == 'E'">
+                  <mat-form-field class="fld-mt0-w100">
+                      <input matInput type="text" maxlength="100" #Subject="ngModel" name="Subject" 
+                      [(ngModel)]="selectedDataGridItem.Subject" placeholder="Subject" required>           
+                      <mat-error *ngIf="this.submitAttempt && Subject.hasError('required')">
+                        Subject is required
+                      </mat-error>
+                    </mat-form-field>
+              </div>                            
+          </div>
+
+          <div fxLayout="row" fxLayoutGap="20px">
+
+            <div fxLayout="column" fxFlex="25%">
+                <div fxLayout="column" class="fieldHeader">
+                    <div class="fieldHeaderText">Merge Fields</div>
+                </div>
+                <p-scrollPanel [style]="{width: '100%', height: '450px'}">
+                    <div fxLayout="row" *ngFor="let itm of FieldList">
+                      <div fxLayout="column" class="fieldItem"
+                          pDraggable="draggedItem" (onDragStart)="dragStart($event,itm)" (onDragEnd)="dragEnd($event)">
+                        <div class="fieldText">{{itm.FieldName}}</div>
+                      </div>
+                    </div>
+                    <br>
+                    <br>
+                </p-scrollPanel>
+                <div fxLayout="row" fxLayoutAlign="start">
+                      <span class="noteText">Note: Merge fields can be drag & dropped into template body/subject</span>
+                </div>                                
+            </div>
+                       
+            <div fxLayout="column" fxFlex="75%">
+              <p-editor #Editor #Body="ngModel" name="Body" [(ngModel)]="selectedDataGridItem.Body"
+                [style]="{'height':'430px'}" pDroppable="draggedItem" (onDrop)="dropInEditor($event)" link-tooltip="true" image-tooltip="true"
+                (onTextChange)="onTextChangeQuill()">
+              </p-editor>
+              <mat-error class="formError" *ngIf="!this.isBodyValid && this.submitAttempt">
+                  Template body is required
+              </mat-error>                  
+            </div>
+                    
+          </div>
+      
+          <br>
+          <br>
+
+        </div>
+      
+      </div>
+
+    </form>
+
+  </div>
+  
+  <div class="ColumnDivider" *ngIf="Mode=='EDIT' || Mode=='ADD'"></div>
+  
+  <div fxLayout="column" [style.width]="this.sessionService.getScreenWidthInPx()">
+
+  <div fxLayout="row">
+
+    <div fxLayout="column">
+          
+      <div fxLayout="row" class="actionBarRow">
+
+          <div fxLayout="column" class="actionBarLabelColumn" fxLayoutAlign="center">
+              <label class="menuBarHeading">Templates</label>
+          </div>
+
+          <div fxLayout="column" class="actionBarDataColumn"></div>
+
+          <div fxLayout="column" class="actionBarSearchColumn">
+            <mat-form-field>
+              <input inputmode="search" (keyup)="onKeyUp()" (input)="dt.filterGlobal($event.target.value, 'contains')" matInput placeholder="Text Filter" class="searchBox">
+            </mat-form-field>            
+          </div>
+    
+          <div fxLayout="column" class="actionBarButtonColumn" fxLayoutAlign="center end">
+            <div fxLayout="row" fxLayoutGap="20px">
+                <div class="tooltip" matTooltip="Add" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                *ngIf="this.sessionService.actionAllowed('ADD_TEMPLATE')">
+                  <button class="app-icon-button" (click)="addClick()">
+                      <i class="material-icons">add_box</i>
+                  </button>
+              </div>
+              <div class="tooltip" matTooltip="Edit" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                *ngIf="this.sessionService.actionAllowed('EDIT_TEMPLATE')">
+                  <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="editClick()">
+                      <i class="material-icons">edit</i>
+                  </button>
+              </div>
+              <div class="tooltip" matTooltip="Delete" [matTooltipPosition]="this.sessionService.ToolTipPosition"
+                *ngIf="this.sessionService.actionAllowed('DELETE_TEMPLATE')">
+                  <button [disabled]="!isRowSelected()" class="app-icon-button" (click)="deleteClick()">
+                      <i class="material-icons">delete</i>
+                  </button>
+              </div>
+              <div class="tooltip" matTooltip="Refresh" [matTooltipPosition]="this.sessionService.ToolTipPosition">
+                  <button class="app-icon-button" (click)="refreshClick()">
+                    <i class="material-icons">refresh</i>
+                  </button>
+              </div>          
+            </div>
+          </div>
+
+      </div>
+                  
+      <div fxLayout="row" class="SecondColumnData">
+        <p-table #dt [columns]="cols" [value]="dataGridList" selectionMode="single" [scrollable]="true" [scrollHeight]="this.sessionService.getDataTableScrollHeightInPX()" 
+          [style.width]="this.sessionService.getScreenWidthInPx()"
+          [(selection)]="selectedData" [paginator]="true" [rows]="sessionService.NoOfRowsPerPage" 
+          [rowsPerPageOptions]="sessionService.RowsPerPageOptions">    
+              <ng-template pTemplate="header" let-columns>
+                  <tr> 
+                      <th *ngFor="let col of columns"  [pSortableColumn]="col.field" [style.width]="col.width">
+                          {{col.header}}
+                          <p-sortIcon [field]="col.field"></p-sortIcon>
+                      </th>
+                  </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-columns="columns">
+                  <tr [pSelectableRow]="rowData" (dblclick)="onDoubleClick(rowData)">
+                      <td pEditableColumn *ngFor="let col of columns" [style.width]="col.width" [style.text-align]="col.align"
+                          [style.word-wrap]="col.wrap">
+                          {{rowData[col.field]}}
+                      </td>
+                    </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                  No records found
+              </ng-template>
+        </p-table>           
+      </div>
+
+    </div>  
+
+  </div>
+
+  </div>
+
+</div>

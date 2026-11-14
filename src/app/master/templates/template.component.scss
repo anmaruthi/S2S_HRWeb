@@ -1,0 +1,47 @@
+.showquill {
+    display: contents;
+}
+
+.hidequill {
+    display: none;
+}
+
+.fieldItem {
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    background-color: ghostwhite;
+    height: 30px;
+    width: 250px;  
+    margin-top: 2px;
+    margin-left: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+    padding: 1px;
+}
+
+.fieldText {
+    color: black;
+    font-weight: 200;
+    text-align: left;
+    margin-top: 7px;
+    margin-left: 5px;
+}
+
+.fieldHeader {
+    border: 1px solid steelblue;
+    background-color: #1a83ca;
+    height: 30px;
+    width: 100%;  
+}
+
+.fieldHeaderText {
+    margin-top: 7px;
+    font-size: 13px;
+    color: white;
+    text-align: center;
+}
+
+.noteText {
+    font-weight: 400px;
+    font-size:10px;
+}
